@@ -1,0 +1,17 @@
+= Building Firmware
+
+.Prerequisites:
+* GCC-compatible toolchain for ARM^(R)^ Cortex^(R)^-M processor family +
+  (such as https://launchpad.net/gcc-arm-embedded[GNU Tools for ARM Embedded Processors])
+* Atmel^(R)^ Software Framework (http://www.atmel.com/tools/avrsoftwareframework.aspx[ASF])
+  version 3.18 or newer
+* GNU Make
+* GNU Bash
+* AWK, sed and xxd utilities
+* Python 2.7
+* Python Imaging Library (PIL) or a compatible replacement such as Pillow
+
+Set the `ASF` environment variable to the ASF's top level directory.
+
+Then run `make`.  The main Mycelium Entropy firmware will be in
+`me/entropy-1.0/me.bin`.
