@@ -122,6 +122,10 @@ class KeySigner:
         sig["r"] = "%064x" % signature.r
         sig["s"] = "%064x" % signature.s
 
+    def pubkey_hex(self):
+        return [ " ".join([ h[i:i+8] for i in range(0, len(h), 8) ]) for h in
+                 ("%064x" % self.pubkey.point.x(), "%064x" % self.pubkey.point.y()) ]
+
 class ExternalSigner:
     def __init__(self):
         import serial
@@ -159,7 +163,7 @@ class ExternalSigner:
             sys.exit(3)
 
 def get_signer(keycfg):
-    key = 0
+    signer = None
     try:
         rc = open(keycfg)
         for l in rc:
@@ -167,20 +171,29 @@ def get_signer(keycfg):
             if not l:
                 continue
             if l[0] == "external":
-                rc.close()
-                return ExternalSigner()
+                signer = ExternalSigner()
+                break
             if l[0] == "key":
                 if len(l) > 1:
                     keyhex = l[1].strip().translate(None, " ")
                     key = long(keyhex, 16)
+                signer = KeySigner(key)
                 break
     except IOError:
         key = random.SystemRandom().randrange(1, ecdsa.g.order())
         keyhex = "%064x" % key
         os.umask(0077)
         rc = open(keycfg, "w")
+        signer = KeySigner(key)
+        x, y = signer.pubkey_hex()
         rc.write("""# Firmware signing key configuration file.
-# This file was automatically generated for you with a new key.
+# This file was automatically generated for you with a new key,
+# but you can use your own key if you like.
+#
+# If you use the automatically generated key, below is the corresponding
+# public key, which you should add to the settings.txt file on your
+# Mycelium Entropy device with the 'sign' keyword as follows:
+# sign """ + x + "\n#      " + y + """
 #
 # You can either provide the key directly with the 'key' statement,
 # or specify that a special hardware device is to be used with the
@@ -191,10 +204,10 @@ key """ + " ".join([ keyhex[i:i+8] for i in range(0, len(keyhex), 8) ]) + "\n")
         print os.path.normpath(keycfg), "created with a new key."
 
     rc.close()
-    if key == 0:
+    if not signer:
         print "Bad config."
         sys.exit(4)
-    return KeySigner(key)
+    return signer
 
 def load_version(dirname):
     version_h = os.path.join(dirname, "..", "version.h")
