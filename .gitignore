@@ -16,3 +16,5 @@ key.cfg
 brt/*/boot-bin.c
 me/*/applet-bin.c
 me/*/jpeg-check
+me/tools/check
+me/tools/test
