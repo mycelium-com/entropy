@@ -216,6 +216,9 @@ static const char settings_txt[] =
 "compressed\r\n"
 "#uncompressed\r\n"
 "\r\n"
+"# Advanced feature: up to 32 bytes of your own salt in hex, e.g.:\r\n"
+"#salt1 dead beef\r\n"
+"\r\n"
 "# Permitted public keys for signing firmware:\r\n"
 "sign";
 

@@ -26,6 +26,7 @@
 #include "lib/sha256.h"
 #include "data.h"
 #include "layout.h"
+#include "sss.h"
 
 
 // We can temporarily use the memory at _estack for coefficients.

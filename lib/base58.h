@@ -31,7 +31,7 @@
 #include "secp256k1.h"
 
 // Base-58 mapping: "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
-const char base58_map[60];
+extern const char base58_map[];
 
 // Encode len bytes of data into b58_buf.
 void base58check_encode(const unsigned char *data, int len, char *b58_buf);

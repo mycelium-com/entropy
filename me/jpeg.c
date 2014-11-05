@@ -24,7 +24,6 @@
 #include <assert.h>
 #include <ff.h>
 
-#include "lib/base58.h"
 #include "qr.h"
 #include "xflash.h"
 #include "fs.h"
@@ -34,7 +33,7 @@
 #include "readme.h"
 
 #define DEBUG           0
-#define USE_EXT_FLASH   0
+#define USE_EXT_FLASH   1
 
 // Image is built out of fragments, which are rectangular arrays of macroblocks.
 // A fragment is described by its type, parameters, and body.
@@ -360,7 +359,7 @@ static bool render_text(union fgm_state *state, int total_width)
 
     for (i = 0; i < st->width && st->text[i]; i++) {
         // character index in the font array
-        int chr_idx = index(base58_map, st->text[i]) - base58_map;
+        unsigned chr_idx = font_map[st->text[i] - ' '];
         // this character's descriptor for this row
         struct Chr_row_descr chr = addr_font[chr_idx][st->row];
 

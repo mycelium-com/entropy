@@ -34,6 +34,7 @@ enum {
 enum {
     IDX_ADDRESS,
     IDX_PRIVKEY,
+    IDX_UNSALTED = 4,
 };
 // For Shamir's Secret Sharing part n of m
 #define IDX_SSS_PART(n) (n)
@@ -64,6 +65,8 @@ struct Layout {
 
 extern const struct Layout main_layout[];
 extern const struct Layout shamir_layout[];
+extern const struct Layout salt1_layout[];
+extern const struct Layout shamir_salt1_layout[];
 const uint16_t *bitcoin_address_ref;
 
 #endif

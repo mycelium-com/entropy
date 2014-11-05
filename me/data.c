@@ -17,8 +17,20 @@
  * GNU General Public License for more details.
  */
 
+#include "sss.h"
+#include "layout.h"
 #include "data.h"
 
-char texts[4][SSS_STRING_SIZE];
+static char address[35];
+static char sss[3][SSS_STRING_SIZE];
+static char unsalted[73];
+
+char * const texts[] = {
+    [IDX_ADDRESS]       = address,
+    [IDX_SSS_PART(1)]   = sss[0],
+    [IDX_SSS_PART(2)]   = sss[1],
+    [IDX_SSS_PART(3)]   = sss[2],
+    [IDX_UNSALTED]      = unsalted,
+};
 
 unsigned global_error_flags;

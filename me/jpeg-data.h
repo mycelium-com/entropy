@@ -11,8 +11,8 @@
 
 // JPEG bitstream elements:
 #define SME {  3,    0x0 }
-#define WTB { 15, 0x401c }
-#define BTW { 15, 0x5fe0 }
+#define WTB { 16, 0xc01c }
+#define BTW { 16, 0xdfe0 }
 #define AC_EOB_LEN       2
 #define AC_EOB_CODE    0x0
 enum {
@@ -21,8 +21,8 @@ enum {
     SME_LONG_MB         = 8,
     SME_LONG_LEN        = 24,
     SME_LONG_BITS       = 0x0,
-    GTW_LEN             = 16,
-    GTW_BITS            = 0xefe0,
+    GTW_LEN             = 15,
+    GTW_BITS            = 0x5fe0,
 };
 
 // Huffman DC table 0
@@ -47,8 +47,9 @@ struct Chr_row_descr {
     uint16_t offset;
 };
 
-extern const struct Chr_row_descr addr_font[59][CHR_HEIGHT];
-extern const unsigned char addr_font_data[34242];
+extern const struct Chr_row_descr addr_font[61][CHR_HEIGHT];
+extern const unsigned char font_map[91];
+extern const unsigned char addr_font_data[34949];
 
 // Pictures.
 extern const uint16_t cut_here_fragment[];
@@ -90,6 +91,16 @@ enum {
     LITECOIN_ADDRESS_FRAGMENT_WIDTH  = 41,
     LITECOIN_ADDRESS_FRAGMENT_HEIGHT = 5
 };
+extern const uint16_t entropy_for_verification_fragment[];
+enum {
+    ENTROPY_FOR_VERIFICATION_FRAGMENT_WIDTH  = 57,
+    ENTROPY_FOR_VERIFICATION_FRAGMENT_HEIGHT = 7
+};
+extern const uint16_t key_sha_256_salt1_fragment[];
+enum {
+    KEY_SHA_256_SALT1_FRAGMENT_WIDTH  = 77,
+    KEY_SHA_256_SALT1_FRAGMENT_HEIGHT = 7
+};
 extern const uint16_t small_print_fragment[];
 enum {
     SMALL_PRINT_FRAGMENT_WIDTH  = 84,
@@ -107,4 +118,4 @@ enum {
 };
 
 // JPEG header.
-extern const unsigned char jpeg_header[420];
+extern const unsigned char jpeg_header[422];

@@ -20,9 +20,7 @@
 #ifndef DATA_H_INCLUDED
 #define DATA_H_INCLUDED
 
-#include "sss.h"
-
-extern char texts[][SSS_STRING_SIZE];
+extern char * const texts[];
 
 extern unsigned global_error_flags;
 

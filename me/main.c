@@ -113,7 +113,7 @@ generate_new_key:
 #endif
 
     // Generate key pair.
-    len = keygen(settings.coin, settings.compressed, key);
+    len = keygen(key);
 
 #if AT25DFX_MEM
     do ; while (!xflash_ready);
@@ -125,14 +125,16 @@ generate_new_key:
     int mode = ui_btn_count;
     if (mode) {
         // generate 2-of-3 Shamir's shares
-        num_sectors = 928;
+        num_sectors = 928 + settings.salt_type * 80;
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
         sss_encode(2, 3, SSS_BASE58, key, len);
-        jpeg_init(&_estack, (uint8_t *)&__ram_end__, shamir_layout);
+        jpeg_init(&_estack, (uint8_t *)&__ram_end__, settings.salt_type == 0 ?
+                  shamir_layout : shamir_salt1_layout);
     } else {
         // generate regular private key in Wallet Import Format (aka SIPA)
-        num_sectors = 290;
-        jpeg_init(&_estack, (uint8_t *)&__ram_end__, main_layout);
+        num_sectors = 290 + settings.salt_type * 140;
+        jpeg_init(&_estack, (uint8_t *)&__ram_end__, settings.salt_type == 0 ?
+                  main_layout : salt1_layout);
     }
     ui_off();
     LED_On(LED0);

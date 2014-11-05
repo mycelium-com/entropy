@@ -22,11 +22,14 @@
 
 #include "ff.h"
 #include "lib/rs.h"
+#include "lib/hex.h"
 #include "data.h"
 #include "jpeg.h"
 #include "jpeg-data.h"
 #include "keygen.h"
 #include "xflash.h"
+#include "sss.h"
+#include "settings.h"
 #include "rng.h"
 
 //void jpeg_dump(void);
@@ -37,8 +40,8 @@
 uint32_t _estack[16 * 256 / 4]; // max 16 shares, 256 bytes each
 
 // Global variables expected by the embedded software.
-char texts[6][SSS_STRING_SIZE];
 int ui_btn_count;
+struct Settings settings;
 
 // File with the contents of external flash.
 static FILE *xflash_file;
@@ -68,6 +71,20 @@ static int get_random_extent(int *xend, int nblk)
     return start;
 }
 
+static bool check_layout(const struct Layout *layout, const char *name)
+{
+    unsigned height = 0;
+
+    do {
+        height += layout->vstep;
+    } while (layout++->type != FGM_STOP);
+
+    if (height != JHEIGHT)
+        printf("%s layout error: height %u, must be %d.\n", name, height,
+                JHEIGHT);
+    return height == JHEIGHT;
+}
+
 static void usage(void)
 {
     fputs("Usage:  check [options]\n"
@@ -78,6 +95,7 @@ static void usage(void)
           "            with a file size of NBLK 512-byte blocks\n"
           "  -l        Litecoin\n"
           "  -p        Peercoin\n"
+          "  -1        use type 1 salt\n"
           "Output is written to sample*.jpg, where * stands for "
           "option-specific suffixes.\n",
           stderr);
@@ -90,7 +108,7 @@ int main(int argc, char *argv[])
     uint8_t buf[22736];
     uint8_t *bprev, *bptr = 0;
     int blk, xend;
-    bool testnet = false, compressed = true, shamir = false;
+    bool testnet = false, shamir = false;
     bool litecoin = false, peercoin = false;
     int nblk = 0;
     int retcode = 0;
@@ -113,7 +131,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    while ((i = getopt(argc, argv, "tsulpr:h")) != -1)
+    settings.compressed = true;
+
+    while ((i = getopt(argc, argv, "tsulp1r:h")) != -1)
         switch (i) {
         case 't':
             testnet = true;
@@ -122,13 +142,16 @@ int main(int argc, char *argv[])
             shamir = true;
             break;
         case 'u':
-            compressed = false;
+            settings.compressed = false;
             break;
         case 'l':
             litecoin = true;
             break;
         case 'p':
             peercoin = true;
+            break;
+        case '1':
+            settings.salt_type = 1;
             break;
         case 'r':
             nblk = strtoul(optarg, 0, 0);
@@ -154,6 +177,7 @@ int main(int argc, char *argv[])
     }
 
     coin = &coins[testnet + 2 * litecoin + 3 * peercoin];
+    settings.coin = coin->coin;
 
     snprintf(fname, sizeof fname, "sample%s%s.jpg",
             coin->suffix,
@@ -171,8 +195,20 @@ int main(int argc, char *argv[])
 
     srandomdev();
 
+    if (settings.salt_type) {
+        settings.salt_len = 4;
+        *(uint32_t *) settings.salt = random();
+        hexlify(buf, settings.salt, settings.salt_len);
+        printf("Salt:%s.\n", buf);
+    }
+
+    check_layout(main_layout, "Main");
+    check_layout(shamir_layout, "Shamir's");
+    check_layout(salt1_layout, "Salt1");
+    check_layout(shamir_salt1_layout, "Shamir with salt1");
+
     // Generate key pair.
-    int len = keygen(coin->coin, compressed, key);
+    int len = keygen(key);
 
     // Set address heading according to coin type.
     bitcoin_address_ref = coin->heading;
@@ -180,9 +216,11 @@ int main(int argc, char *argv[])
     if (shamir) {
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
         sss_encode(2, 3, SSS_BASE58, key, len);
-        jpeg_init(buf, buf + sizeof buf, shamir_layout);
+        jpeg_init(buf, buf + sizeof buf, settings.salt_type == 0 ?
+                  shamir_layout : shamir_salt1_layout);
     } else {
-        jpeg_init(buf, buf + sizeof buf, main_layout);
+        jpeg_init(buf, buf + sizeof buf, settings.salt_type == 0 ?
+                  main_layout : salt1_layout);
     }
 
     if (nblk) {

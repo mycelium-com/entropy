@@ -40,7 +40,8 @@ int parse_settings(struct Raw_public_key keys[], int len)
     uint8_t buf[32];
     char token[16];
     int tlen = 0;           // length of accumulated token, heh heh
-    uint8_t *key_ptr = keys[0].x;
+    uint8_t *buf_ptr = 0;
+    uint8_t  buf_len = 0;
     unsigned hex_buf = 1;
     UINT i = 0;
     UINT num_chars_in_buf;
@@ -49,6 +50,8 @@ int parse_settings(struct Raw_public_key keys[], int len)
     // default configuration
     settings.coin = BITCOIN;
     settings.compressed = true;
+    settings.salt_type = 0;
+    settings.salt_len = 0;
 
     if (f_open(&file, "0:settings.txt", FA_READ) != FR_OK) {
         // probably no such file, revert to default configuration
@@ -72,6 +75,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
         COIN,
         COMPRESS,
         SIGN,
+        SALT,
     };
 
     static const struct Token_table coin_args[] = {
@@ -87,6 +91,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
         { .token = "compressed",    .code = COMPRESS, .value = true },
         { .token = "uncompressed",  .code = COMPRESS, .value = false },
         { .token = "sign",          .code = SIGN },
+        { .token = "salt1",         .code = SALT, .value = 1 },
         { 0 }
     };
     const struct Token_table *table = commands;
@@ -94,7 +99,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
     // parser state
     bool in_comment = false;
     bool in_hex = false;
-    len <<= 6;      // count key bytes instead of whole keys
+    bool in_salt = false;
 
     f_read(&file, buf, sizeof buf, &num_chars_in_buf);
 
@@ -124,6 +129,14 @@ int parse_settings(struct Raw_public_key keys[], int len)
             }
             in_comment = false;
 
+            if (in_salt && c == '\n') {
+                in_salt = false;
+                in_hex = false;
+                settings.salt_len = sizeof settings.salt - buf_len;
+                if (hex_buf != 1)
+                    return -2;
+            }
+
             if (c <= ' ') {     // isspace
                 if (in_hex)
                     continue;
@@ -152,6 +165,16 @@ int parse_settings(struct Raw_public_key keys[], int len)
                             settings.compressed = table->value;
                             break;
                         case SIGN:
+                            buf_ptr = key_cnt < len ? keys[key_cnt].x : 0;
+                            key_cnt++;
+                            buf_len = 64;
+                            in_hex = true;
+                            break;
+                        case SALT:
+                            buf_ptr = settings.salt;
+                            buf_len = sizeof settings.salt;
+                            settings.salt_type = table->value;
+                            in_salt = true;
                             in_hex = true;
                             break;
                         }
@@ -179,11 +202,11 @@ int parse_settings(struct Raw_public_key keys[], int len)
                     return -2;  // bad hex
                 hex_buf = hex_buf << 4 | c;
                 if (hex_buf & 0x100) {
-                    if (key_cnt++ < len)
-                        *key_ptr++ = hex_buf;
+                    if (buf_ptr)
+                        *buf_ptr++ = hex_buf;
                     hex_buf = 1;
-                    if ((key_cnt & 63) == 0)
-                        in_hex = false;     // end of hex for this key
+                    if (--buf_len == 0)
+                        in_hex = false;     // end of hex for this key or salt
                 }
             } else {
                 if (tlen == sizeof token - 1)
@@ -200,5 +223,5 @@ int parse_settings(struct Raw_public_key keys[], int len)
         i = 0;
     }
 
-    return in_hex ? -2 : key_cnt >> 6;
+    return in_hex ? -2 : key_cnt;
 }

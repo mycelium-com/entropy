@@ -23,13 +23,16 @@
 
 #include "lib/base58.h"
 #include "lib/ecdsa.h"
+#include "lib/sha256.h"
+#include "lib/hex.h"
 #include "data.h"
 #include "layout.h"
 #include "rng.h"
+#include "settings.h"
 #include "keygen.h"
 
 
-int keygen(uint8_t coin, bool compressed, uint8_t key_buf[])
+int keygen(uint8_t key_buf[])
 {
     int len;
 
@@ -46,10 +49,26 @@ int keygen(uint8_t coin, bool compressed, uint8_t key_buf[])
     bignum256 tkey;     // private key in bignum format
     curve_point pub;    // public key
 
+    // for salting
+    struct {
+        uint8_t  salt[32];
+        uint32_t rnum[8];
+    } mixer;
+
     // generate a random 256-bit number;
     // try again if it is >= field prime
     do {
-        rng_next(key.words);
+        switch (settings.salt_type) {
+        case 1:
+            rng_next(mixer.rnum);
+            hexlify(texts[IDX_UNSALTED], (uint8_t *) mixer.rnum, 32);
+            uint8_t *mix = mixer.salt + sizeof mixer.salt - settings.salt_len;
+            memcpy(mix, settings.salt, settings.salt_len);
+            sha256_hash(key.words, mix, mixer.salt + sizeof mixer - mix);
+            break;
+        default:
+            rng_next(key.words);
+        }
         bn_read_be((uint8_t *)key.words, &tkey);
     } while (!bn_is_less(&tkey, &order256k1));
 
@@ -57,14 +76,15 @@ int keygen(uint8_t coin, bool compressed, uint8_t key_buf[])
     scalar_multiply(&tkey, &pub);
 
     // SIPA formatting
-    key.sipa[0] = coin | 0x80;
+    key.sipa[0] = settings.coin | 0x80;
     len = 33;
-    if (compressed)
+    if (settings.compressed)
         key.sipa[len++] = 1;
     memcpy(key_buf, key.sipa, len);
 
     base58check_encode(key.sipa, len, texts[IDX_PRIVKEY]);
-    base58_encode_address(&pub, coin, compressed, texts[IDX_ADDRESS]);
+    base58_encode_address(&pub, settings.coin, settings.compressed,
+                          texts[IDX_ADDRESS]);
 
     printf("Address: %s.\n", texts[IDX_ADDRESS]);
 

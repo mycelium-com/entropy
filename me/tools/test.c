@@ -251,15 +251,19 @@ static void test_parser(void)
         const char *text;
         uint8_t coin;
         bool compressed;
+        uint8_t salt_type;
+        uint8_t salt_len;
+        uint8_t salt[32];
         const char (*keys)[2][65];
         int nkeys;
     } tests[] = {
         {
             "  # comment\r\n coin bitcoin  # test\ncompressed\r\n# another comment\n"
+            "salt1 dead beef\n"
             "sign 2665 9c1cf7321c178c07437150639ff0c5b7679c7ea195253ed9abda2e\r\n"
             "081a37 00000000 \n"
             " 00000000000000000000000000000000000000000000000000000000",
-            BITCOIN, true, &public_keys[0], 1
+            BITCOIN, true, 1, 4, { 0xde, 0xad, 0xbe, 0xef }, &public_keys[0], 1
         },
         {
             "coin   ltC \r\nsign\n   \n"
@@ -267,19 +271,27 @@ static void test_parser(void)
             "3d48#comment\n"
             "00000000000000000000000000000000000000000000000000000000000000\n"
             "01\n"
+            "salt1 01234567 89abcdef aabbccdd 11223344 5432fecb 24681357 a1b2c3d4"
+            " ff99ee88#max salt\n"
             " uncompressed # really?\n"
             "sign 96e8f2093f018aff6c2e2da5201ee528e2c8accbf9cac51563d33a7bb74a0160\n"
             "54201c025e2a5d96b1629b95194e806c63eb96facaedc733b1a4b70ab3b33e3a\n",
-            LITECOIN, false, &public_keys[3], 2
+            LITECOIN, false, 1, 32, {
+                0x01, 0x23, 0x45, 0x67,  0x89, 0xab, 0xcd, 0xef,
+                0xaa, 0xbb, 0xcc, 0xdd,  0x11, 0x22, 0x33, 0x44,
+                0x54, 0x32, 0xfe, 0xcb,  0x24, 0x68, 0x13, 0x57,
+                0xa1, 0xb2, 0xc3, 0xd4,  0xff, 0x99, 0xee, 0x88,
+            }, &public_keys[3], 2
         },
-        {   "illegal command",      0, true, 0, -2  },
-        {   "coin unknown",         0, true, 0, -2  },
-        {   "coin\nuncompressed\n", 0, true, 0, -2  },
-        {   "coin btc coin ltc\n",  0, true, 0, -2  },
+        {   "illegal command",      0, true, 0, 0, {}, 0, -2  },
+        {   "coin unknown",         0, true, 0, 0, {}, 0, -2  },
+        {   "coin\nuncompressed\n", 0, true, 0, 0, {}, 0, -2  },
+        {   "coin btc coin ltc\n",  0, true, 0, 0, {}, 0, -2  },
         {   "coin 96e8f2093f018aff6c2e2da5201ee528e2c8accbf9cac51563d33a7bb74a0160",
-                                    0, true, 0, -2  },
-        {   "sign hmm",             0, true, 0, -2  },
-        {   "sign 01",              0, true, 0, -2  },
+                                    0, true, 0, 0, {}, 0, -2  },
+        {   "sign hmm",             0, true, 0, 0, {}, 0, -2  },
+        {   "sign 01",              0, true, 0, 0, {}, 0, -2  },
+        {   "salt1 abc",            0, true, 1, 1, {}, 0, -2  },
     };
 
     unsigned i;
@@ -299,7 +311,9 @@ static void test_parser(void)
 
             if (nkeys != tests[i].nkeys
              || settings.coin != tests[i].coin
-             || settings.compressed != tests[i].compressed) {
+             || settings.compressed != tests[i].compressed
+             || settings.salt_type != tests[i].salt_type
+             || settings.salt_len != tests[i].salt_len) {
                 printf("Parser test %u FAILED: nkeys %d, coin %#x, compressed %d.\n",
                         i, nkeys, settings.coin, settings.compressed);
                 abort();
@@ -307,6 +321,11 @@ static void test_parser(void)
 
             if (nkeys < 0)
                 continue;       // correct error detection
+
+            if (memcmp(settings.salt, tests[i].salt, settings.salt_len) != 0) {
+                printf("Parser test %u FAILED: wrong salt.\n", i);
+                abort();
+            }
 
             if (nkeys > j)
                 nkeys = j;

@@ -50,10 +50,8 @@
 #include "ripemd.h"
 
 // Mapping of Base58 code points to characters.
-// This is also used as font map, and we use dash in the font in addition to
-// the Base58 alphabet.
 const char base58_map[] =
-    "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz-";
+    "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 
 // Encode len bytes of data into b58_buf using Base58Check encoding.
 void base58check_encode(const unsigned char *data, int len, char *b58_buf)

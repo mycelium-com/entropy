@@ -35,7 +35,7 @@ enum {
 
 // Store private key in SIPA format into key_buf.
 // Return key length (33 or 34), or 0 on failure.
-int keygen(uint8_t coin, bool compressed, uint8_t key_buf[]);
+int keygen(uint8_t key_buf[]);
 
 #endif
 

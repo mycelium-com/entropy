@@ -13,7 +13,8 @@ SRC = ../sss.c ../keygen.c ../../lib/base58enc.c ../../lib/sha512.c \
 	../../lib/bignum.c ../../lib/secp256k1.c ../../lib/ecdsa.c \
 	../../lib/sha256.c ../../lib/ripemd.c ../../lib/rs-enc.c
 
-check: check.c ../jpeg.c ../layout.c ../qr.c ../jpeg-data.c ../jpeg-data-ext.c $(SRC)
+check: check.c ../jpeg.c ../layout.c ../qr.c ../jpeg-data.c ../jpeg-data-ext.c \
+	../data.c ../../lib/hex.c $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^
 
 test: test.c ../settings.c $(SRC)

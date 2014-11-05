@@ -34,7 +34,8 @@ DPI         = 220
 FONT        = "/System/Library/Fonts/Optima.ttc", 44
 TEXTS       = ("Bitcoin Address", "Private Key", "Share 1 of 3", "Share 2 of 3",
                "Share 3 of 3", "(any two shares reveal the key)",
-               "Litecoin Address")
+               "Litecoin Address",
+               "Entropy for verification:", "Key = SHA-256(salt1 || Entropy)")
 
 # Small font and text for the small print at the bottom
 SFONT       = "/System/Library/Fonts/Optima.ttc", 32
@@ -42,7 +43,7 @@ STEXT       = "Created by Mycelium Entropy.   mycelium.com"
 
 # Monospace font for text next to QR codes
 MFONT       = "/System/Library/Fonts/Menlo.ttc", 40
-MTEXT       = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz-"
+MTEXT       = " 0123456789-ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
 # Just for tuning the JPEG optimiser.  It's ok to have occasional 33x33 QRs.
 QR_SIZE = 29
@@ -575,6 +576,10 @@ class FontData:
         # bin_file is not used
         h.write("\n// Font data encoded as JPEG bitstream\n")
         c.write("\n// Font data encoded as JPEG bitstream\n")
+        # Make character mapping table.
+        fmap = bytearray(ord(max(MTEXT)) - ord(' ') + 1)
+        for i in range(len(MTEXT)):
+            fmap[ord(MTEXT[i]) - ord(' ')] = i
         # Aggregate all characters into a single data array,
         # computing offsets as we go.
         array = bytearray()
@@ -608,6 +613,7 @@ struct Chr_row_descr {
 
 extern const struct Chr_row_descr addr_font[%d][CHR_HEIGHT];
 """ % (self.width, self.height, len(self.data)))
+        write_byte_array(h, c, "font_map", fmap)
         c.write("""
 const struct Chr_row_descr addr_font[%d][CHR_HEIGHT] = {
 """ % len(self.data))

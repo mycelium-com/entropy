@@ -29,6 +29,9 @@ int parse_settings(struct Raw_public_key keys[], int len);
 extern struct Settings {
     uint8_t coin;
     bool    compressed;
+    uint8_t salt_type;
+    uint8_t salt_len;
+    uint8_t salt[32];
 } settings;
 
 extern const struct Raw_public_key mycelium_public_key;
