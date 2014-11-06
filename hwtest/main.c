@@ -22,6 +22,7 @@
 #include <board.h>
 #include <sleepmgr.h>
 #include <adcife.h>
+#include <delay.h>
 #include <led.h>
 #include <udc.h>
 
@@ -33,6 +34,7 @@
 #include "xflash.h"
 
 static volatile bool main_b_msc_enable = false;
+static volatile unsigned usb_frames_received;
 
 extern unsigned char fs_1_img[];
 extern unsigned int fs_1_img_len;
@@ -171,6 +173,61 @@ static void patch_fat(unsigned unique_id, unsigned length)
     }
 }
 
+// USB pins
+enum {
+    DM = PIN_PA25,
+    DP = PIN_PA26
+};
+
+static void report_dm_dp(const char *text)
+{
+    delay_ms(10);
+    bool dm = ioport_get_pin_level(DM);
+    bool dp = ioport_get_pin_level(DP);
+    printf("%s: DM = %d, DP = %d.\n", text, dm, dp);
+}
+
+static void check_usb_loopback(void)
+{
+    // Assume USB D+ and D- are connected together for test purposes.
+    ioport_enable_pin(DM);
+    ioport_enable_pin(DP);
+    ioport_set_pin_dir(DM, IOPORT_DIR_INPUT);
+    ioport_set_pin_dir(DP, IOPORT_DIR_INPUT);
+    puts("\n-- Loopback test --");
+
+    ioport_set_pin_mode(DM, IOPORT_MODE_PULLUP | IOPORT_MODE_GLITCH_FILTER);
+    report_dm_dp("DM in pull-up (both must be 1)");
+    ioport_set_pin_mode(DM, IOPORT_MODE_PULLDOWN | IOPORT_MODE_GLITCH_FILTER);
+    report_dm_dp("DM in pull-down (both must be 0)");
+    ioport_set_pin_mode(DM, IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_mode(DP, IOPORT_MODE_PULLUP | IOPORT_MODE_GLITCH_FILTER);
+    report_dm_dp("DP in pull-up (both must be 1)");
+    ioport_set_pin_mode(DP, IOPORT_MODE_PULLDOWN | IOPORT_MODE_GLITCH_FILTER);
+    report_dm_dp("DP in pull-down (both must be 0)");
+    ioport_set_pin_mode(DP, IOPORT_MODE_GLITCH_FILTER);
+
+    ioport_set_pin_dir(DM, IOPORT_DIR_OUTPUT);
+    ioport_set_pin_mode(DP, IOPORT_MODE_PULLUP | IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_level(DM, 0);
+    report_dm_dp("DM drives low, DP in pull-up (both must be 0)");
+    ioport_set_pin_mode(DP, IOPORT_MODE_PULLDOWN | IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_level(DM, 1);
+    report_dm_dp("DM drives high, DP in pull-down (both must be 1)");
+    ioport_set_pin_mode(DP, IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_dir(DM, IOPORT_DIR_INPUT);
+
+    ioport_set_pin_dir(DP, IOPORT_DIR_OUTPUT);
+    ioport_set_pin_mode(DM, IOPORT_MODE_PULLUP | IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_level(DP, 0);
+    report_dm_dp("DP drives low, DM in pull-up (both must be 0)");
+    ioport_set_pin_mode(DM, IOPORT_MODE_PULLDOWN | IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_level(DP, 1);
+    report_dm_dp("DP drives high, DM in pull-down (both must be 1)");
+    ioport_set_pin_mode(DM, IOPORT_MODE_GLITCH_FILTER);
+    ioport_set_pin_dir(DP, IOPORT_DIR_INPUT);
+}
+
 int main(void)
 {
     sysclk_init();
@@ -198,6 +255,9 @@ int main(void)
     // Start USB stack to authorize VBus monitoring
     udc_start();
 
+    // Timestamp to detect if USB is not connected within 5 seconds
+    uint32_t ts = now();
+
     // The main loop manages only the power mode
     // because the USB management is done by interrupt
     while (true) {
@@ -206,8 +266,20 @@ int main(void)
             if (!udi_msc_process_trans()) {
                 //sleepmgr_enter_sleep();
             }
-        } else {
-            //sleepmgr_enter_sleep();
+            static bool ok_shown = false;
+            if (!ok_shown) {
+                ok_shown = true;
+                puts("USB looks OK.");
+            }
+        } else if ((now() - ts) > 5 * AST_FREQ) {
+            puts("USB connection failed.");
+            udc_stop();
+            for (;;) {
+                check_usb_loopback();
+                puts("\nClick button to check loopback again.");
+                ui_btn_count = 0;
+                do ; while (ui_btn_count == 0);
+            }
         }
     }
 }
@@ -226,6 +298,7 @@ void main_sof_action(void)
 {
     if (!main_b_msc_enable)
         return;
+    usb_frames_received++;
     //ui_process(udd_get_frame_number());
 }
 
