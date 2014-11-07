@@ -33,6 +33,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <limits.h>
 #include <sysclk.h>
 #include <tc.h>
 #include <dfll.h>
@@ -42,6 +43,7 @@
 
 
 static bool open_loop;          // is DFLL in open loop mode
+static bool in_sync = false;
 static int next_sync_frame = 1; // number of frames until next sync
 
 #if SYNC_DIAGNOSTICS
@@ -69,7 +71,13 @@ void sync_init(void)
     sysclk_enable_peripheral_clock(TC_SYNC);
 
     tc_init(TC_SYNC, TC_SYNC_CHANNEL,
+#if CONFIG_SYSCLK_PBA_DIV == 0
             TC_CMR_TCCLKS_TIMER_CLOCK3 |    // PBA clock / 8
+#elif CONFIG_SYSCLK_PBA_DIV == 2
+            TC_CMR_TCCLKS_TIMER_CLOCK2 |    // PBA clock / 2
+#else
+#error Unsupported PBA frequency.
+#endif
             TC_CMR_WAVE |                   // waveform mode is enabled
             TC_CMR_WAVSEL_UP_NO_AUTO);      // UP mode, no trigger
 
@@ -136,9 +144,14 @@ void sync_frame(void)
 
     if (deviation == 0) {
         // we are in sync with USB, next check in one second
+        in_sync = true;
         next_sync_frame = 1000;
         return;
     }
+
+    // if we are in sync, use small steps
+    if (in_sync)
+        deviation = (deviation | INT_MAX) >> (sizeof deviation * 8 - 2);
 
     if ((tuning - deviation) & 0xFF00) {
         // saturation; if this happens, we should adjust coarse tuning,
@@ -174,6 +187,7 @@ void sync_suspend(void)
     // result in a wrong timing measurement upon exit from suspend.
     // Also, setting it to 2 will ensure a quick re-sync when back from suspend.
     next_sync_frame = 2;
+    in_sync = false;
 #else
     // switch to closed loop to track RC32K, because we won't be getting
     // frames from USB for a while;

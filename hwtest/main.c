@@ -30,6 +30,7 @@
 #include "conf_access.h"
 #include "sys/stdio-uart.h"
 #include "sys/now.h"
+#include "sys/sync.h"
 #include "ui.h"
 #include "xflash.h"
 
@@ -238,6 +239,8 @@ int main(void)
     strcpy(readme, "-- MYCELIUM ENTROPY TEST --\r\n\r\n");
     ptr = readme + strlen(readme);
 
+    sync_init();
+
     /* Initialize the console uart */
     stdio_uart_init();
     printf("-- Mycelium Entropy Test --\n");
@@ -281,11 +284,14 @@ int main(void)
                 do ; while (ui_btn_count == 0);
             }
         }
+
+        sync_diag_print();
     }
 }
 
 void main_suspend_action(void)
 {
+    sync_suspend();
     ui_powerdown();
 }
 
@@ -296,6 +302,7 @@ void main_resume_action(void)
 
 void main_sof_action(void)
 {
+    sync_frame();
     if (!main_b_msc_enable)
         return;
     usb_frames_received++;
