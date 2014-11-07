@@ -23,22 +23,22 @@
 
 #include <ff.h>
 #include "lib/rs.h"
-#include "layout.h"
 #include "lib/sha256.h"
 #include "lib/ripemd.h"
 #include "lib/sha512.h"
 #include "lib/base58.h"
+#include "lib/xxtea.h"
+#include "layout.h"
 #include "settings.h"
 #include "data.h"
 #include "keygen.h"
+#include "sss.h"
 
 extern uint32_t _estack[1024 * 15 / 4];
 extern uint32_t __ram_end__;
 
 asm (".section .bss, \"w\"\n.globl __estack, ___ram_end__");
 asm ("__estack: .space 1024 * 15\n___ram_end__: .space 4");
-
-char texts[6][SSS_STRING_SIZE];
 
 // for simulated fatfs
 static const uint8_t *settings_txt;
@@ -175,6 +175,79 @@ static void gen_hmac512(void)
             print_hex("Hmac", hash.b, sizeof hash.b);
             puts("HMAC/SHA-512\n");
         }
+}
+
+static void test_xxtea(void)
+{
+    static const uint32_t key[4] = {
+        0x12345678, 0xabcdef99, 0x00112233, 0xffffffff
+    };
+    static const uint32_t msg[128] = {
+        0x75712041, 0x206b6369, 0x776f7262, 0x7866206e, 0xffffffff, 0x89abcdef
+    };
+    static const uint32_t enc[128] = {
+        0x5550980b, 0xa9e36ee9, 0xc129ef58, 0x09bc30c8, 0x5a2b7f71, 0xbd23b5fd,
+        0x49fa0a5e, 0x29e0a88c, 0xabeb982d, 0x7a9df16c, 0xf6b08876, 0xd5aff559,
+        0xc946f16b, 0xdf502d58, 0x6fe524ef, 0x4c9de4ae, 0x75fa29a5, 0x5058b300,
+        0x5eb49410, 0xb7bbfa3f, 0xb9f97576, 0xb910258e, 0xbe6a2db0, 0xce56fcc8,
+        0xbb297d7f, 0x1ece9984, 0x3e79b62b, 0xc16ede48, 0x42a1e05d, 0xce59257f,
+        0xeaa58fa9, 0x6df3c32f, 0x404000a2, 0x8f9a12f6, 0xa53df492, 0xaf5d6e21,
+        0x7acbfb4a, 0x22b86a8c, 0x7c2babe7, 0x6a7a8ec8, 0x505cb2dc, 0x231e6e55,
+        0xc62861d0, 0x49b927cc, 0x6d3fca0b, 0x5beb763b, 0x8f9bcdda, 0xd9b9a0ea,
+        0x177e42b7, 0xbac89c2b, 0x91e1d80d, 0x18032e5e, 0xb4e26ea9, 0xff637b1d,
+        0x3ba58e5b, 0xde7dde8e, 0x2c75b314, 0xacdb82fc, 0x4c9b8dc8, 0x428ba935,
+        0x373eab13, 0x04731b69, 0x16a7a92b, 0x5a108121, 0x25b3f698, 0x3978da78,
+        0xa74d4845, 0x0fe4a04e, 0x76b5385e, 0x9740f87c, 0xb92ed67b, 0xdceb8181,
+        0x16c1e413, 0x56ae342f, 0x43fa919a, 0x618aed8d, 0xcd7ddf7e, 0xcab34a94,
+        0x9f7a90b8, 0x608e4603, 0xc4b8cc99, 0x2de0bd39, 0xedd52196, 0x94cf81d5,
+        0x2eab4554, 0x40c6c300, 0xcfe739bd, 0x6ba39d22, 0x2f3584b6, 0xd51db720,
+        0xb39dab01, 0xd35f5f9f, 0x2ead1b1b, 0x7db98411, 0x35ea7101, 0x10a93104,
+        0x22b10a69, 0x0413472d, 0x2cc3259b, 0x2c6d3c31, 0x267b9598, 0xb440a61a,
+        0x10d57ca7, 0xef27869e, 0x09ef2bac, 0xe430853b, 0x7ac3fa4a, 0x3507aca7,
+        0x7c4bbe88, 0x6a72f9c3, 0x54c93524, 0xec8b20f8, 0x09397368, 0xdc7502f4,
+        0x3c0df564, 0x7cfc6bf0, 0x26df3c96, 0x9ec589a4, 0xe9861099, 0xc6b74dfe,
+        0xb0c1df91, 0x1dd975c8, 0x08489783, 0xb9bff7f4, 0xc05cd9c0, 0x4117b62e,
+        0xa601237a, 0xcc1691da };
+    uint32_t buf[128];
+
+    memcpy(buf, msg, sizeof buf);
+    xxtea_encrypt_block(buf, key);
+    if (memcmp(buf, enc, sizeof buf) != 0) {
+        puts("XXTEA encoding test 1 FAILED.");
+        abort();
+    }
+    xxtea_decrypt_block(buf, key);
+    if (memcmp(buf, msg, sizeof buf) != 0) {
+        puts("XXTEA decoding test 1 FAILED.");
+        abort();
+    }
+
+    int i, j;
+    uint32_t rkey[4];
+    uint32_t rmsg[128];
+
+    for (i = 0; i < 256; i++) {
+        for (j = 0; j < 4; j++)
+            rkey[j] = random();
+        for (j = 0; j < 128; j++)
+            rmsg[j] = random();
+
+        memcpy(buf, rmsg, sizeof buf);
+        xxtea_encrypt_block(buf, key);
+        xxtea_decrypt_block(buf, key);
+        if (memcmp(buf, rmsg, sizeof buf) != 0) {
+            puts("XXTEA test 2 FAILED.");
+            abort();
+        }
+        xxtea_encrypt_block(buf, rkey);
+        xxtea_decrypt_block(buf, rkey);
+        if (memcmp(buf, rmsg, sizeof buf) != 0) {
+            puts("XXTEA test 3 FAILED.");
+            abort();
+        }
+    }
+
+    puts("XXTEA tests PASSED.\n");
 }
 
 /*
@@ -354,6 +427,7 @@ static void test_parser(void)
 
 int main()
 {
+    test_xxtea();
     test_base58();
     test_parser();
     gen_hash(160);

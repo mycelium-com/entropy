@@ -31,7 +31,8 @@ CSRCS = \
 	secp256k1.c \
 	sha256.c \
 	sha512.c \
-	stubs.c
+	stubs.c \
+	xxtea.c
 
 # List of assembler source files.
 ASSRCS = 
