@@ -33,7 +33,7 @@
 #include "readme.h"
 
 #define DEBUG           0
-#define USE_EXT_FLASH   1
+#define USE_EXT_FLASH   0
 
 // Image is built out of fragments, which are rectangular arrays of macroblocks.
 // A fragment is described by its type, parameters, and body.
