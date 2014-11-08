@@ -170,7 +170,7 @@ void set_active_lun(U8 lun);
 #define Lun_5_usb_write_10                      xfb_usb_write_10
 #define Lun_5_mem_2_ram                         xfb_mem_2_ram
 #define Lun_5_ram_2_mem                         xfb_ram_2_mem
-#define LUN_5_NAME                              "\"Firmware\""
+#define LUN_5_NAME                              "\"Firmware Update\""
 //! @}
 
 /*! \name USB LUNs Definitions

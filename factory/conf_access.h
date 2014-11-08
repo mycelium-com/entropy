@@ -76,7 +76,7 @@
 #define Lun_0_usb_write_10                      virtual_usb_write_10
 #define Lun_0_mem_2_ram                         virtual_mem_2_ram
 #define Lun_0_ram_2_mem                         virtual_ram_2_mem
-#define LUN_0_NAME                              "\"On-Chip Virtual Memory\""
+#define LUN_0_NAME                              "\"Factory Test\""
 //! @}
 
 

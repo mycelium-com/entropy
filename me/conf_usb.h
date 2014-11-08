@@ -120,10 +120,8 @@
  */
 
 //! Vendor name and Product version of MSC interface
-#define UDI_MSC_GLOBAL_VENDOR_ID            \
-   'M', 'R', 'D', ' ', ' ', ' ', ' ', ' '
-#define UDI_MSC_GLOBAL_PRODUCT_VERSION            \
-   '1', '.', '0', '0'
+#define UDI_MSC_GLOBAL_VENDOR_ID        'M', 'y', 'c', 'e', 'l', 'i', 'u', 'm'
+#define UDI_MSC_GLOBAL_PRODUCT_VERSION  '1', '.', '0', '0'
 
 //! Interface callback definition
 #define  UDI_MSC_ENABLE_EXT()          main_msc_enable()
