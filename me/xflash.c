@@ -29,7 +29,7 @@
 #include "data.h"
 
 
-#define XFLASH_DEBUG    1
+#define XFLASH_DEBUG    0
 
 // Flash parameters set during xflash_init()
 uint32_t xflash_id;             // 3-byte JEDEC ID, e.g. 0x01461F

@@ -65,7 +65,4 @@
 /* Number of bits in each SPI transfer */
 #define AT25DFX_SPI_BITS            8
 
-/** AT25DFx device type */
-#define AT25DFX_MEM_TYPE AT25DFX_161
-
 #endif  /* CONF_AT25DFX_H_INCLUDED */

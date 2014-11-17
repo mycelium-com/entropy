@@ -142,31 +142,19 @@ extern "C" {
 #define AT25_RES_DEEP_PDOWN         0xAB
 
 /** Global protection data */
-#define AT25_GLOBAL_PROTECT_VALUE         0x3C
+#define AT25_GLOBAL_PROTECT_VALUE       0x3C
 
 /** Sector Protection Register value is 1 (sector is protected) */
-#define AT25_SECTOR_PROTECTED_VALUE    0xff
+#define AT25_SECTOR_PROTECTED_VALUE     0xff
 
 /** Sector Protection Register value is 0 (sector is unprotected) */
-#define AT25_SECTOR_UNPROTECTED_VALUE    0x0
+#define AT25_SECTOR_UNPROTECTED_VALUE   0x0
 
 /** Protect type code */
 #define AT25_TYPE_PROTECT  0x1
 
 /** Unprotect type code */
 #define AT25_TYPE_UNPROTECT  0x0
-
-/** Supporting AT25 device type */
-#define AT25DFX_041A 0 /* AT25DF041A */
-#define AT25DFX_161  1 /* AT25DF161  */
-#define AT25DFX_081A 2 /* AT26DF081A */
-#define AT25DFX_0161 3 /* AT26DF0161 */
-#define AT25DFX_161A 4 /* AT26DF161A */
-#define AT25DFX_321  5 /* AT25DF321  */
-#define AT25DFX_321A 6 /* AT25DF321A */
-#define AT25DFX_512B 7 /* AT25DF512B */
-#define AT25DFX_021  8 /* AT25DF021  */
-#define AT25DFX_641A 9 /* AT25DF641A */
 
 /** AT25 operation status, each operation returns one of the following status */
 typedef enum at25_status {
@@ -192,7 +180,6 @@ typedef enum at25_status {
 at25_status_t at25dfx_initialize(void);
 void at25dfx_set_mem_active(uint8_t cs);
 at25_status_t at25dfx_read_dev_id(uint32_t *dev_id);
-at25_status_t at25dfx_mem_check(void);
 at25_status_t at25dfx_read_status(uint8_t *status);
 at25_status_t at25dfx_write_status(uint8_t status);
 at25_status_t at25dfx_read_sector_protect_status(uint32_t address);

@@ -68,7 +68,7 @@ extern "C" {
  *
  * See \ref at25dfx_quickstart.
  *
- * This is a driver for the AT25DFx SerialFlash memories.
+ * This is a driver for the AT25DFx SerialFlash and compatible memories.
  * It provides functions for initialization, read and write operations.
  *
  * \section dependencies Dependencies
@@ -77,110 +77,6 @@ extern "C" {
  *
  * @{
  */
-
-#if AT25DFX_MEM_TYPE == AT25DFX_041A
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                   0x0001441F
-/** AT25 total size */
-#define AT25DFX_SIZE                     (512 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE               (64*1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_161
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0002461F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (2 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_081A
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0001451F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (1 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_0161
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0000461F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (2 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_161A
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0001461F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (2 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_321
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0000471F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (4 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_321A
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0001471F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (4 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_512B
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0001651F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (64 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (32 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_32K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_021
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0000431F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (256 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#elif AT25DFX_MEM_TYPE == AT25DFX_641A
-/** AT25 device ID */
-#define AT25DFX_DEV_ID                     0x0000481F
-/** AT25 total size */
-#define AT25DFX_SIZE                       (8 * 1024 * 1024)
-/** AT25 block size */
-#define AT25DFX_BLOCK_SIZE                 (64 * 1024)
-/** AT25 block erase command */
-#define AT25DFX_BLOCK_ERASE_CMD    AT25_BLOCK_ERASE_64K
-
-#else
-#error AT25DFX_MEM_TYPE is not defined to a supported value
-#endif
 
 /** The page size of AT25DF series is always 256 */
 #define AT25DFX_PAGE_SIZE              256
@@ -348,26 +244,6 @@ at25_status_t at25dfx_initialize(void)
 void at25dfx_set_mem_active(uint8_t cs)
 {
 	active_sf_cs = cs;
-}
-
-/**
- * \brief Check if the SerialFlash is valid. It will read the device id from the device and compare the
- * value set in the configuration file.
- *
- * \return AT25_SUCCESS for success, AT25_ERROR_NOT_FOUND for error.
- */
-at25_status_t at25dfx_mem_check(void)
-{
-	uint32_t dev_id = 0x0;
-
-	/* Read SerialFlash device id */
-	at25dfx_read_dev_id(&dev_id);
-
-	if (dev_id == AT25DFX_DEV_ID) {
-		return AT25_SUCCESS;
-	} else {
-		return AT25_ERROR_NOT_FOUND;
-	}
 }
 
 /**
@@ -622,11 +498,6 @@ at25_status_t at25dfx_start_erasing_block(uint32_t address, uint8_t cmd)
 	uint8_t at25_stat;
 	at25_cmd_t at25cmd;
 
-	/* Check if beyond the memory size */
-	if (address > AT25DFX_SIZE) {
-		return AT25_ERROR;
-	}
-
 	/* Check if the flash is ready and unprotected */
 	op_stat = at25dfx_read_status(&at25_stat);
 	if (op_stat != AT25_SUCCESS) {
@@ -674,11 +545,6 @@ at25_status_t at25dfx_write(uint8_t *data, uint16_t size, uint32_t address)
 	at25_status_t op_stat;
 	uint8_t at25_stat;
 	at25_cmd_t at25cmd;
-
-	/* Check if beyond the memory size */
-	if ((size + address) > AT25DFX_SIZE) {
-		return AT25_ERROR;
-	}
 
 	/* Program one page after another */
 	while (size > 0) {
@@ -738,11 +604,6 @@ at25_status_t at25dfx_read(uint8_t *data, uint16_t size, uint32_t address)
 {
 	at25_status_t op_stat;
 	at25_cmd_t at25cmd;
-
-	/* Check if beyond the memory size */
-	if ((size + address) > AT25DFX_SIZE) {
-		return AT25_ERROR;
-	}
 
 	/* Initialize a Read command to be sent through SPI */
 	at25cmd.cmd = AT25_READ_ARRAY_LF;
