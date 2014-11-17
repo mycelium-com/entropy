@@ -363,12 +363,7 @@ int ecdsa_sign_digest(const uint8_t *priv_key, const uint8_t *digest, uint8_t *s
 	// r = (rx mod n)
 	bn_mod(&R.x, &order256k1);
 	// if r is zero, we fail
-	for (i = 0; i < 9; i++) {
-		if (R.x.val[i] != 0) break;
-	}
-	if (i == 9) {
-		return 2;
-	}
+	if (bn_is_zero(&R.x)) return 2;
 	bn_inverse(&k, &order256k1);
 	bn_read_be(priv_key, da);
 	bn_multiply(&R.x, da, &order256k1);
@@ -380,13 +375,8 @@ int ecdsa_sign_digest(const uint8_t *priv_key, const uint8_t *digest, uint8_t *s
 	da->val[8] += z.val[8];
 	bn_multiply(da, &k, &order256k1);
 	bn_mod(&k, &order256k1);
-	for (i = 0; i < 9; i++) {
-		if (k.val[i] != 0) break;
-	}
 	// if k is zero, we fail
-	if (i == 9) {
-		return 3;
-	}
+	if (bn_is_zero(&k)) return 3;
 
 	// if S > order/2 => S = -S
 	if (bn_is_less(&order256k1_half, &k)) {
@@ -440,12 +430,17 @@ void ecdsa_get_pubkeyhash(const uint8_t *pub_key, uint8_t *pubkeyhash)
 	ripemd160(h, 32, pubkeyhash);
 }
 
+void ecdsa_get_address_raw(const uint8_t *pub_key, uint8_t version, uint8_t *addr_raw)
+{
+	addr_raw[0] = version;
+	ecdsa_get_pubkeyhash(pub_key, addr_raw + 1);
+}
+
 void ecdsa_get_address(const uint8_t *pub_key, uint8_t version, char *addr)
 {
-	uint8_t data[21];
-	data[0] = version;
-	ecdsa_get_pubkeyhash(pub_key, data + 1);
-	base58_encode_check(data, 21, addr);
+	uint8_t raw[21];
+	ecdsa_get_address_raw(pub_key, version, raw);
+	base58_encode_check(raw, 21, addr);
 }
 
 void ecdsa_get_wif(const uint8_t *priv_key, uint8_t version, char *wif)
@@ -628,11 +623,7 @@ int ecdsa_verify_digest(const uint8_t *pub_key, const uint8_t *sig, const uint8_
 	bn_mod(&(res.x), &order256k1);
 
 	// signature does not match
-	for (i = 0; i < 9; i++) {
-		if (res.x.val[i] != r.val[i]) {
-			return 5;
-		}
-	}
+	if (!bn_is_equal(&res.x, &r)) return 5;
 
 	// all OK
 	return 0;
