@@ -28,6 +28,9 @@
 #include "xflash.h"
 #include "data.h"
 
+
+#define XFLASH_DEBUG    1
+
 // Flash parameters set during xflash_init()
 uint32_t xflash_id;             // 3-byte JEDEC ID, e.g. 0x01461F
 bool xflash_4k_erase_capable;   // whether the flash can erase 4 kB blocks
@@ -53,33 +56,49 @@ void xflash_init(void)
     at25dfx_initialize();
     at25dfx_set_mem_active(AT25DFX_MEM_ID);
 
-    if (at25dfx_read_dev_id(&xflash_id) != AT25_SUCCESS) {
-        global_error_flags |= FLASH_ERROR;
-        return;
-    }
+    if (at25dfx_read_dev_id(&xflash_id) != AT25_SUCCESS)
+        goto error;
 
     // Analyse type of serial flash to find out its size
     // and whether it is 4 kB subsector erase capable.
     unsigned mfr = xflash_id & 0xFF;        // manufacturer ID
     if (mfr == 0 || mfr == 0xFF) {
-        puts("Serial flash is faulty.");
+error:
+        puts("\nSerial flash is faulty.");
         global_error_flags |= FLASH_ERROR;
         return;
     }
     xflash_num_blocks = 128 << (xflash_id >> 16 & 0xF);
     xflash_4k_erase_capable = mfr == MACRONIX || (xflash_id & 0xFFFF) == 0xBA20;
+#if XFLASH_DEBUG
+    printf("\nSerial flash: ID %06x, %u kB, 4k erasable: %s.\n",
+            (unsigned) xflash_id, (unsigned) xflash_num_blocks >> 1,
+            xflash_4k_erase_capable ? "yes" : "no");
+#endif
 }
 
 void xflash_read(uint8_t *data, uint16_t size, uint32_t address)
 {
-    if (at25dfx_read(data, size, address) != AT25_SUCCESS)
+    at25_status_t s = at25dfx_read(data, size, address);
+    if (s != AT25_SUCCESS) {
+#if XFLASH_DEBUG
+        printf("xflash_read(%p, %u, %#x) failed with status %d.\n",
+                data, size, (unsigned) address, s);
+#endif
         global_error_flags |= FLASH_ERROR;
+    }
 }
 
 void xflash_write(const uint8_t *data, uint16_t size, uint32_t address)
 {
-    if (at25dfx_write((uint8_t *)data, size, address) != AT25_SUCCESS)
+    at25_status_t s = at25dfx_write((uint8_t *)data, size, address);
+    if (s != AT25_SUCCESS) {
+#if XFLASH_DEBUG
+        printf("xflash_write(%p, %u, %#x) failed with status %d.\n",
+                data, size, (unsigned) address, s);
+#endif
         global_error_flags |= FLASH_ERROR;
+    }
 }
 
 void xflash_erase_4k(uint32_t address)
@@ -87,8 +106,14 @@ void xflash_erase_4k(uint32_t address)
     uint8_t erase_cmd = xflash_4k_erase_capable ?
             AT25_BLOCK_ERASE_4K : AT25_BLOCK_ERASE_64K;
 
-    if (at25dfx_erase_block(address, erase_cmd) != AT25_SUCCESS)
+    at25_status_t s = at25dfx_erase_block(address, erase_cmd);
+    if (s != AT25_SUCCESS) {
+#if XFLASH_DEBUG
+        printf("xflash_erase_4k(%#x) failed with status %d.\n",
+                (unsigned) address, s);
+#endif
         global_error_flags |= FLASH_ERROR;
+    }
 }
 
 #if AT25DFX_MEM == ENABLE
