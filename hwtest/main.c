@@ -31,6 +31,7 @@
 #include "sys/stdio-uart.h"
 #include "sys/now.h"
 #include "sys/sync.h"
+#include "lib/fwsign.h"
 #include "ui.h"
 #include "xflash.h"
 
@@ -243,7 +244,7 @@ int main(void)
 
     /* Initialize the console uart */
     stdio_uart_init();
-    printf("-- Mycelium Entropy Test --\n");
+    appname("Mycelium Entropy Test");
     init_ast();
     ast_enable_interrupt(AST, AST_INTERRUPT_PER);
 

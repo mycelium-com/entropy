@@ -29,6 +29,7 @@
 #include "sys/now.h"
 #include "sys/sync.h"
 #include "lib/rs.h"
+#include "lib/fwsign.h"
 #include "ui.h"
 #include "sss.h"
 #include "jpeg.h"
@@ -79,7 +80,7 @@ int main(void)
         }
         set_active_lun(LUN_ID_XFLASH_BUF_MEM);
         ui_pulsate();
-        puts("\n-- Mycelium Entropy Firmware Update --");
+        appname("Mycelium Entropy Firmware Update");
         __ram_end__ = 0;        // indicate that SRAM is not random
         update_run();
         ui_off();
@@ -91,7 +92,7 @@ int main(void)
 
     set_active_lun(LUN_ID_ME_ACCESS);
     ui_keygen();
-    puts("\n-- Mycelium Entropy --");
+    appname("Mycelium Entropy");
 
     if (!rng_init()) {
         // error, e.g. memory not random

@@ -90,4 +90,7 @@ static inline const struct Firmware_signature * firmware_signature(void)
     return (const struct Firmware_signature *) (exception_table + offset / 4);
 }
 
+// Print application's build information.
+void appname(const char *name);
+
 #endif

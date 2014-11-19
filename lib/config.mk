@@ -24,6 +24,7 @@ CSRCS = \
 	bignum.c \
 	debug.c \
 	ecdsa.c \
+	fwsign.c \
 	hex.c \
 	printf.c \
 	ripemd.c \

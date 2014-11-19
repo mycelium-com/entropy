@@ -206,10 +206,12 @@ $(BUILD_DIR)/$(APPNAME).elf: $(vectors) \
 		Makefile config.mk \
 		$(TOP)/config.mk $(TOP)/platforms/$(PLATFORM)/config.mk
 	@echo $(MSG_LINKING)
+	$(Q)LANG=C date +'const char build_ts[] = "%e-%b-%Y %H:%M";' > $@.ts.c
 	$(Q)$(CC) $(l_flags) -Wl,-T,$(TOP)/$(PROJECT_TYPE).ld \
 		$(vectors) $(addprefix $(BUILD_DIR)/,$(ALWAYS_LINK)) \
 		-Wl,--start-group $(filter %.a,$^) -Wl,--end-group \
-		$(libflags-gnu-y) -o $@
+		$(libflags-gnu-y) $@.ts.c -o $@
+	$(Q)$(RM) $@.ts.c
 	@echo $(MSG_SIZE)
 	$(Q)$(SIZE) -Ax $@
 	$(Q)$(SIZE) -Bx $@

@@ -31,6 +31,7 @@
 #include "sys/stdio-uart.h"
 #include "sys/now.h"
 #include "sys/sync.h"
+#include "lib/fwsign.h"
 #include "ui.h"
 #include "xflash.h"
 #include "main.h"
@@ -200,7 +201,7 @@ int main(void)
 
     /* Initialize the console uart */
     stdio_uart_init();
-    printf("-- Mycelium Entropy Test --\n");
+    appname("Mycelium Entropy Factory Test");
 
     if (!flash_bootloader())
         set_fault(BOOTLOADER_FAULT);
