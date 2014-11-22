@@ -7,7 +7,7 @@
 CC = gcc
 CFLAGS = -I.. -I../.. -I$(ASF)/thirdparty/fatfs/fatfs-r0.09/src \
 	-I../../platforms/entropy-1.0 \
-	-O2 -pipe -D_CONF_ACCESS_H_ -DAT25DFX_MEM=0 -DJPEG_NO_FILESYSTEM
+	-O2 -pipe -D_CONF_ACCESS_H_ -DAT25DFX_MEM=0
 
 SRC = ../sss.c ../keygen.c ../../lib/base58enc.c ../../lib/sha512.c \
 	../../lib/bignum.c ../../lib/secp256k1.c ../../lib/ecdsa.c \

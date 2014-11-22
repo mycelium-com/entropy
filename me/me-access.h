@@ -23,6 +23,14 @@
 #include "conf_access.h"
 #include <ctrl_access.h>
 
+// Structure defining fragments of the composite block device.
+struct CBD_map_entry {
+    unsigned  size;
+    uint8_t * (*get_block)(unsigned blk);
+};
+extern struct CBD_map_entry cbd_map[];
+extern unsigned cbd_num_sectors;
+
 // Tests the memory state and initialises the memory if required.
 // This command may be used to check the media status of LUNs with removable
 // media.

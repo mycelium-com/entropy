@@ -80,6 +80,7 @@
 #include "xflash.h"
 #include "blkbuf.h"
 #include "fs.h"
+#include "me-access.h"
 #include "main.h"
 
 /**
@@ -244,7 +245,6 @@ DRESULT disk_write(BYTE drv, BYTE const *buff, DWORD sector, BYTE count)
  *
  * \return RES_OK for success, otherwise DRESULT error code.
  */
-extern unsigned num_sectors;
 DRESULT disk_ioctl(BYTE drive, BYTE command, void *buffer)
 {
     switch (command) {
@@ -253,7 +253,7 @@ DRESULT disk_ioctl(BYTE drive, BYTE command, void *buffer)
         case FS_LUN_XFLASH:
             *(DWORD *)buffer = xflash_num_blocks;
         case FS_LUN_STREAM:
-            *(DWORD *)buffer = num_sectors;
+            *(DWORD *)buffer = cbd_num_sectors;
         default:
             return RES_NOTRDY;
         }

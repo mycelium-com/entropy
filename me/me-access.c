@@ -21,7 +21,6 @@
 #include "me-access.h"
 #include "jpeg.h"
 
-extern unsigned num_sectors;
 
 static Ctrl_status unit_status = CTRL_GOOD;
 
@@ -39,7 +38,7 @@ Ctrl_status me_test_unit_ready(void)
 // (a sector is 512 bytes).
 Ctrl_status me_read_capacity(uint32_t *nb_sector)
 {
-    *nb_sector = num_sectors - 1;
+    *nb_sector = cbd_num_sectors - 1;
     return me_test_unit_ready();
 }
 
@@ -85,16 +84,24 @@ Ctrl_status me_usb_read_10(uint32_t addr, uint16_t nb_sector)
     if (unit_status != CTRL_GOOD)
         return unit_status;
 
-    if (addr + nb_sector > num_sectors)
+    if (addr + nb_sector > cbd_num_sectors)
         return CTRL_FAIL;
 
+    const struct CBD_map_entry * entry = cbd_map;
+
+    while (addr >= entry->size)
+        addr -= entry++->size;
+
     for (; nb_sector; --nb_sector) {
-        uint8_t *blkptr = jpeg_get_block(addr++);
+        uint8_t *blkptr = entry->get_block(addr++);
         // udi_msc_trans_block() is limited to 64KB
         if (!udi_msc_trans_block(true, blkptr, SECTOR_SIZE, 0))
             return CTRL_FAIL;   // transfer aborted
+        if (addr >= entry->size)
+            addr -= entry++->size;
     }
-    jpeg_get_block(addr);   // prefetch
+    if (entry->get_block == jpeg_get_block)
+        jpeg_get_block(addr);   // prefetch
 
     return CTRL_GOOD;
 }
@@ -116,10 +123,15 @@ Ctrl_status me_usb_write_10(uint32_t addr, uint16_t nb_sector)
 
 Ctrl_status me_mem_2_ram(uint32_t addr, void *ram)
 {
-    if (addr >= num_sectors)
+    if (addr >= cbd_num_sectors)
         return CTRL_FAIL;
 
-    memcpy(ram, jpeg_get_block(addr), SECTOR_SIZE);
+    const struct CBD_map_entry * entry = cbd_map;
+
+    while (addr >= entry->size)
+        addr -= entry++->size;
+
+    memcpy(ram, entry->get_block(addr), SECTOR_SIZE);
 
     return me_test_unit_ready();
 }

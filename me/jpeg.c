@@ -26,11 +26,9 @@
 
 #include "qr.h"
 #include "xflash.h"
-#include "fs.h"
 #include "jpeg.h"
 #include "data.h"
 #include "jpeg-data.h"
-#include "readme.h"
 
 #define DEBUG           0
 #define USE_EXT_FLASH   0
@@ -492,70 +490,11 @@ static void jpeg_dump(void)
 
 static void jpeg_fill(void);
 
-#ifndef JPEG_NO_FILESYSTEM
-
-static const uint8_t * read_ptr(unsigned secno)
-{
-    return stream.buf + secno * 512;
-}
-
-static uint8_t * write_ptr(unsigned secno)
-{
-    return stream.buf + secno * 512;
-}
-
-extern unsigned num_sectors;
-
-static uint8_t * make_fs(uint8_t *buf, const char *prefix)
-{
-    enum {
-        CLU_SECT    = 2,                // cluster size in sectors
-    };
-    static const struct FS_init_param fs_param = {
-        .lun        = FS_LUN_STREAM,    // TODO: unused by fs_init()
-        .fdisk      = false,            // make a non-partitioned volume
-        .clu_sect   = CLU_SECT,         // cluster size in sectors
-        .align      = 1,                // no alignment
-        .label      = "MYCELIUM   ",    // volume label
-        .read_ptr   = read_ptr,         // device read function
-        .write_ptr  = write_ptr,        // device write function
-    };
-    FATFS fs;
-    FIL file;
-    UINT bytes_written;
-
-    // Initialise and mount filesystem.
-    fs_stream_buf = buf;
-    buf += 512 * fs_init(&fs_param, num_sectors, true);     // TODO: FS size
-    f_mount(1, &fs);
-
-    // Add readme.txt.
-    f_open(&file, "1:readme.txt", FA_WRITE | FA_CREATE_ALWAYS);
-    f_write(&file, readme, sizeof readme - 1, &bytes_written);
-    f_close(&file);
-    buf += (sizeof readme - 2 + CLU_SECT * 512) & -CLU_SECT * 512;
-
-    // Add JPEG file.
-    sprintf((char *)buf, "1:%s%s.jpg", prefix, texts[IDX_ADDRESS]);
-    f_open(&file, (char *)buf, FA_WRITE | FA_CREATE_ALWAYS);
-    FRESULT res = f_lseek(&file, num_sectors * 512 - (buf - fs_stream_buf));
-    if (res != FR_OK)
-        printf("f_lseek: %d\n", res);
-    res = f_close(&file);
-    if (res != FR_OK)
-        printf("f_close: %d\n", res);
-
-    // Unmount filesystem.
-    f_mount(1, 0);
-
-    return buf;
-}
-
-#endif
-
 static void jpeg_start(void)
 {
     uint8_t *buf = stream.buf;
+
+    cbd_buf_owner = CBD_JPEG;
 
     stream.minblk = 0;
     stream.minblk_ptr = buf;
@@ -564,9 +503,6 @@ static void jpeg_start(void)
 
     chain = &end;
     layout = stream.layout;
-#ifndef JPEG_NO_FILESYSTEM
-    buf = make_fs(buf, layout == shamir_layout ? "2-of-3 " : "");
-#endif
     memcpy(buf, jpeg_header, sizeof jpeg_header);
 
     // initialise bitstream output and change the background to white
@@ -598,8 +534,6 @@ void jpeg_init(uint8_t *buf, uint8_t *endbuf, const struct Layout *l)
         return;
     }
 #endif
-
-    jpeg_start();
 }
 
 static bool jpeg_more(void)
@@ -782,10 +716,13 @@ static void jpeg_fill(void)
 
 uint8_t * jpeg_get_block(unsigned blk)
 {
-    if (blk < stream.minblk) {
+    if (cbd_buf_owner != CBD_JPEG || blk < stream.minblk) {
 #if DEBUG
-        printf("Requested block %u, minimum now %u.  Restarting.\n",
-                blk, stream.minblk);
+        printf("Requested block %u, ", blk);
+        if (cbd_buf_owner == CBD_JPEG)
+            printf ("minimum now %u.  Restarting.\n", stream.minblk);
+        else
+            printf ("taking ownership from %u.  Restarting.\n", cbd_buf_owner);
 #endif
         jpeg_start();
     }

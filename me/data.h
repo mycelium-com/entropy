@@ -30,4 +30,11 @@ enum Global_error_flags {
     NO_LAYOUT_FILE  = 1 << 1,
 };
 
+// ownership of the stream buffer for the composite block device
+enum {
+    CBD_NONE,
+    CBD_FS,
+    CBD_JPEG,
+} cbd_buf_owner;
+
 #endif

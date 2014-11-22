@@ -85,7 +85,6 @@ CSRCS += \
 	sam/drivers/usbc/usbc_device.c                     \
 	sam/drivers/wdt/wdt_sam4l.c                        \
 	sam/utils/cmsis/sam4l/source/templates/system_sam4l.c \
-	sam/utils/syscalls/gcc/syscalls.c                  \
 	thirdparty/fatfs/fatfs-port-r0.09/diskio.c         \
 	thirdparty/fatfs/fatfs-port-r0.09/sam/fattime_ast.c \
 	thirdparty/fatfs/fatfs-r0.09/src/ff.c              \

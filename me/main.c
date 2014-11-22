@@ -35,19 +35,40 @@
 #include "jpeg.h"
 #include "jpeg-data.h"
 #include "xflash.h"
+#include "fs.h"
 #include "me-access.h"
 #include "keygen.h"
 #include "data.h"
 #include "rng.h"
 #include "update.h"
 #include "settings.h"
+#include "readme.h"
 
 // Symbols defined by the linker.
 // Uninitialised memory is between them.
-extern uint8_t  _estack;
+extern struct {
+    uint8_t sector_buf[512];
+    uint8_t stream_buf[];
+} _estack;
 extern uint32_t __ram_end__;
 
-unsigned num_sectors;
+// Composite Block Device parameters.  They are used by me-access.c.
+unsigned cbd_num_sectors;   // total number of sectors on the device
+enum {      // indices of the CBD map entries for different content
+    CBD_ENTRY_FS,           // filesystem metadata and readme.txt
+    CBD_ENTRY_JPEG,         // JPEG file with keys and addresses
+    CBD_ENTRY_ESRC,         // raw entropy sources
+};
+static void make_fs(void);
+static uint8_t * fs_get_block(unsigned blk);
+static uint8_t * esrc_get_block(unsigned blk);
+struct CBD_map_entry cbd_map[] = {
+    [CBD_ENTRY_FS]      = { .get_block = fs_get_block },
+    [CBD_ENTRY_JPEG]    = { .get_block = jpeg_get_block },
+    [CBD_ENTRY_ESRC]    = { .get_block = esrc_get_block },
+};
+// File name prefix.
+static const char *prefix;
 
 bool configuration_mode;
 
@@ -126,17 +147,21 @@ generate_new_key:
     int mode = ui_btn_count;
     if (mode) {
         // generate 2-of-3 Shamir's shares
-        num_sectors = 928 + settings.salt_type * 80;
+        cbd_num_sectors = 928 + settings.salt_type * 80;
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
         sss_encode(2, 3, SSS_BASE58, key, len);
-        jpeg_init(&_estack, (uint8_t *)&__ram_end__, settings.salt_type == 0 ?
-                  shamir_layout : shamir_salt1_layout);
+        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__,
+                settings.salt_type == 0 ? shamir_layout : shamir_salt1_layout);
+        prefix = "2-of-3 ";
     } else {
         // generate regular private key in Wallet Import Format (aka SIPA)
-        num_sectors = 290 + settings.salt_type * 140;
-        jpeg_init(&_estack, (uint8_t *)&__ram_end__, settings.salt_type == 0 ?
-                  main_layout : salt1_layout);
+        cbd_num_sectors = 290 + settings.salt_type * 140;
+        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__,
+                settings.salt_type == 0 ? main_layout : salt1_layout);
+        prefix = "";
     }
+    cbd_buf_owner = CBD_NONE;
+    make_fs();
     ui_off();
     LED_On(LED0);
 
@@ -223,4 +248,78 @@ bool say_yes(void)
 bool say_no(void)
 {
     return false;
+}
+
+// Composite block device filesystem.
+
+static const uint8_t * read_ptr(unsigned secno)
+{
+    return _estack.stream_buf + secno * 512;
+}
+
+static uint8_t * write_ptr(unsigned secno)
+{
+    return _estack.stream_buf + secno * 512;
+}
+
+static void make_fs(void)
+{
+    enum {
+        CLU_SECT    = 2,                // cluster size in sectors
+    };
+    static const struct FS_init_param fs_param = {
+        .lun        = FS_LUN_STREAM,    // TODO: unused by fs_init()
+        .fdisk      = false,            // make a non-partitioned volume
+        .clu_sect   = CLU_SECT,         // cluster size in sectors
+        .align      = 1,                // no alignment
+        .label      = "MYCELIUM   ",    // volume label
+        .read_ptr   = read_ptr,         // device read function
+        .write_ptr  = write_ptr,        // device write function
+    };
+    FATFS fs;
+    FIL file;
+    UINT bytes_written;
+
+    // Initialise and mount filesystem.
+    fs_stream_buf = _estack.stream_buf;
+    unsigned nblk = fs_init(&fs_param, cbd_num_sectors, true); // TODO: FS size
+    f_mount(1, &fs);
+
+    // Add readme.txt.
+    f_open(&file, "1:readme.txt", FA_WRITE | FA_CREATE_ALWAYS);
+    f_write(&file, readme, sizeof readme - 1, &bytes_written);
+    f_close(&file);
+    nblk += (sizeof readme - 2 + CLU_SECT * 512) / 512 & -CLU_SECT;
+
+    // Set sizes in the USB device block map.
+    cbd_map[CBD_ENTRY_FS].size = nblk;
+    cbd_map[CBD_ENTRY_JPEG].size = cbd_num_sectors - nblk;
+
+    // Add JPEG file.
+    char *buf = (char *) _estack.stream_buf + nblk * 512;
+    sprintf((char *)buf, "1:%s%s.jpg", prefix, texts[IDX_ADDRESS]);
+    f_open(&file, (char *)buf, FA_WRITE | FA_CREATE_ALWAYS);
+    FRESULT res = f_lseek(&file, (cbd_num_sectors - nblk) * 512);
+    if (res != FR_OK)
+        printf("f_lseek: %d\n", res);
+    res = f_close(&file);
+    if (res != FR_OK)
+        printf("f_close: %d\n", res);
+
+    // Unmount filesystem and register ownership.
+    f_mount(1, 0);
+    cbd_buf_owner = CBD_FS;
+}
+
+static uint8_t * fs_get_block(unsigned blk)
+{
+    if (cbd_buf_owner != CBD_FS)
+        make_fs();
+    return write_ptr(blk);
+}
+
+static uint8_t * esrc_get_block(unsigned blk)
+{
+    // TODO: decrypt raw entropy from serial flash
+    return _estack.sector_buf;
 }
