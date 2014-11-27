@@ -120,7 +120,7 @@ bool xflash_check(char **ptr, char *wbuf, int buflen)
     *ptr += sprintf(*ptr, "Serial flash test OK.\r\n");
 
     uint32_t id = buf[0] << 16 | buf[1] << 8 | buf[2];
-    if (id != 0x202015 && id != 0x20BA16)
+    if (id != 0xC22013 && id != 0x20BA16)
         set_fault(WRONG_FLASH);
 
     return true;
