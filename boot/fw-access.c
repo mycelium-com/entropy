@@ -72,10 +72,10 @@ extern unsigned int  updfs_128_nblk;
 extern unsigned char updfs_256_img[] __attribute__ ((aligned (4)));
 extern unsigned int  updfs_256_img_len;
 extern unsigned int  updfs_256_nblk;
-extern unsigned char readme[] __attribute__ ((aligned (4)));
+extern const char    readme[] __attribute__ ((aligned (4)));
 
 static unsigned num_sectors;
-static unsigned first_blk;
+static uint16_t readme_blk, flash_blk;
 typedef uint8_t uint8_t_aligned __attribute__ ((aligned (4)));
 static uint8_t_aligned *fs_img;
 
@@ -93,30 +93,30 @@ Ctrl_status fw_test_unit_ready(void)
 #endif
         num_sectors = updfs_128_nblk;
         fs_img = updfs_128_img;
-        first_blk = (updfs_128_img_len >> 9) + 1;
+        readme_blk = (updfs_128_img_len >> 9);
 #if ! SMALL_FLASH_ONLY
         break;
 
     case 0x900:                 // CHIPID_CIDR_NVPSIZ_256K
         num_sectors = updfs_256_nblk;
         fs_img = updfs_256_img;
-        first_blk = (updfs_256_img_len >> 9) + 1;
+        readme_blk = (updfs_256_img_len >> 9);
         break;
 
     default:
         return CTRL_NO_PRESENT;
     }
 #endif
+    flash_blk = readme_blk + 2;
 
 #ifdef SPECIAL
-#define PROTECTED 0
+#define PROTECTED 0u
     flashcalw_lock_page_region(0, false);
-    fs_img[((first_blk - 2) << 9) + 0x8b] = 0x20;
+    fs_img[((readme_blk - 1) << 9) + 0x8b] = 0x20;
 #else
-#define PROTECTED 32
+#define PROTECTED 32u
 #endif
-    ((uint32_t *)fs_img)[((first_blk - 2) << 7) + 23] =
-        strlen((const char *)readme);
+    ((uint32_t *)fs_img)[((readme_blk - 1) << 7) + 23] = strlen(readme);
 
     return CTRL_GOOD;
 }
@@ -182,12 +182,12 @@ Ctrl_status fw_usb_read_10(uint32_t addr, uint16_t nb_sector)
     for (; nb_sector; --nb_sector, addr++) {
         uint8_t *blkptr;
 
-        if (addr < first_blk - 1)
+        if (addr < readme_blk)
             blkptr = fs_img + addr * SECTOR_SIZE;
-        else if (addr == first_blk - 1)
-            blkptr = readme;
+        else if (addr < flash_blk)
+            blkptr = (uint8_t *) (readme + (addr - readme_blk) * SECTOR_SIZE);
         else {
-            memcpy(buffer, (const void *)((addr - first_blk) * SECTOR_SIZE), sizeof buffer);
+            memcpy(buffer, (const void *)((addr - flash_blk) * SECTOR_SIZE), sizeof buffer);
             blkptr = buffer;
         }
 
@@ -223,8 +223,8 @@ Ctrl_status fw_usb_write_10(uint32_t addr, uint16_t nb_sector)
             return CTRL_FAIL;   // transfer aborted
 
         // ignore writes which do not go to flash
-        if (addr >= first_blk + PROTECTED) {
-            flashcalw_memcpy((volatile void *)((addr - first_blk) * SECTOR_SIZE),
+        if (addr >= flash_blk + PROTECTED) {
+            flashcalw_memcpy((volatile void *)((addr - flash_blk) * SECTOR_SIZE),
                     buffer, SECTOR_SIZE, true);
             if (flashcalw_is_lock_error() || flashcalw_is_programming_error())
                 return CTRL_FAIL;

@@ -19,16 +19,22 @@
 
 #include "version.h"
 
-const char readme[512] __attribute__ ((aligned (4))) =
-"                   MYCELIUM ENTROPY EMERGENCY RECOVERY MODE\r\n"
+const char readme[1024] __attribute__ ((aligned (4))) =
+"                          MYCELIUM ENTROPY BOOTLOADER\r\n"
 "\r\n"
 "Your Mycelium Entropy device is in firmware recovery mode.\r\n"
 "\r\n"
+"This mode is UNSAFE due to lack of signature checks.  It is intended solely for\r\n"
+"unbricking, when the main firmware is damaged and normal firmware update and\r\n"
+"configuration mode is not working.\r\n"
+"\r\n"
 "To perform recovery:\r\n"
-"1. Copy new firmware to the firmware.bin file here, using command line, e.g.:\r\n"
-"     cp new.bin /Volumes/RECOVERY/firmware.bin    (OS X) or\r\n"
-"     copy/b new.bin D:firmware.bin    (Windows; drive letter may vary).\r\n"
-"2. Instruct your computer to eject, unmount, or safely remove RECOVERY volume.\r\n"
+"1. Copy new firmware to the firmware.bin file here using command line, e.g.:\r\n"
+"     cp new.bin /Volumes/BOOTLOADER/firmware.bin           (OS X);\r\n"
+"     cp new.bin /media/username/BOOTLOADER/firmware.bin    (Ubuntu); or\r\n"
+"     copy/b new.bin X:firmware.bin                         (Windows;\r\n"
+"                                          substitute this drive's letter for X).\r\n"
+"2. Instruct your computer to eject, unmount, or safely remove BOOTLOADER volume.\r\n"
 "3. Unplug Mycelium Entropy when safe.\r\n"
 "\r\n"
 "\r\n"

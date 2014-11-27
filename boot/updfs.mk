@@ -26,7 +26,7 @@ export MTOOLSRC = $(basename $@).conf
 	@echo "unsigned int $(subst -,_,$*)_nblk = $(NBLK);" >> $@
 
 updfs-%.img: updfs-%.conf updfs.mk
-	mformat -C -d1 -r1 -v "RECOVERY" a:
+	mformat -C -c2 -d1 -r1 -v "BOOTLOADER" a:
 	mcopy -t $< a:readme.txt
 	mattrib +r a:readme.txt
 	dd if=/dev/zero count=16 bs=1k of=tmp
@@ -34,6 +34,7 @@ updfs-%.img: updfs-%.conf updfs.mk
 	mattrib +r a:boot.bin
 	dd if=/dev/zero count=$$(($*-16)) bs=1k of=tmp
 	mcopy tmp a:firmware.bin
+	dd if=/dev/zero bs=1 conv=notrunc seek=446 count=16 of=$@
 	rm tmp
 
 layfs-%.img: layfs-%.conf updfs.mk
