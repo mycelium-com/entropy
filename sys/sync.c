@@ -53,9 +53,9 @@ static int next_sync_frame = 1; // number of frames until next sync
 // Buffer size must be a power of two.
 #define LOGBUFSIZE  32
 static struct {
-    uint32_t tuning_before;
+    uint16_t tuning_before;
     uint16_t interval;
-    uint32_t tuning_after;
+    uint16_t tuning_after;
 } synclog[LOGBUFSIZE];
 static int log_head, log_tail;
 #endif
@@ -124,8 +124,8 @@ void sync_frame(void)
     curr -= prev_timestamp;
 
 #if SYNC_DIAGNOSTICS
-    synclog[log_head].tuning_before = tuning;
-    synclog[log_head].tuning_after = tuning;
+    synclog[log_head].tuning_before = tuning | tuning >> 8;
+    synclog[log_head].tuning_after = tuning | tuning >> 8;
     synclog[log_head].interval = curr;
     log_head = (log_head + 1) & (LOGBUFSIZE - 1);
 #endif
@@ -154,17 +154,18 @@ void sync_frame(void)
         deviation = (deviation | INT_MAX) >> (sizeof deviation * 8 - 2);
 
     if ((tuning - deviation) & 0xFF00) {
-        // saturation; if this happens, we should adjust coarse tuning,
-        // but that's another day's exercise, as it will probably never happen
+        // coarse tuning adjustment
+        in_sync = false;
+        tuning = (tuning & SCIF_DFLL0VAL_COARSE_Msk) | 127;
         if (deviation > 0)
-            tuning &= ~0xFF;
+            tuning -= (1 << SCIF_DFLL0VAL_COARSE_Pos) + 90;
         else
-            tuning |= 0xFF;
+            tuning += (1 << SCIF_DFLL0VAL_COARSE_Pos) + 90;
     } else
         tuning -= deviation;
 
 #if SYNC_DIAGNOSTICS
-    synclog[(log_head - 1) & (LOGBUFSIZE - 1)].tuning_after = tuning;
+    synclog[(log_head - 1) & (LOGBUFSIZE - 1)].tuning_after = tuning | tuning >> 8;
 #endif
 
     // write new tuning value to DFLL
@@ -220,9 +221,9 @@ void sync_diag_print(void)
     putchar('\n');
 
     while (log_head != log_tail) {
-        printf("interval %5u: tuning %lu -> %lu\n", synclog[log_tail].interval,
-                synclog[log_tail].tuning_before & 0xFF,
-                synclog[log_tail].tuning_after & 0xFF);
+        printf("interval %5u: tuning %x -> %x\n", synclog[log_tail].interval,
+                synclog[log_tail].tuning_before,
+                synclog[log_tail].tuning_after);
         log_tail = (log_tail + 1) & (LOGBUFSIZE - 1);
     }
 }
