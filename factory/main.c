@@ -137,7 +137,7 @@ static void check_voltage(void)
 
     ADCIFE->ADCIFE_SEQCFG = *(const uint32_t *)&seq_cfg;
 
-    const unsigned nsamples = 4;
+    const unsigned nsamples = 64;
     unsigned sample = 0;
     unsigned i;
     for (i = 0; i < nsamples; i++ ) {
@@ -203,9 +203,6 @@ int main(void)
     stdio_uart_init();
     appname("Mycelium Entropy Factory Test");
 
-    if (!flash_bootloader())
-        set_fault(BOOTLOADER_FAULT);
-
     strcpy(readme, "-- MYCELIUM ENTROPY TEST --\r\n\r\n");
     ptr = readme + strlen(readme);
 
@@ -221,15 +218,18 @@ int main(void)
     // Start USB stack to authorize VBus monitoring
     udc_start();
 
-    // The main loop manages only the power mode
-    // because the USB management is done by interrupt
     while (true) {
 
         if (main_b_msc_enable) {
             if (!udi_msc_process_trans()) {
                 //sleepmgr_enter_sleep();
             }
-            if (usb_frames_received == 3) {
+            if (usb_frames_received >= 3 && usb_frames_received < 1000) {
+                usb_frames_received = 1000;    // make sure this executes only once
+
+                if (!faults && !flash_bootloader())
+                    set_fault(BOOTLOADER_FAULT);
+
                 if (faults) {
                     enable_report = true;
                     ui_error(faults);
@@ -294,6 +294,8 @@ bool flash_bootloader(void)
     unsigned pages_per_region = flashcalw_get_page_count_per_region();
     bool use_region_1 = APP_START_PAGE > pages_per_region;
 
+    cpu_irq_enter_critical();
+
     // Program the bootloader configuration word in the User page.
     // This selects GPIO pin that can be used to enter bootloader.
     // We use our button for this.
@@ -315,6 +317,8 @@ bool flash_bootloader(void)
     flashcalw_lock_page_region(0, true);
     if (use_region_1)
         flashcalw_lock_page_region(pages_per_region, true);
+
+    cpu_irq_leave_critical();
 
     // Verify.
     // memcmp() requires addresses to be non-null, so we verify the value
