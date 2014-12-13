@@ -64,7 +64,7 @@ static uint8_t * fs_get_block(unsigned blk);
 static uint8_t * esrc_get_block(unsigned blk);
 struct CBD_map_entry cbd_map[] = {
     [CBD_ENTRY_FS]      = { .get_block = fs_get_block },
-    [CBD_ENTRY_JPEG]    = { .get_block = jpeg_get_block },
+    [CBD_ENTRY_JPEG]    = { .get_block = jpeg_get_block, .prefetchable = true },
     [CBD_ENTRY_ESRC]    = { .get_block = esrc_get_block },
 };
 // File name prefix.

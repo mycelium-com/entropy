@@ -19,7 +19,6 @@
 
 #include <string.h>
 #include "me-access.h"
-#include "jpeg.h"
 
 
 static Ctrl_status unit_status = CTRL_GOOD;
@@ -100,8 +99,8 @@ Ctrl_status me_usb_read_10(uint32_t addr, uint16_t nb_sector)
         if (addr >= entry->size)
             addr -= entry++->size;
     }
-    if (entry->get_block == jpeg_get_block)
-        jpeg_get_block(addr);   // prefetch
+    if (entry->prefetchable)
+        entry->get_block(addr); // prefetch
 
     return CTRL_GOOD;
 }

@@ -27,6 +27,7 @@
 struct CBD_map_entry {
     unsigned  size;
     uint8_t * (*get_block)(unsigned blk);
+    bool prefetchable;
 };
 extern struct CBD_map_entry cbd_map[];
 extern unsigned cbd_num_sectors;
