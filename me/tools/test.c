@@ -26,6 +26,7 @@
 #include "lib/sha256.h"
 #include "lib/ripemd.h"
 #include "lib/sha512.h"
+#include "lib/pbkdf2.h"
 #include "lib/base58.h"
 #include "lib/xxtea.h"
 #include "layout.h"
@@ -175,6 +176,52 @@ static void gen_hmac512(void)
             print_hex("Hmac", hash.b, sizeof hash.b);
             puts("HMAC/SHA-512\n");
         }
+}
+
+static void test_pbkdf2(void)
+{
+    // Test vectors from trezor-crypto, originally from
+    // http://stackoverflow.com/questions/15593184/pbkdf2-hmac-sha-512-test-vectors
+
+    static const struct {
+        const char *password;
+        const char *salt;
+        int iterations;
+        char key[129];
+    } tests[] = {
+        { "password", "salt", 1,
+          "867f70cf1ade02cff3752599a3a53dc4af34c7a669815ae5d513554e1c8cf252"
+          "c02d470a285a0501bad999bfe943c08f050235d7d68b1da55e63f73b60a57fce" },
+        { "password", "salt", 2,
+          "e1d9c16aa681708a45f5c7c4e215ceb66e011a2e9f0040713f18aefdb866d53c"
+          "f76cab2868a39b9f7840edce4fef5a82be67335c77a6068e04112754f27ccf4e" },
+        { "password", "salt", 4096,
+          "d197b1b33db0143e018b12f3d1d1479e6cdebdcc97c5c0f87f6902e072f457b5"
+          "143f30602641b3d55cd335988cb36b84376060ecd532e039b742a239434af2d5" },
+        { "passwordPASSWORDpassword", "saltSALTsaltSALTsaltSALTsaltSALTsalt", 4096,
+          "8c0511f4c6e597c6ac6315d8f0362e225f3c501495ba23b868c005174dc4ee71"
+          "115b59f9e60cd9532fa33e0f75aefe30225c583a186cd82bd4daea9724a3d3b8" },
+    };
+
+    uint64_t key[8];
+    uint8_t  key_vec[64];
+    unsigned i;
+
+    for (i = 0; i < sizeof tests / sizeof tests[0]; i++) {
+        const char *password = tests[i].password;
+        const char *salt = tests[i].salt;
+
+        unhexlify(tests[i].key, key_vec);
+        pbkdf2_512(key, (const uint8_t *) password, strlen(password),
+                   (const uint8_t *) salt, strlen(salt),
+                   tests[i].iterations);
+        if (memcmp(key, key_vec, sizeof key) != 0) {
+            printf("PBKDF2 test %u FAILED.\n", i);
+            abort();
+        }
+    }
+
+    puts("PBKDF2 test PASSED.\n");
 }
 
 static void test_xxtea(void)
@@ -434,6 +481,7 @@ int main()
     gen_hash(256);
     gen_hash(512);
     gen_hmac512();
+    test_pbkdf2();
     return 0;
 }
 

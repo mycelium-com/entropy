@@ -1,5 +1,5 @@
 /*
- * Hexadeceimal <-> binary conversion.
+ * Hexadecimal <-> binary conversion.
  *
  * The author has waived all copyright and related or neighbouring rights
  * to this file and placed it in public domain.

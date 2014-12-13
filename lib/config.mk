@@ -26,6 +26,7 @@ CSRCS = \
 	ecdsa.c \
 	fwsign.c \
 	hex.c \
+	pbkdf2.c \
 	printf.c \
 	ripemd.c \
 	rs-enc.c \
