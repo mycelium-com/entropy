@@ -22,8 +22,8 @@
 
 #include <stdint.h>
 
-// Maximum QR "version" (size) that we support: 3, 4 or 5.
-#define QR_MAX_VERSION  4
+// Maximum QR "version" (size) that we support: 3 through to 6.
+#define QR_MAX_VERSION  6
 
 // Size in "modules" (dots) of QR code;
 // these should be surrounded by a "silent zone" four white (0) dots in width
@@ -33,6 +33,7 @@ enum {
     QR3_RAW_BYTES       = 70,       // size 29
     QR4_RAW_BYTES       = 100,      // size 33
     QR5_RAW_BYTES       = 134,      // size 37
+    QR6_RAW_BYTES       = 172,      // size 41
 
     // Reed-Solomon EC lengths in bytes
     RSLEN_3_L = 15,
@@ -47,11 +48,16 @@ enum {
     RSLEN_5_M = 48,
     RSLEN_5_Q = 72,
     RSLEN_5_H = 88,
+    RSLEN_6_L = 36,
+    RSLEN_6_M = 64,
+    RSLEN_6_Q = 96,
+    RSLEN_6_H = 112,
 
     // maximum message length for each version
     QR3_MAX_LEN         = QR3_RAW_BYTES - RSLEN_3_L - 2,
     QR4_MAX_LEN         = QR4_RAW_BYTES - RSLEN_4_L - 2,
     QR5_MAX_LEN         = QR5_RAW_BYTES - RSLEN_5_L - 2,
+    QR6_MAX_LEN         = QR6_RAW_BYTES - RSLEN_6_L - 2,
 };
 
 #if QR_MAX_VERSION <= 3

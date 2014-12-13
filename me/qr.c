@@ -38,13 +38,14 @@ enum {
 };
 
 static const unsigned raw_capacity[] = {
-    QR3_RAW_BYTES, QR4_RAW_BYTES, QR5_RAW_BYTES,
+    QR3_RAW_BYTES, QR4_RAW_BYTES, QR5_RAW_BYTES, QR6_RAW_BYTES,
 };
 static const uint8_t ecc_len[] = {
     // ECC lengths for H, Q, M, L levels
     RSLEN_3_H, RSLEN_3_Q, RSLEN_3_M, RSLEN_3_L,
     RSLEN_4_H, RSLEN_4_Q, RSLEN_4_M, RSLEN_4_L,
     RSLEN_5_H, RSLEN_5_Q, RSLEN_5_M, RSLEN_5_L,
+    RSLEN_6_H, RSLEN_6_Q, RSLEN_6_M, RSLEN_6_L,
 };
 
 // Fill all "modules" (pixels) belonging to fixed patterns with 1,
