@@ -41,8 +41,11 @@ static bool enable_report = false;
 static volatile bool main_b_msc_enable = false;
 static volatile unsigned usb_frames_received;
 
+extern uint32_t __ram_end__;
 extern const unsigned char boot_bin[];
 extern const int boot_bin_len;
+extern const unsigned char ifp_bin[];
+extern const int ifp_bin_len;
 extern unsigned char fs_1_img[];
 extern unsigned int fs_1_img_len;
 static char *readme = ((char*) fs_1_img) + 0x600;  // char, unsigned char and signed char are 3 different types.
@@ -52,7 +55,7 @@ static char *ptr;
 #define APP_START_PAGE      (APP_START_ADDRESS/FLASH_PAGE_SIZE)
 
 bool flash_bootloader(void);
-void enter_bootloader(void);
+static void run_ifp(void) __attribute__ ((noreturn));
 
 static int faults;
 
@@ -182,26 +185,21 @@ static void patch_fat(unsigned unique_id, unsigned length)
     }
 }
 
-/*! \brief Main function. Execution starts here.
- */
+
 int main(void)
 {
     // Check the flag passed by the bootloader to determine if we should do
-    // firmware update.
-    bool do_update = (CONFIG_FW_REG & CONFIG_FW_MASK) != 0;
+    // initial flash programming.
+    bool do_ifp = (CONFIG_FW_REG & CONFIG_FW_MASK) != 0;
+
+    if (do_ifp)
+        run_ifp();
 
     sysclk_init();
     board_init();
     ui_init();
-
-    if (do_update)
-        enter_bootloader();
-
     sync_init();
-
-    /* Initialize the console uart */
     stdio_uart_init();
-    appname("Mycelium Entropy Factory Test");
 
     strcpy(readme, "-- MYCELIUM ENTROPY TEST --\r\n\r\n");
     ptr = readme + strlen(readme);
@@ -211,11 +209,12 @@ int main(void)
     if (!xflash_check(&ptr, readme, 1024))
         set_fault(FLASH_FAULT);
 
+    appname("Mycelium Entropy Factory Test");
     puts(readme);
 
     patch_fat(unique_id, ptr - readme);
 
-    // Start USB stack to authorize VBus monitoring
+    // Start USB stack.
     udc_start();
 
     while (true) {
@@ -327,11 +326,25 @@ bool flash_bootloader(void)
         && memcmp((void *) 1, boot_bin + 1, boot_bin_len - 1) == 0;
 }
 
-__attribute__ ((section (".ramfunc")))
-void enter_bootloader(void)
+// Load and run the Initial Flash Programming applet in SRAM.
+static void run_ifp(void)
 {
-    flashcalw_erase_page(APP_START_PAGE, false);
-    NVIC_SystemReset();
-}
+    uint32_t *ram = (uint32_t *) 0x20000000;
 
-// vim:ts=4
+    // Allow Entropy firmware to run after IFP without complaining about
+    // lack of entropy.
+    __ram_end__ = 239;
+
+    memcpy(ram, ifp_bin, ifp_bin_len);
+
+    // Exception table starts as follows:
+    //   ram[0] = initial stack pointer
+    //   ram[1] = reset vector
+    // This code depends on factory test's stack pointer being higher
+    // than ifp's.
+    // That way we don't need to deal with it in a potentially problematic
+    // way.
+    //__set_MSP(ram[0]);
+    asm ("bx %0" :: "r" (ram[1]));
+    for (;;);   // to satisfy __attribute__ ((noreturn))
+}

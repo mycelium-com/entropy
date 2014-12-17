@@ -16,11 +16,12 @@ CFLAGS =
 # Extra flags to use when preprocessing.
 CPPFLAGS = -DNDEBUG
 
-# Additional items to clean under BUILD_DIR
+# Additional items to clean under BUILD_DIR.
 CLEAN = boot-bin.c $(APPNAME).tsk $(APPNAME)-flash.*
 
 include ../config.mk
 
+# Additional targets for building and signing.
 all sign: $(BUILD_DIR)/$(APPNAME).tsk $(BUILD_DIR)/$(APPNAME)-flash.bin
 
 $(BUILD_DIR)/boot-bin.c: ../boot/$(PLATFORM)/boot.bin
