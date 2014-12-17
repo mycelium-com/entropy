@@ -51,7 +51,7 @@ enum {
     // Part of uninitialised SRAM is saved into serial flash for comparing
     // at next power-up to make sure it's sufficiently different.
     // The offset from the end of flash and size of this snapshot is set here.
-    XFLASH_RAM_SNAPSHOT_OFFSET  = 4096,
+    XFLASH_RAM_SNAPSHOT_OFFSET  = 1024,
     XFLASH_RAM_SNAPSHOT_SIZE    = 1024,
 };
 
