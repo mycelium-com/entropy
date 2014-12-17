@@ -73,7 +73,7 @@ enum {
     HW_XSFL_2M          = 5,
     HW_XSFL_4M          = 6,
 
-    FW_SIGN_VECTOR      = 8,    // signature vector in the excepion table
+    FW_SIGN_VECTOR      = 8,    // signature vector in the exception table
 };
 
 // exception_table is actually an array of IntFunc, but it is not declared

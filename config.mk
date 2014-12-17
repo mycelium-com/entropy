@@ -47,7 +47,7 @@ BUILD_DIR = $(PLATFORM)
 
 # Top level directory for all projects, relative to the directory where make
 # is running.  Can be overridden in the project-platform config.mk.
-TOP = ..
+TOP ?= ..
 
 # Application target name. Given with suffix .a for library and .elf for a
 # standalone application.

@@ -21,9 +21,7 @@ CLEAN = boot-bin.c $(APPNAME).tsk $(APPNAME)-flash.*
 
 include ../config.mk
 
-all: $(BUILD_DIR)/$(APPNAME).tsk $(BUILD_DIR)/$(APPNAME)-flash.bin
-
-sign: $(BUILD_DIR)/$(APPNAME).tsk $(BUILD_DIR)/$(APPNAME)-flash.bin
+all sign: $(BUILD_DIR)/$(APPNAME).tsk $(BUILD_DIR)/$(APPNAME)-flash.bin
 
 $(BUILD_DIR)/boot-bin.c: ../boot/$(PLATFORM)/boot.bin
 	(cd $(dir $<); xxd -i $(notdir $<) | sed '/=/s/^/const /') > $@

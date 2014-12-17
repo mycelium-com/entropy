@@ -139,6 +139,6 @@
 
 //! The includes of classes and other headers must be done at the end of this file to avoid compile error
 #include "udi_msc_conf.h"
-#include "../main.h"
+#include "main.h"
 
 #endif // _CONF_USB_H_
