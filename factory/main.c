@@ -54,6 +54,7 @@ static char *ptr;
 #define APP_START_ADDRESS   0x4000
 #define APP_START_PAGE      (APP_START_ADDRESS/FLASH_PAGE_SIZE)
 
+void set_boot_pin(void);
 bool flash_bootloader(void);
 static void run_ifp(void) __attribute__ ((noreturn));
 
@@ -214,6 +215,8 @@ int main(void)
 
     patch_fat(unique_id, ptr - readme);
 
+    set_boot_pin();
+
     // Start USB stack.
     udc_start();
 
@@ -287,6 +290,23 @@ Ctrl_status report_test_unit_ready(void)
     return enable_report ? CTRL_GOOD : CTRL_NO_PRESENT;
 }
 
+// Program the bootloader configuration word in the User page.
+// This selects GPIO pin that can be used to enter bootloader.
+// We use our button for this.
+__attribute__ ((section (".ramfunc")))
+void set_boot_pin(void)
+{
+    cpu_irq_enter_critical();
+
+    uint32_t *boot_config = (uint32_t *) (FLASH_USER_PAGE_ADDR + 0x10);
+    uint32_t boot_config_value = ~0x1fful | BUTTON_0_ACTIVE << 8 | BUTTON_0_PIN;
+    if (*boot_config != boot_config_value)
+        flashcalw_memcpy(boot_config, &boot_config_value, 4, true);
+
+    cpu_irq_leave_critical();
+}
+
+// Replace the original bootloader with our own version.
 __attribute__ ((section (".ramfunc")))
 bool flash_bootloader(void)
 {
@@ -295,20 +315,12 @@ bool flash_bootloader(void)
 
     cpu_irq_enter_critical();
 
-    // Program the bootloader configuration word in the User page.
-    // This selects GPIO pin that can be used to enter bootloader.
-    // We use our button for this.
-    uint32_t *boot_config = (uint32_t *) (FLASH_USER_PAGE_ADDR + 0x10);
-    uint32_t boot_config_value = ~0x1fful | BUTTON_0_ACTIVE << 8 | BUTTON_0_PIN;
-    if (*boot_config != boot_config_value)
-        flashcalw_memcpy(boot_config, &boot_config_value, 4, true);
-
     // Unlock bootloader region(s).
     flashcalw_lock_page_region(0, false);
     if (use_region_1)
         flashcalw_lock_page_region(pages_per_region, false);
 
-    // Flash bootloader in boot_bin[] from address 0.
+    // Flash bootloader from boot_bin[] at address 0.
     memcpy(readme, boot_bin, boot_bin_len);
     flashcalw_memcpy((volatile void *) 0, readme, boot_bin_len, true);
 

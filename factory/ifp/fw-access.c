@@ -74,6 +74,7 @@ static unsigned num_sectors;        // total number of sectors in both flashes
 static unsigned int_flash_size;     // number of sectors in the internal flash
 unsigned ext_flash_size;            // number of sectors in the serial flash
 uint32_t magic_sector_addr;         // address of the magic sector
+uint32_t ext_flash_start_addr;      // start address of data in external flash
 uint32_t checksum_state;            // state of the checksum FSM
 
 // Serial flash parameters and state.
@@ -196,19 +197,26 @@ Ctrl_status fw_usb_read_10(uint32_t addr, uint16_t nb_sector)
 //!
 Ctrl_status fw_usb_write_10(uint32_t addr, uint16_t nb_sector)
 {
-    uint8_t buffer[SECTOR_SIZE];
+    union {
+        uint8_t bytes[SECTOR_SIZE];
+        const struct {
+            char     magic[32];
+            uint32_t hash[8];
+            uint32_t start;
+        };
+    } buffer;
 
     if (addr + nb_sector > num_sectors)
         return CTRL_FAIL;
 
     for (; nb_sector; --nb_sector, addr++) {
-        if (!udi_msc_trans_block(false, buffer, SECTOR_SIZE, 0))
+        if (!udi_msc_trans_block(false, buffer.bytes, SECTOR_SIZE, 0))
             return CTRL_FAIL;   // transfer aborted
 
         if (addr < int_flash_size) {
             // write to internal flash
             flashcalw_memcpy((volatile void *) (addr * SECTOR_SIZE),
-                    buffer, SECTOR_SIZE, true);
+                    buffer.bytes, SECTOR_SIZE, true);
             if (flashcalw_is_lock_error() || flashcalw_is_programming_error())
                 return CTRL_FAIL;
         } else {
@@ -222,17 +230,20 @@ Ctrl_status fw_usb_write_10(uint32_t addr, uint16_t nb_sector)
                         != AT25_SUCCESS)
                     return CTRL_FAIL;
             }
-            if (at25dfx_write(buffer, SECTOR_SIZE, flash_addr) != AT25_SUCCESS)
+            if (at25dfx_write(buffer.bytes, SECTOR_SIZE, flash_addr)
+                    != AT25_SUCCESS)
                 return CTRL_FAIL;
             // check for magic block
-            if (strcmp((char *) buffer, "End of data in the filesystem.") == 0)
+            if (strcmp(buffer.magic, "End of data in the filesystem.") == 0) {
                 magic_sector_addr = flash_addr;
+                if (buffer.start < flash_addr)
+                    ext_flash_start_addr = buffer.start;
+            }
         }
     }
 
-    // Any successful write zeroes out the state of the checksum FSM,
-    // because it must start from scratch.
-    checksum_state = 0;
+    // Any successful write restarts the checksum FSM from scratch.
+    checksum_state = ext_flash_start_addr;
 
     return CTRL_GOOD;
 }

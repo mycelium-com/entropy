@@ -74,6 +74,10 @@ extern unsigned ext_flash_size;
 // Filled by USB access functions when a magic sector is written to flash.
 extern uint32_t magic_sector_addr;
 
+// Start address of data in the serial flash.
+// Filled by USB access functions when a magic sector is written to flash.
+extern uint32_t ext_flash_start_addr;
+
 // State of the checksum FSM.
 // USB access functions clear this on any successful write transaction.
 // The state is otherwise used and controlled by the FSM in main.c.

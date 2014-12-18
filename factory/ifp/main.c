@@ -45,7 +45,6 @@ static void check_if_finished(void);
 
 // States of checksum_state.
 enum {
-    INIT = 0,
     BOOT = 1,
     MAIN = 2,
     DONE,
@@ -182,7 +181,7 @@ static void check_if_finished(void)
 
     // check image in the external flash
 
-    if (checksum_state == INIT)
+    if (checksum_state == ext_flash_start_addr)
         sha256_init(hash);
 
     if (at25dfx_read(buf.b, sizeof buf, checksum_state) != AT25_SUCCESS) {
@@ -199,11 +198,11 @@ static void check_if_finished(void)
         checksum_state += sizeof buf;
     } else {
         // check hash against magic sector
-        sha256_finish(hash, buf.b, 32, checksum_state + 32);
+        sha256_finish(hash, buf.b, 32, checksum_state - ext_flash_start_addr + 32);
         if (memcmp(hash, buf.b + 32, sizeof hash) == 0) {
             puts("Serial flash hash OK.");
             checksum_state = BOOT;  // hash OK, go to next state
         } else
-            checksum_state = INIT;  // bad hash, restart serial flash check
+            checksum_state = ext_flash_start_addr;  // bad hash, restart
     }
 }

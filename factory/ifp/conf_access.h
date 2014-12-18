@@ -78,7 +78,7 @@
 #define Lun_0_usb_write_10                      fw_usb_write_10
 #define Lun_0_mem_2_ram                         fw_mem_2_ram
 #define Lun_0_ram_2_mem                         fw_ram_2_mem
-#define LUN_0_NAME                              "\"IFP Mode\""
+#define LUN_0_NAME                              "\"IFP Mode 2\""
 //! @}
 
 /*! \name Actions Associated with Memory Accesses
