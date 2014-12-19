@@ -1,0 +1,2 @@
+ACTION=="add", KERNEL=="sd?", ATTRS{vendor}=="Mycelium", ATTRS{model}=="All Flash", RUN+="CWD/ifp.sh $attr{size}"
+ACTION=="add", KERNEL=="sd?", ATTRS{vendor}=="Mycelium", ATTRS{model}=="IFP Mode*", RUN+="CWD/ifp.sh $attr{size}"
