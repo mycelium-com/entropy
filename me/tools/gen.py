@@ -88,16 +88,27 @@ def text_to_id(text):
     return "_".join(text[:4])
 
 def add_text_fragment(rects, drw, font, y, text, idn = None):
-    w, h = font.getsize(text)
-    w = (w + 7) / 8 + 1 # width in macroblocks plus one white at the end
-    h = (h + 14) / 8    # height in macroblocks
+    if not isinstance(font, list):
+        font = [font]
+        text = [text]
+    x = 0
+    xx = []
+    H = 0
+    for i in range(len(font)):
+        xx += [x]
+        w, h = font[i].getsize(text[i])
+        x += w
+        H = max(H, h)
+    w = (x + 7) / 8 + 1 # width in macroblocks plus one white at the end
+    h = (H + 14) / 8    # height in macroblocks
 
-    print '"' + text + '":', "%dx%d" % (w, h)
+    print '"' + "".join(text) + '":', "%dx%d" % (w, h)
 
     if not idn:
-        idn = text_to_id(text)
+        idn = text_to_id("".join(text))
 
-    drw.text((0, y*8), text, font=font)
+    for i in range(len(font)):
+        drw.text((xx[i], y*8), text[i], font=font[i])
     fgm = Fragment(idn + "_fragment", w, h)
     rect = Rect(0, y, w, h, fgm)
     rects.append(rect)
