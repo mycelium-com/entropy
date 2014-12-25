@@ -127,7 +127,7 @@ bool fw_wr_protect(void)
 // Returns true if the memory is removable.
 bool fw_removal(void)
 {
-    return true;
+    return false;
 }
 
 
