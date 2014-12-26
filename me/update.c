@@ -439,6 +439,15 @@ static bool find_image(char fname[13], struct Firmware_signature *signature)
             || actual != sizeof *signature)
         ui_error(UI_E_INVALID_IMAGE);
 
+    // check flavour:
+    // - regular can be updated to any;
+    // - non-regular can be updated to itself or regular
+    const struct Firmware_signature *our_sig = firmware_signature();
+    if (our_sig && our_sig->flavour_code != FW_FLAVOUR_REGULAR
+                && signature->flavour_code != FW_FLAVOUR_REGULAR
+                && signature->flavour_code != our_sig->flavour_code)
+        ui_error(UI_E_INVALID_IMAGE);
+
     // check image size, and whether it's our current running image
     uint32_t max_size = 0;
     switch (ftype) {
@@ -447,7 +456,6 @@ static bool find_image(char fname[13], struct Firmware_signature *signature)
                max_size = 112 * 1024;
             else
                max_size = 240 * 1024;
-            const struct Firmware_signature *our_sig = firmware_signature();
             if (our_sig && memcmp(signature->hash.b, our_sig->hash.b,
                                   sizeof our_sig->hash.b) == 0)
                 return false;

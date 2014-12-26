@@ -56,6 +56,7 @@ enum {
     FW_MAGIC_BOOT       = 0x544f4f42,   // 'BOOT'
 
     FW_FLAVOUR_REGULAR  = 0,
+    FW_FLAVOUR_MYCELIUM = 1,
 
     // hardware_family byte
     HW_FAMILY_XPRO      = 0,    // Atmel SAM4L Xtended Pro board
