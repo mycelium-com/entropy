@@ -59,7 +59,7 @@ enum {
     FW_FLAVOUR_MYCELIUM = 1,
 
     // hardware_family byte
-    HW_FAMILY_XPRO      = 0,    // Atmel SAM4L Xtended Pro board
+    HW_FAMILY_XPRO      = 0,    // Atmel SAM4L Xplained Pro board
     HW_FAMILY_ME1       = 1,    // Mycelium Entropy platform
     // hardware_code[0]
     HW_SAM4L2           = 0,    // SAM4L chip with 128 kB flash

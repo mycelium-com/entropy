@@ -25,7 +25,6 @@
 #include <board.h>
 #include <sysclk.h>
 #include <flashcalw.h>
-#include <at25dfx.h>
 #include <ioport.h>
 #include <led.h>
 #include <udc.h>
@@ -37,6 +36,11 @@
 #include "fw-access.h"
 #include "ui.h"
 #include "main.h"
+
+#define EXT_FLASH   (BOARD == USER_BOARD)
+#if EXT_FLASH
+#include <at25dfx.h>
+#endif
 
 
 static volatile bool main_b_msc_enable = false;
@@ -60,6 +64,7 @@ int main(void)
     sync_init();
     stdio_uart_init();
 
+#if EXT_FLASH
     // Initialise serial flash.
     ioport_set_pin_mode(PIN_PA13A_USART1_RTS, MUX_PA13A_USART1_RTS);
     ioport_disable_pin(PIN_PA13A_USART1_RTS);
@@ -72,9 +77,11 @@ int main(void)
 
     at25dfx_initialize();
     at25dfx_set_mem_active(AT25DFX_MEM_ID);
+#endif
 
     appname("Initial Flash Programming Applet");
 
+#if EXT_FLASH
     if (at25dfx_read_dev_id(&xflash_id) != AT25_SUCCESS)
         goto error;
 
@@ -86,6 +93,9 @@ error:
         ui_error(2);
     }
     ext_flash_size = 128 << (xflash_id >> 16 & 0xF);
+#else
+    ext_flash_size = xflash_id = 0;
+#endif
 
     // Start USB stack and attach MSB device.
     udc_start();
@@ -184,11 +194,13 @@ static void check_if_finished(void)
     if (checksum_state == ext_flash_start_addr)
         sha256_init(hash);
 
+#if EXT_FLASH
     if (at25dfx_read(buf.b, sizeof buf, checksum_state) != AT25_SUCCESS) {
         printf("Flash read at %#lx failed.\n", checksum_state);
         udc_stop();
         ui_error(2);
     }
+#endif
 
     if (checksum_state < magic_sector_addr) {
         // hash current sector

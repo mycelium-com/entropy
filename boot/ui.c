@@ -54,7 +54,7 @@ void ui_init(void)
     ioport_set_port_mode(LED_PORT, LED_MASK, IOPORT_MODE_DRIVE_STRENGTH);
 #else
     ioport_set_pin_dir(LED0_PIN, IOPORT_DIR_OUTPUT);
-    ioport_set_pin_level(LED0_PIN, LED_INACTIVE);
+    ioport_set_pin_level(LED0_PIN, LED0_INACTIVE);
     ioport_set_pin_mode(LED0_PIN, IOPORT_MODE_DRIVE_STRENGTH);
 #endif
 

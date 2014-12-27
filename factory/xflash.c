@@ -21,7 +21,6 @@
 #include <string.h>
 #include <board.h>
 #include <ioport.h>
-#include <usart_spi.h>
 
 #include "sys/now.h"
 #include "xflash.h"
@@ -29,6 +28,7 @@
 
 #if BOARD == USER_BOARD
 
+#include <usart_spi.h>
 #include <at25dfx.h>
 
 void xflash_init(void)

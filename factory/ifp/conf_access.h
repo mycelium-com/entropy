@@ -62,6 +62,8 @@
 //! @}
 
 #define VIRTUAL_MEM          DISABLE
+#define SD_MMC_0_MEM         DISABLE
+#define SD_MMC_1_MEM         DISABLE
 #define MEM_USB              LUN_USB
 
 /*! \name LUN 0 Definitions

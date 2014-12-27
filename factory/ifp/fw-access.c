@@ -67,8 +67,12 @@
 #include <string.h>
 #include <sam4l.h>
 #include <flashcalw.h>
-#include <at25dfx.h>
 #include "fw-access.h"
+
+#define EXT_FLASH   (BOARD == USER_BOARD)
+#if EXT_FLASH
+#include <at25dfx.h>
+#endif
 
 static unsigned num_sectors;        // total number of sectors in both flashes
 static unsigned int_flash_size;     // number of sectors in the internal flash
@@ -77,12 +81,13 @@ uint32_t magic_sector_addr;         // address of the magic sector
 uint32_t ext_flash_start_addr;      // start address of data in external flash
 uint32_t checksum_state;            // state of the checksum FSM
 
+#if EXT_FLASH
 // Serial flash parameters and state.
 enum {
     FLASH_BLOCK_SIZE = 65536,
-    FLASH_MAX_SIZE   = 512 * 1024,
 };
 static uint32_t last_erased = 0x80000000u;
+#endif
 
 // This function tests memory state and starts memory initialisation.
 Ctrl_status fw_test_unit_ready(void)
@@ -169,10 +174,12 @@ Ctrl_status fw_usb_read_10(uint32_t addr, uint16_t nb_sector)
             // USB cannot transfer from flash directly, so we copy to RAM first
             memcpy(buffer, (const void *) (addr * SECTOR_SIZE), sizeof buffer);
         } else {
+#if EXT_FLASH
             // read external serial flash
             if (at25dfx_read(buffer, SECTOR_SIZE,
                         (addr - int_flash_size) * SECTOR_SIZE) != AT25_SUCCESS)
                 return CTRL_FAIL;
+#endif
         }
 
         if (!udi_msc_trans_block(true, buffer, SECTOR_SIZE, 0))
@@ -223,6 +230,7 @@ Ctrl_status fw_usb_write_10(uint32_t addr, uint16_t nb_sector)
             // write to external serial flash
             uint32_t flash_addr = (addr - int_flash_size) * SECTOR_SIZE;
 
+#if EXT_FLASH
             if (flash_addr < last_erased
              || flash_addr >= last_erased + FLASH_BLOCK_SIZE) {
                 last_erased = flash_addr & ~(FLASH_BLOCK_SIZE - 1);
@@ -233,6 +241,7 @@ Ctrl_status fw_usb_write_10(uint32_t addr, uint16_t nb_sector)
             if (at25dfx_write(buffer.bytes, SECTOR_SIZE, flash_addr)
                     != AT25_SUCCESS)
                 return CTRL_FAIL;
+#endif
             // check for magic block
             if (strcmp(buffer.magic, "End of data in the filesystem.") == 0) {
                 magic_sector_addr = flash_addr;
