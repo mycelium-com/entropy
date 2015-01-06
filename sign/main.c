@@ -1,7 +1,7 @@
 /*
  * Signing tool.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -28,6 +28,7 @@
 #include <usart.h>
 
 #include "sys/stdio-uart.h"
+#include "sys/now.h"
 #include "lib/fwsign.h"
 #include "lib/hex.h"
 #include "lib/ecdsa.h"
@@ -54,6 +55,7 @@ int main(void)
     stdio_uart_init();
     devctrl_init();
     oled_init();
+    ast_init();
 
     puts("\n-- Signing tool --");
     oled_write(0, 0, "\tSIGNING TOOL");
@@ -104,7 +106,9 @@ int main(void)
     }
 
     // compute public key
+    uint32_t t = now();
     scalar_multiply(&private, &public);
+    print_time_interval("Mutliplication time", now() - t);
 
     print_public_key(&public);
 
@@ -159,7 +163,9 @@ int main(void)
         oled_write(1, 2, "\tSigning...");
 
         do {
+            t = now();
             res = ecdsa_sign_digest((uint8_t *) private_key, hash_bin, sig);
+            print_time_interval("Signing time", now() - t);
             if (res)
                 printf("Error %d, retrying.\n", res);
         } while (res);

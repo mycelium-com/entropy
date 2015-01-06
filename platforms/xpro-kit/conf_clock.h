@@ -52,10 +52,10 @@
 
 //#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_RCSYS
 //#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_OSC0
-//#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_PLL0
+#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_PLL0
 //#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_DFLL
 //#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_RC80M
-#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_RCFAST
+//#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_RCFAST
 //#define CONFIG_SYSCLK_SOURCE        SYSCLK_SRC_RC1M
 
 /* RCFAST frequency selection: 0 for 4MHz, 1 for 8MHz and 2 for 12MHz */
@@ -67,8 +67,8 @@
 #define CONFIG_SYSCLK_CPU_DIV         0
 #define CONFIG_SYSCLK_PBA_DIV         0
 #define CONFIG_SYSCLK_PBB_DIV         0
-#define CONFIG_SYSCLK_PBC_DIV         2
-#define CONFIG_SYSCLK_PBD_DIV         2
+#define CONFIG_SYSCLK_PBC_DIV         0
+#define CONFIG_SYSCLK_PBD_DIV         0
 
 //#define CONFIG_USBCLK_SOURCE        USBCLK_SRC_OSC0
 //#define CONFIG_USBCLK_SOURCE        USBCLK_SRC_PLL0
@@ -76,11 +76,11 @@
 /* Fusb = Fsys / USB_div */
 //#define CONFIG_USBCLK_DIV           1
 
-//#define CONFIG_PLL0_SOURCE          PLL_SRC_OSC0
+#define CONFIG_PLL0_SOURCE          PLL_SRC_OSC0
 
 /* Fpll0 = (Fclk * PLL_mul) / PLL_div */
-//#define CONFIG_PLL0_MUL             (48000000UL / BOARD_OSC0_HZ)
-//#define CONFIG_PLL0_DIV             1
+#define CONFIG_PLL0_MUL             (48000000UL / BOARD_OSC0_HZ)
+#define CONFIG_PLL0_DIV             1
 
 //#define CONFIG_DFLL0_SOURCE         GENCLK_SRC_OSC0
 //#define CONFIG_DFLL0_SOURCE         GENCLK_SRC_RCSYS
@@ -93,5 +93,16 @@
 //#define CONFIG_DFLL0_MUL            (CONFIG_DFLL0_FREQ / BOARD_OSC0_HZ)
 //#define CONFIG_DFLL0_DIV            2
 
-#endif /* CONF_CLOCK_H_INCLUDED */
+// 0: disable PicoCache, 1: enable PicoCache
+// PicoCache is enabled by default
+#define CONFIG_HCACHE_ENABLE          1
 
+/*
+ * To use low power mode for flash read mode (PS0, PS1), don't define it.
+ * To use high speed mode for flash read mode (PS2), define it.
+ * At 48 MHz high speed mode is enabled automatically in sysclk_init() anyway,
+ * so this setting just reduces code size.
+ */
+#define CONFIG_FLASH_READ_MODE_HIGH_SPEED_ENABLE
+
+#endif /* CONF_CLOCK_H_INCLUDED */
