@@ -103,7 +103,7 @@ static unsigned check_chip(void)
     return serial_number[1] | serial_number[2] << 8;
 }
 
-static void check_voltage(void)
+static bool check_voltage(void)
 {
     static const struct adc_config cfg = {
         .prescal    = ADC_PRESCAL_DIV16,    // assuming PBA is clocked at 12 MHz
@@ -136,7 +136,7 @@ static void check_voltage(void)
 
     if (adc_enable(&adc) != STATUS_OK) {
         ptr += sprintf(ptr, "ADC error: cannot enable ADC.\r\n");
-        return;
+        return true;
     }
 
     ADCIFE->ADCIFE_SEQCFG = *(const uint32_t *)&seq_cfg;
@@ -154,8 +154,11 @@ static void check_voltage(void)
     sample = sample * 10000 / (nsamples * 4095);    // convert to mV
     ptr += sprintf(ptr, "VDD: %u.%03u V.\r\n", sample / 1000, sample % 1000);
 
-    if (sample < 3000 || sample >= 3600)
+    if (sample < 3000 || sample >= 3600) {
         set_fault(VDD_FAULT);
+        return false;
+    }
+    return true;
 }
 
 static void patch_fat(unsigned unique_id, unsigned length)
@@ -206,7 +209,7 @@ int main(void)
     ptr = readme + strlen(readme);
 
     unsigned unique_id = check_chip();
-    check_voltage();
+    bool voltage_ok = check_voltage();
     if (!xflash_check(&ptr, readme, 1024))
         set_fault(FLASH_FAULT);
 
@@ -215,7 +218,8 @@ int main(void)
 
     patch_fat(unique_id, ptr - readme);
 
-    set_boot_pin();
+    if (voltage_ok)
+        set_boot_pin();
 
     // Start USB stack.
     udc_start();
