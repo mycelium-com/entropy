@@ -220,6 +220,11 @@ $(BUILD_DIR)/$(APPNAME).elf: $(vectors) \
 	@echo $(MSG_BINARY_IMAGE)
 	$(Q)$(OBJCOPY) -O binary $< $@
 
+# Create Intel HEX image from ELF output file.
+%.hex: %.elf
+	@echo $(MSG_IHEX_IMAGE)
+	$(Q)$(OBJCOPY) -O ihex $(flashflags-gnu-y)  $< $@
+
 # Attach signature block to the image.
 sign: $(BUILD_DIR)/$(APPNAME).bin
 	$(TOP)/sign/sign.py $^

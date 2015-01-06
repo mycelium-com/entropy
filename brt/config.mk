@@ -19,13 +19,18 @@ CPPFLAGS = -DNDEBUG
 # Additional items to clean under BUILD_DIR.
 CLEAN = boot-bin.c $(APPNAME).tsk $(APPNAME)-flash.*
 
+# Bootloader binary image location.
+BOOTLOADER ?= ../boot/$(PLATFORM)/boot.bin
+
 include ../config.mk
 
 # Additional targets for building and signing.
 all sign: $(BUILD_DIR)/$(APPNAME).tsk $(BUILD_DIR)/$(APPNAME)-flash.bin
 
-$(BUILD_DIR)/boot-bin.c: ../boot/$(PLATFORM)/boot.bin
-	(cd $(dir $<); xxd -i $(notdir $<) | sed '/=/s/^/const /') > $@
+$(BUILD_DIR)/boot-bin.c: $(BOOTLOADER)
+	ln -s $< boot.bin
+	xxd -i boot.bin | sed '/=/s/^/const /' > $@
+	rm boot.bin
 
 # Flash wrapper.
 $(BUILD_DIR)/$(APPNAME)-flash.elf: $(vectors) \
