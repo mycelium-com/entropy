@@ -65,6 +65,7 @@ SECTIONS
     {
         KEEP(*(.start.vectors))
         *(.start.text*)
+        . = ALIGN(8);
     } > rom
 
     .text :
@@ -111,13 +112,13 @@ SECTIONS
         KEEP (*(SORT(.dtors.*)))
         KEEP (*crtend.o(.dtors))
 
-        . = ALIGN(4);
+        . = ALIGN(8);
         _efixed = .;            /* End of text section */
     } > ram AT> rom
 
     _stext_in_flash = LOADADDR(.text);
 
-    . = ALIGN(4);
+    . = ALIGN(8);
     _etext = .;
 
     .relocate :
