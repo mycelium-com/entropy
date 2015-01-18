@@ -1,7 +1,7 @@
 /*
  * Streaming JPEG generator.
  *
- * Copyright 2013-2014 Mycelium SA, Luxembourg.
+ * Copyright 2013-2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -356,6 +356,15 @@ static bool render_text(union fgm_state *state, int total_width)
     int last_dc = 0;
 
     for (i = 0; i < st->width && st->text[i]; i++) {
+        if (st->text[i] == ' ') {
+            // check for line break
+            const char *next_space = index(st->text + i + 1, ' ');
+            if (!next_space)
+                next_space = index(st->text + i + 1, '\0');
+            if (next_space > st->text + st->width)
+                break;          // Me name's Break.  Line Break.
+        }
+
         // character index in the font array
         unsigned chr_idx = font_map[st->text[i] - ' '];
         // this character's descriptor for this row
@@ -398,6 +407,8 @@ static bool render_text(union fgm_state *state, int total_width)
     if (++st->row == CHR_HEIGHT) {
         st->row = 0;
         st->text += i;
+        if (*st->text == ' ')
+            st->text++;     // skip space at line break
     }
 
     // return to white (add one white macroblock)

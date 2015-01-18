@@ -31,7 +31,7 @@ char * const texts[] = {
     [IDX_SSS_PART(1)]   = sss[0],
     [IDX_SSS_PART(2)]   = sss[1],
     [IDX_SSS_PART(3)]   = sss[2],
-    [IDX_UNSALTED]      = unsalted,
+    [IDX_UNSALTED]      = unsalted + 1,
     [IDX_HD_PATH]       = settings.hd_path,
 };
 

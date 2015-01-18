@@ -1,7 +1,7 @@
 /*
  * Picture layouts for JPEG generator.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -378,7 +378,7 @@ const struct Layout salt1_layout[] = {
     {
         .type   = FGM_TEXT,
         .vstep  = 7 - 1 + 4,
-        .x      = 20 + QR_SIZE(4) + 1,
+        .x      = 20 + QR_SIZE(4) + 4,
         .text   = { .idx = IDX_UNSALTED, .width = 36 },
     },
     {
@@ -604,7 +604,7 @@ const struct Layout shamir_salt1_layout[] = {
     {
         .type   = FGM_TEXT,
         .vstep  = 7 - 1 + 2,
-        .x      = 20 + QR_SIZE(4) + 1,
+        .x      = 20 + QR_SIZE(4) + 4,
         .text   = { .idx = IDX_UNSALTED, .width = 36 },
     },
     {

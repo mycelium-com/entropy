@@ -61,7 +61,7 @@ int keygen(uint8_t key_buf[])
         switch (settings.salt_type) {
         case 1:
             rng_next(mixer.rnum);
-            hexlify(texts[IDX_UNSALTED], (uint8_t *) mixer.rnum, 32);
+            hexlify(texts[IDX_UNSALTED] - 1, (uint8_t *) mixer.rnum, 32);
             uint8_t *mix = mixer.salt + sizeof mixer.salt - settings.salt_len;
             memcpy(mix, settings.salt, settings.salt_len);
             sha256_hash(key.words, mix, mixer.salt + sizeof mixer - mix);
