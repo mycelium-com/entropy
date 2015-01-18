@@ -8,6 +8,15 @@
 #ifndef ENDIAN_H
 #define ENDIAN_H
 
+#if ATMEL_SOFTWARE_FRAMEWORK
+
+#include <compiler.h>
+#define __LITTLE_ENDIAN 1
+#define __BIG_ENDIAN    2
+#define __BYTE_ORDER    __LITTLE_ENDIAN
+
+#else
+
 #define _BSD_SOURCE
 #include <sys/types.h>
 #include <sys/param.h>
@@ -18,6 +27,7 @@
 #define __BIG_ENDIAN    BIG_ENDIAN
 #endif
 
+#ifndef le32_to_cpu
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define le32_to_cpu
 #define cpu_to_le32
@@ -28,6 +38,9 @@
 #define cpu_to_le32     __builtin_bswap32
 #define be32_to_cpu
 #define cpu_to_be32
+#endif
+#endif
+
 #endif
 
 #endif

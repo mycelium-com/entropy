@@ -179,6 +179,7 @@ CPPFLAGS += \
 	-I $(TOP)/platforms/$(PLATFORM) \
 	-I $(TOP)/lib \
 	-I $(TOP) \
+	-D ATMEL_SOFTWARE_FRAMEWORK=1 \
 	-D scanf=iscanf
 
 # Extra flags to use when linking
