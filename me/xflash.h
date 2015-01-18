@@ -53,6 +53,9 @@ enum {
     // The offset from the end of flash and size of this snapshot is set here.
     XFLASH_RAM_SNAPSHOT_OFFSET  = 1024,
     XFLASH_RAM_SNAPSHOT_SIZE    = 1024,
+
+    // BIP-39 word list.
+    XFLASH_WORDLIST_OFFSET      = 65536,
 };
 
 #endif

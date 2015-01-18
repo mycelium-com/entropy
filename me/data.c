@@ -1,7 +1,7 @@
 /*
  * Global data.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -20,9 +20,10 @@
 #include "sss.h"
 #include "layout.h"
 #include "data.h"
+#include "settings.h"
 
-static char address[35];
-static char sss[3][SSS_STRING_SIZE];
+static char address[112];               // regular address or xpub
+static char sss[3][SSS_STRING_SIZE];    // 3*SSS, 1*WIF or 1*mnemonic
 static char unsalted[73];
 
 char * const texts[] = {
@@ -31,6 +32,7 @@ char * const texts[] = {
     [IDX_SSS_PART(2)]   = sss[1],
     [IDX_SSS_PART(3)]   = sss[2],
     [IDX_UNSALTED]      = unsalted,
+    [IDX_HD_PATH]       = settings.hd_path,
 };
 
 unsigned global_error_flags;

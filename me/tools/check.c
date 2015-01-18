@@ -1,6 +1,8 @@
 /*
  * Generate JPEG into a file to check the results.
  *
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
+ *
  * This file is part of Mycelium Entropy.
  *
  * Mycelium Entropy is free software: you can redistribute it and/or modify
@@ -27,7 +29,6 @@
 #include "jpeg.h"
 #include "jpeg-data.h"
 #include "keygen.h"
-#include "xflash.h"
 #include "sss.h"
 #include "settings.h"
 #include "rng.h"
@@ -115,7 +116,7 @@ int main(int argc, char *argv[])
     int i;
 
     static const struct {
-        uint8_t coin;
+        uint16_t coin;
         const char *suffix;
         const uint16_t *heading;
     } coins[] = {
@@ -177,7 +178,7 @@ int main(int argc, char *argv[])
     }
 
     coin = &coins[testnet + 2 * litecoin + 3 * peercoin];
-    settings.coin = coin->coin;
+    settings.coin.type = coin->coin;
 
     snprintf(fname, sizeof fname, "sample%s%s.jpg",
             coin->suffix,
@@ -265,13 +266,6 @@ int main(int argc, char *argv[])
     fclose(xflash_file);
 
     return retcode;
-}
-
-// Simulate reading graphics data from external flash.
-void xflash_read(uint8_t *data, uint16_t size, uint32_t address)
-{
-    fseek(xflash_file, address, SEEK_SET);
-    fread(data, 1, size, xflash_file);
 }
 
 // Simulate RNG.

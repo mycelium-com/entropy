@@ -1,7 +1,7 @@
 /*
  * Parser for settings.txt.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2105 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -23,16 +23,41 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "lib/fwsign.h"
+#include "lib/endian.h"
 
 int parse_settings(struct Raw_public_key keys[], int len);
 
 extern struct Settings {
-    uint8_t coin;
+    union {
+        struct {
+            uint8_t avb;    // coin type as in Application/Version Byte
+            uint8_t bip44;  // coin type according to BIP-44
+        };
+        uint16_t    type;   // both coin types as one word
+    } coin;
     bool    compressed;
     uint8_t salt_type;
     uint8_t salt_len;
     uint8_t salt[32];
+    bool    hd;
+    char    hd_path[32];
 } settings;
+
+// Coin types for settings.coin.
+// The first byte is avb, followed by bip44.
+#if __BYTE_ORDER == __LITTLE_ENDIAN
+#define COIN_TYPE(avb, bip44)   ((avb) | (bip44) << 8)
+#else
+#define COIN_TYPE(avb, bip44)   ((avb) << 8 | (bip44))
+#endif
+enum {
+    BITCOIN         = COIN_TYPE(0, 0),
+    BITCOIN_TESTNET = COIN_TYPE(0x6F, 1),
+    LITECOIN        = COIN_TYPE(0x30, 2),
+    PEERCOIN        = COIN_TYPE(0x37, 6),
+    DOGECOIN        = COIN_TYPE(0x1E, 3),
+    NAMECOIN        = COIN_TYPE(0x34, 7),
+};
 
 extern const struct Raw_public_key mycelium_public_key;
 

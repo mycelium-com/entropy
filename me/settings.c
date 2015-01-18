@@ -1,7 +1,7 @@
 /*
  * Parser for settings.txt.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2105 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -38,7 +38,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
 {
     int key_cnt = 0;
     uint8_t buf[32];
-    char token[16];
+    char token[sizeof settings.hd_path];
     int tlen = 0;           // length of accumulated token, heh heh
     uint8_t *buf_ptr = 0;
     uint8_t  buf_len = 0;
@@ -48,10 +48,12 @@ int parse_settings(struct Raw_public_key keys[], int len)
     FIL file;
 
     // default configuration
-    settings.coin = BITCOIN;
+    settings.coin.type = BITCOIN;
     settings.compressed = true;
     settings.salt_type = 0;
     settings.salt_len = 0;
+    settings.hd = false;
+    settings.hd_path[0] = 0;
 
     if (f_open(&file, "0:settings.txt", FA_READ) != FR_OK) {
         // probably no such file, revert to default configuration
@@ -76,6 +78,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
         COMPRESS,
         SIGN,
         SALT,
+        HD,
     };
 
     static const struct Token_table coin_args[] = {
@@ -92,6 +95,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
         { .token = "uncompressed",  .code = COMPRESS, .value = false },
         { .token = "sign",          .code = SIGN },
         { .token = "salt1",         .code = SALT, .value = 1 },
+        { .token = "hd",            .code = HD },
         { 0 }
     };
     const struct Token_table *table = commands;
@@ -100,6 +104,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
     bool in_comment = false;
     bool in_hex = false;
     bool in_salt = false;
+    int  in_hd = false;
 
     f_read(&file, buf, sizeof buf, &num_chars_in_buf);
 
@@ -143,10 +148,15 @@ int parse_settings(struct Raw_public_key keys[], int len)
 
                 if (tlen != 0) {
                     // end of token
-                    if (!table)
-                        return -2;  // unexpected token
                     token[tlen] = 0;
                     tlen = 0;
+                    if (in_hd) {
+                        strcpy(settings.hd_path, token);
+                        in_hd = false;
+                        goto check_eol;
+                    }
+                    if (!table)
+                        return -2;  // unexpected token
                     while (strcmp(token, table->token) != 0) {
                         table++;
                         if (!table->token)
@@ -159,7 +169,7 @@ int parse_settings(struct Raw_public_key keys[], int len)
                     else {
                         switch (table->code) {
                         case COIN:
-                            settings.coin = table->value;
+                            settings.coin.type = table->value;
                             break;
                         case COMPRESS:
                             settings.compressed = table->value;
@@ -177,15 +187,20 @@ int parse_settings(struct Raw_public_key keys[], int len)
                             in_salt = true;
                             in_hex = true;
                             break;
+                        case HD:
+                            in_hd = true;
+                            settings.hd = true;
+                            break;
                         }
                         table = 0;  // no more tokens expected in this line
                     }
                 }
-
+check_eol:
                 if (c == '\n') {
                     if (table && table != commands)
                         return -2;  // EOL while expecting a token
                     table = commands;
+                    in_hd = false;
                 }
 
                 continue;

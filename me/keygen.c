@@ -1,7 +1,7 @@
 /*
  * Private & public key pair generation for Mycelium Entropy.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -76,14 +76,14 @@ int keygen(uint8_t key_buf[])
     scalar_multiply(&tkey, &pub);
 
     // SIPA formatting
-    key.sipa[0] = settings.coin | 0x80;
+    key.sipa[0] = settings.coin.avb | 0x80;
     len = 33;
     if (settings.compressed)
         key.sipa[len++] = 1;
     memcpy(key_buf, key.sipa, len);
 
     base58check_encode(key.sipa, len, texts[IDX_PRIVKEY]);
-    base58_encode_address(&pub, settings.coin, settings.compressed,
+    base58_encode_address(&pub, settings.coin.avb, settings.compressed,
                           texts[IDX_ADDRESS]);
 
     printf("Address: %s.\n", texts[IDX_ADDRESS]);

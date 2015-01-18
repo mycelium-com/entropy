@@ -1,7 +1,7 @@
 /*
  * Global data.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -28,6 +28,7 @@ extern unsigned global_error_flags;
 enum Global_error_flags {
     FLASH_ERROR     = 1 << 0,
     NO_LAYOUT_FILE  = 1 << 1,
+    NO_WORDLIST     = 1 << 2,
 };
 
 // ownership of the stream buffer for the composite block device

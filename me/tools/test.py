@@ -60,7 +60,7 @@ for s in sys.stdin:
     try:
         tag, value = s.split(":")
     except:
-        if s:
+        if s in tests:
             num += 1
             test_cnt[s] = test_cnt.get(s, 0) + 1
             if not tests[s](param):
@@ -69,6 +69,8 @@ for s in sys.stdin:
         param = {}
         continue
 
+    if tag == "Mnemonic":
+        continue
     value = value.split()
     data = ""
     length = int(value[0])

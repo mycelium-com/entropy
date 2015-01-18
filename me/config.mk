@@ -5,7 +5,7 @@
 APPNAME = me
 
 # List of C source files.
-CSRCS = main.c ui.c keygen.c jpeg.c sss.c layout.c qr.c rng.c data.c \
+CSRCS = main.c ui.c keygen.c hd.c jpeg.c sss.c layout.c qr.c rng.c data.c \
 	at25dfx_mem.c xflash.c blkbuf.c xflash_buf_mem.c me-access.c \
 	fs.c update.c settings.c diskio.c ctrl_access.c \
 	jpeg-data.c jpeg-data-ext.c

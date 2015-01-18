@@ -1,7 +1,8 @@
 /*
- * Private & public key pair generation for Mycelium Entropy.
+ * Hierarchical Deterministic wallets with mnemonic seeds.
+ * BIP-32 and BIP-39 subset implementation for Mycelium Entropy.
  *
- * Copyright 2014, 2015 Mycelium SA, Luxembourg.
+ * Copyright 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -17,15 +18,10 @@
  * GNU General Public License for more details.
  */
 
-#ifndef KEYGEN_H
-#define KEYGEN_H
+#ifndef HD_H_INCLUDED
+#define HD_H_INCLUDED
 
-#include <stdint.h>
-#include <stdbool.h>
-
-// Store private key in SIPA format into key_buf.
-// Return key length (33 or 34), or 0 on failure.
-int keygen(uint8_t key_buf[]);
+bool hd_gen_seed_with_mnemonic(int ent, uint64_t seed[8], char *mnemonic);
+bool hd_make_xpub(const uint8_t *seed, int len);
 
 #endif
-

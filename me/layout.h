@@ -33,8 +33,10 @@ enum {
 // Text indices
 enum {
     IDX_ADDRESS,
+    IDX_XPUB     = IDX_ADDRESS,
     IDX_PRIVKEY,
     IDX_UNSALTED = 4,
+    IDX_HD_PATH,
 };
 // For Shamir's Secret Sharing part n of m
 #define IDX_SSS_PART(n) (n)

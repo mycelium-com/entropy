@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -141,8 +141,9 @@ generate_new_key:
     do ; while (!xflash_ready);
 #endif
 
-    bitcoin_address_ref = settings.coin == LITECOIN ? litecoin_address_fragment
-        : bitcoin_address_fragment;
+    // this is sort of temporary
+    bitcoin_address_ref = settings.coin.type == LITECOIN ?
+        litecoin_address_fragment : bitcoin_address_fragment;
 
     int mode = ui_btn_count;
     if (mode) {
