@@ -1,7 +1,7 @@
 /*
  * Initial factory firmware and self test for Mycelium Entropy.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -224,6 +224,9 @@ int main(void)
     // Start USB stack.
     udc_start();
 
+    // Timestamp to detect if USB is not connected within 5 seconds.
+    uint32_t ts = now();
+
     while (true) {
 
         if (main_b_msc_enable) {
@@ -242,8 +245,11 @@ int main(void)
                 } else
                     ui_ok();
             }
-        } else {
-            //sleepmgr_enter_sleep();
+        } else if ((now() - ts) > 5 * AST_FREQ) {
+            puts("USB connection failed.");
+            udc_stop();
+            ui_error(USB_FAULT);
+            for (;;);
         }
 
         sync_diag_print();

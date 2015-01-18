@@ -108,7 +108,7 @@ int main(void)
     // compute public key
     uint32_t t = now();
     scalar_multiply(&private, &public);
-    print_time_interval("Mutliplication time", now() - t);
+    print_time_interval("Multiplication time", now() - t);
 
     print_public_key(&public);
 

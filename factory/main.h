@@ -1,7 +1,7 @@
 /*
  * Initial factory firmware and self test for Mycelium Entropy.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -23,9 +23,10 @@
 enum Faults {
     VDD_FAULT           = 1,
     FLASH_FAULT         = 2,
-    BOOTLOADER_FAULT    = 4,
+    USB_FAULT           = 4,
     WRONG_FLASH         = 5,
     WRONG_MCU           = 6,
+    BOOTLOADER_FAULT    = 7,
 };
 
 void set_fault(enum Faults fault);
