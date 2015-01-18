@@ -212,9 +212,7 @@ static void test_pbkdf2(void)
         const char *salt = tests[i].salt;
 
         unhexlify(tests[i].key, key_vec);
-        pbkdf2_512(key, (const uint8_t *) password, strlen(password),
-                   (const uint8_t *) salt, strlen(salt),
-                   tests[i].iterations);
+        pbkdf2_512(key, password, salt, tests[i].iterations);
         if (memcmp(key, key_vec, sizeof key) != 0) {
             printf("PBKDF2 test %u FAILED.\n", i);
             abort();

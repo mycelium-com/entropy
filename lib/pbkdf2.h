@@ -26,8 +26,8 @@
 #include <stdint.h>
 
 void pbkdf2_512(uint64_t key[8],
-                const uint8_t *password, int plen,
-                const uint8_t *salt, int slen,
+                const char *password,
+                const char *salt,
                 int iterations);
 
 #endif

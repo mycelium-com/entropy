@@ -26,10 +26,12 @@
 
 
 void pbkdf2_512(uint64_t key[8],
-                const uint8_t *password, int plen,
-                const uint8_t *salt, int slen,
+                const char *password,
+                const char *salt,
                 int iterations)
 {
+    int plen = strlen(password);
+    int slen = strlen(salt);
     int j, k;
     uint64_t buf[8];
     uint8_t salti[slen + 4];
@@ -42,11 +44,12 @@ void pbkdf2_512(uint64_t key[8],
     salti[slen++] = 0;
     salti[slen++] = 1;
 
-    sha512_hmac(buf, password, plen, salti, slen);
+    sha512_hmac(buf, (const uint8_t *) password, plen, salti, slen);
     memcpy(key, buf, sizeof buf);
 
     for (j = 1; j < iterations; j++) {
-        sha512_hmac(buf, password, plen, (uint8_t *) buf, sizeof buf);
+        sha512_hmac(buf, (const uint8_t *) password, plen,
+                (uint8_t *) buf, sizeof buf);
         for (k = 0; k != sizeof buf / sizeof buf[0]; k++)
             key[k] ^= buf[k];
     }
