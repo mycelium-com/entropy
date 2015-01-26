@@ -29,11 +29,16 @@
 // these should be surrounded by a "silent zone" four white (0) dots in width
 #define QR_SIZE(ver)    (17 + (ver) * 4)
 
+#define QR_RAW_BYTES(version)   QR_RAW_BYTES_(version)
+#define QR_RAW_BYTES_(version)  QR##version##_RAW_BYTES
+
 enum {
     QR3_RAW_BYTES       = 70,       // size 29
     QR4_RAW_BYTES       = 100,      // size 33
     QR5_RAW_BYTES       = 134,      // size 37
     QR6_RAW_BYTES       = 172,      // size 41
+
+    QR_MAX_RAW_BYTES    = QR_RAW_BYTES(QR_MAX_VERSION),
 
     // Reed-Solomon EC lengths in bytes
     RSLEN_3_L = 15,

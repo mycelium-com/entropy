@@ -70,7 +70,7 @@ struct qr_state {
     uint8_t  size;          // QR code size in modules (29 or 33)
     uint8_t  idx;           // index of the text to render (address, key, etc.)
     uint16_t row;           // index of the next row of modules/macroblocks
-    qr_row_t qr[QR_SIZE(4)]; // bit map
+    qr_row_t qr[QR_SIZE(QR_MAX_VERSION)];   // bit map
 };
 
 // Rectangle type: Text.

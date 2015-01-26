@@ -247,7 +247,7 @@ void qr_encode(const char *msg, qr_row_t *qr, int size)
     int len;                            // length of data without EC
     unsigned ecl;                       // EC level
     unsigned f;
-    uint8_t buf[QR5_RAW_BYTES + 5];     // 5 for gaps and remaining bits
+    uint8_t buf[QR_MAX_RAW_BYTES + 5];  // 5 for gaps and remaining bits
     uint8_t *bufp = buf;
 
     // find highest EC level for the requested QR size with sufficient
