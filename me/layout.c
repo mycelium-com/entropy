@@ -45,8 +45,8 @@ const struct Layout main_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,    // width 42, height 45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_QR,
@@ -73,8 +73,14 @@ const struct Layout main_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 29 - 2,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 18,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     {
@@ -104,8 +110,8 @@ const struct Layout shamir_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,                // 42x45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_PICTURE_BY_REF,
@@ -144,8 +150,14 @@ const struct Layout shamir_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 26,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     {
@@ -175,8 +187,8 @@ const struct Layout shamir_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,                // 42x45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_PICTURE_BY_REF,
@@ -215,8 +227,14 @@ const struct Layout shamir_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 26,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     {
@@ -246,8 +264,8 @@ const struct Layout shamir_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,                // 42x45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_PICTURE_BY_REF,
@@ -286,8 +304,14 @@ const struct Layout shamir_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 26,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     {
@@ -318,8 +342,8 @@ const struct Layout salt1_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,    // width 42, height 45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_QR,
@@ -346,8 +370,14 @@ const struct Layout salt1_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 29 - 2,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 18,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     {
@@ -408,8 +438,8 @@ const struct Layout shamir_salt1_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,                // 42x45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_PICTURE_BY_REF,
@@ -448,8 +478,14 @@ const struct Layout shamir_salt1_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 26,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     //------------------------------------------------------------------
@@ -473,8 +509,8 @@ const struct Layout shamir_salt1_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,                // 42x45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_PICTURE_BY_REF,
@@ -513,8 +549,14 @@ const struct Layout shamir_salt1_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 26,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     //------------------------------------------------------------------
@@ -538,8 +580,8 @@ const struct Layout shamir_salt1_layout[] = {
     {
         .type   = FGM_PICTURE,
         .vstep  = 6,
-        .x      = (JWIDTH - 41) / 2,
-        .pic    = logo_top_fragment,                // 42x45
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
     },
     {
         .type   = FGM_PICTURE_BY_REF,
@@ -578,8 +620,14 @@ const struct Layout shamir_salt1_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
-        .vstep  = 26,
-        .x      = (JWIDTH - 65) / 2,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
     //------------------------------------------------------------------

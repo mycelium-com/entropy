@@ -180,19 +180,20 @@ def make_jpeg(jpeg_name, font, mfont, mtw, mth):
         black = black.crop((64, 0, h * 8 - 1, 39)).rotate(270)
         cut_here = cut_here.crop((64, 0, h * 8 - 1, 39)).rotate(270)
         img.paste(black, ((x + w/2 - 3) * 8 + 1, 8), cut_here)
-    off = (w - w/4) / 4
-    tw = w - 2 * off
-    th = 45
+    tx, tw, th = 28, 10, 20     # top part's offset, width and height
+    mx = (w - w/4) / 4          # middle part's offset
+    mw = w - 2 * mx             # middle part's width
+    mh = 25                     # middle part's height
     if False:   # change to True to draw vertical dashed line
         fgm = Fragment("logo_top_fragment", tw, th + 9)
-        rects.append(Rect(x + off, y - 9, tw, th + 9, fgm))
+        rects.append(Rect(x + tx, y - 9, tw, th + 9, fgm))
     else:
         fgm = Fragment("logo_top_fragment", tw, th)
-        rects.append(Rect(x + off, y, tw, th, fgm))
-    fgm = Fragment("logo_bottom_fragment", w, h - th)
-    rects.append(Rect(x, y + th, w, h - th, fgm))
-    print "Logo top: offset %d, width %d, height %d." % (off, tw, th)
-    print "Logo bottom: width %d, height %d." % (w, h - th)
+        rects.append(Rect(x + tx, y, tw, th, fgm))
+    fgm = Fragment("logo_middle_fragment", mw, mh)
+    rects.append(Rect(x + mx, y + th, mw, mh, fgm))
+    fgm = Fragment("logo_bottom_fragment", w, h - th - mh)
+    rects.append(Rect(x, y + th + mh, w, h - th - mh, fgm))
 
     img.save(jpeg_name, quality=100, optimize=True)
 

@@ -17,5 +17,6 @@ brt/*/boot-bin.c
 factory/*/ifp-bin.c
 me/*/applet-bin.c
 me/*/jpeg-check
+me/jpeg-data*
 me/tools/check
 me/tools/test
