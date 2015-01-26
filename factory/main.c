@@ -40,6 +40,7 @@ static bool enable_report = false;
 
 static volatile bool main_b_msc_enable = false;
 static volatile unsigned usb_frames_received;
+static volatile bool was_suspended = false;
 
 extern uint32_t __ram_end__;
 extern const unsigned char boot_bin[];
@@ -226,6 +227,9 @@ int main(void)
     if (voltage_ok)
         set_boot_pin();
 
+    if (faults)
+        enable_report = true;
+
     // Start USB stack.
     udc_start();
 
@@ -238,32 +242,50 @@ int main(void)
             if (!udi_msc_process_trans()) {
                 //sleepmgr_enter_sleep();
             }
-            if (usb_frames_received >= 3 && usb_frames_received < 1000) {
-                usb_frames_received = 1000;    // make sure this executes only once
-
-                if (!faults && !flash_bootloader())
-                    set_fault(BOOTLOADER_FAULT);
-
-                if (faults) {
-                    enable_report = true;
-                    ui_error(faults);
-                } else
-                    ui_ok();
-            }
-        } else if ((now() - ts) > 5 * AST_FREQ) {
-            puts("USB connection failed.");
-            udc_stop();
-            ui_error(USB_FAULT);
-            for (;;);
+        }
+        if (was_suspended) {
+            puts("USB was suspended.\n");
+            set_fault(USB_FAULT);
+            break;
+        } else if (usb_frames_received > 1000 && !was_suspended && sync_ok()) {
+            static bool connected;
+            if (connected)
+                continue;
+            connected = true;
+            puts("USB OK.");
+            if (!faults)
+                break;
+            ui_error(faults);
+        } else if ((now() - ts) > 2 * AST_FREQ) {
+            printf("USB connection failed: %u frames,%s %s.\n",
+                    usb_frames_received,
+                    was_suspended ? " was suspended," : "",
+                    sync_ok() ? "sync ok" : "not in sync");
+            set_fault(USB_FAULT);
+            break;
         }
 
         sync_diag_print();
     }
+
+    udc_stop();
+
+    if (!faults && !flash_bootloader())
+        set_fault(BOOTLOADER_FAULT);
+
+    if (faults)
+        ui_error(faults);
+    else
+        ui_ok();
+
+    for (;;);
 }
 
 void main_suspend_action(void)
 {
     sync_suspend();
+    if (usb_frames_received >= 100)
+        was_suspended = true;
 }
 
 void main_resume_action(void)
@@ -273,8 +295,6 @@ void main_resume_action(void)
 void main_sof_action(void)
 {
     sync_frame();
-    if (!main_b_msc_enable)
-        return;
     usb_frames_received++;
 }
 

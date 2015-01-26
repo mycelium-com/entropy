@@ -17,7 +17,7 @@ ASSRCS =
 CFLAGS =
 
 # Extra flags to use when preprocessing.
-CPPFLAGS = -DNDEBUG
+CPPFLAGS = -DNDEBUG -DSYNC_DIAGNOSTICS=1
 
 # Additional items to clean under BUILD_DIR
 CLEAN = ifp-bin.c

@@ -21,11 +21,14 @@
 #define SYNC_H_INCLUDED
 
 // Enable diagnostic output?
+#ifndef SYNC_DIAGNOSTICS
 #define SYNC_DIAGNOSTICS 0
+#endif
 
 void sync_init(void);
 void sync_frame(void);
 void sync_suspend(void);
+bool sync_ok(void);
 
 #if SYNC_DIAGNOSTICS
 void sync_diag_print(void);

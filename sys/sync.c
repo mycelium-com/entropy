@@ -212,6 +212,11 @@ void sync_suspend(void)
 #endif
 }
 
+bool sync_ok(void)
+{
+    return in_sync;
+}
+
 #if SYNC_DIAGNOSTICS
 void sync_diag_print(void)
 {
