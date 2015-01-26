@@ -591,6 +591,7 @@ static bool jpeg_more(void)
         dy = 0;
 
         struct fgm_ctl *new_item = &end;
+        uint16_t shift = 0;
 
         switch (layout->type) {
         case FGM_PICTURE_BY_REF:
@@ -629,8 +630,12 @@ fgm_picture:
             new_item = ALLOC(text_fragments);
             new_item->state->text.idx = layout->text.idx;
             new_item->state->text.width = layout->text.width;
+            new_item->state->text.text = texts[layout->text.idx];
+            if (layout->text.centre) {
+                shift = (layout->text.centre - strnlen(texts[layout->text.idx],
+                            layout->text.centre)) * CHR_WIDTH / 2;
+            }
             new_item->state->text.row = 0;
-            new_item->state->text.text = texts[layout->qr.idx];
             new_item->render = render_text;
             break;
 
@@ -639,7 +644,7 @@ fgm_picture:
         }
 
         // insert new_item into the chain according to x
-        new_item->x = layout->x;
+        new_item->x = layout->x + shift;
         for (fgm = &chain; (*fgm)->x < new_item->x; fgm = &(*fgm)->next);
         new_item->next = *fgm;
         *fgm = new_item;
@@ -692,7 +697,7 @@ static void jpeg_fill(void)
         // This is usually the maximum size (in bytes) of one macroblock row
         // and determined empirically.  It shouldn't exceed 1/2.5 of the space
         // available for jpeg buffering, i.e. entropy_size.
-        RESERVE = 8 * 1024
+        RESERVE = 10 * 1024
     };
 
     uint8_t *limit = stream.minblk_ptr > jpeg.buf ? stream.minblk_ptr :

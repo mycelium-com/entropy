@@ -20,6 +20,8 @@
 #ifndef LAYOUT_H
 #define LAYOUT_H
 
+#include <stdint.h>
+
 // Fragment types
 enum {
     FGM_LARGE_PICTURE,
@@ -54,12 +56,13 @@ struct Layout {
         // QR code
         struct {
             uint16_t idx;       // text index IDX_xxx
-            uint16_t size;      // QR_SIZE(ver): 29 or 33
+            uint16_t size;      // QR_SIZE(ver): between 29 and 41
         } qr;
 
         // text fragment
         struct {
-            uint16_t idx;       // text index IDX_xxx
+            uint8_t  idx;       // text index IDX_xxx
+            uint8_t  centre;    // width for centring, if not 0
             uint16_t width;     // width in characters
         } text;
     };
