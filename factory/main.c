@@ -209,7 +209,12 @@ int main(void)
     ptr = readme + strlen(readme);
 
     unsigned unique_id = check_chip();
+
+    // Temporarily reduce PBA speed to 12 MHz while the ADC is in operation.
+    sysclk_set_prescalers(0, 2, 0, 0, 0);
     bool voltage_ok = check_voltage();
+    sysclk_set_prescalers(0, 0, 0, 0, 0);
+
     if (!xflash_check(&ptr, readme, 1024))
         set_fault(FLASH_FAULT);
 

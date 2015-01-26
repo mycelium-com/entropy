@@ -64,11 +64,11 @@
 #define CONFIG_RCFAST_FRANGE    2
 
 /* Fbus = Fsys / (2 ^ BUS_div) */
-#define CONFIG_SYSCLK_CPU_DIV         2
-#define CONFIG_SYSCLK_PBA_DIV         2
-#define CONFIG_SYSCLK_PBB_DIV         2
-#define CONFIG_SYSCLK_PBC_DIV         2
-#define CONFIG_SYSCLK_PBD_DIV         2
+#define CONFIG_SYSCLK_CPU_DIV         0
+#define CONFIG_SYSCLK_PBA_DIV         0
+#define CONFIG_SYSCLK_PBB_DIV         0
+#define CONFIG_SYSCLK_PBC_DIV         0
+#define CONFIG_SYSCLK_PBD_DIV         0
 
 // ===== Disable all non-essential peripheral clocks
 //#define CONFIG_SYSCLK_INIT_CPUMASK  0
@@ -100,7 +100,7 @@
 #define CONFIG_DFLL0_FREQ           48000000UL
 //#define CONFIG_DFLL0_MUL            ((4 * CONFIG_DFLL0_FREQ) / 12000000)
 //#define CONFIG_DFLL0_DIV            4
-#define CONFIG_DFLL0_MUL            (CONFIG_DFLL0_FREQ / 32768)
+#define CONFIG_DFLL0_MUL            (CONFIG_DFLL0_FREQ / OSC_RC32K_NOMINAL_HZ)
 #define CONFIG_DFLL0_DIV            1
 //#define CONFIG_DFLL0_MUL            4
 
@@ -115,5 +115,17 @@
 // ===== GCLK9 option
 //#define CONFIG_GCLK9_SOURCE           GENCLK_SRC_GCLKIN0
 //#define CONFIG_GCLK9_DIV              1
+
+// 0: disable PicoCache, 1: enable PicoCache
+// PicoCache is enabled by default
+#define CONFIG_HCACHE_ENABLE          1
+
+/*
+ * To use low power mode for flash read mode (PS0, PS1), don't define it.
+ * To use high speed mode for flash read mode (PS2), define it.
+ * At 48 MHz high speed mode is enabled automatically in sysclk_init() anyway,
+ * so this setting just reduces code size.
+ */
+#define CONFIG_FLASH_READ_MODE_HIGH_SPEED_ENABLE
 
 #endif /* CONF_CLOCK_H_INCLUDED */
