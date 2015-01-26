@@ -36,9 +36,10 @@
 //void jpeg_dump(void);
 
 // Unallocated memory starts at the _estack symbol, provided by the linker to
-// the embedded firmware.  sss.c temporarily uses this area for coefficients.
+// the embedded firmware.  sss.c temporarily uses this area for coefficients,
+// and hd.c for the word list.
 // Here we simulate _estack.
-uint32_t _estack[16 * 256 / 4]; // max 16 shares, 256 bytes each
+uint32_t _estack[5 * 2048 / 4];
 
 // Global variables expected by the embedded software.
 int ui_btn_count;
@@ -97,6 +98,7 @@ static void usage(void)
           "  -l        Litecoin\n"
           "  -p        Peercoin\n"
           "  -1        use type 1 salt\n"
+          "  -d path   HD wallet with xpub at path (-dd for default)\n"
           "Output is written to sample*.jpg, where * stands for "
           "option-specific suffixes.\n",
           stderr);
@@ -106,7 +108,7 @@ int main(int argc, char *argv[])
 {
     char fname[80];
     uint8_t key[34];
-    uint8_t buf[22736];
+    uint8_t buf[24576];
     uint8_t *bprev, *bptr = 0;
     int blk, xend;
     bool testnet = false, shamir = false;
@@ -134,7 +136,7 @@ int main(int argc, char *argv[])
 
     settings.compressed = true;
 
-    while ((i = getopt(argc, argv, "tsulp1r:h")) != -1)
+    while ((i = getopt(argc, argv, "tsulp1d:r:h")) != -1)
         switch (i) {
         case 't':
             testnet = true;
@@ -153,6 +155,11 @@ int main(int argc, char *argv[])
             break;
         case '1':
             settings.salt_type = 1;
+            break;
+        case 'd':
+            settings.hd = true;
+            strncpy(settings.hd_path, *optarg == 'd' ? "" : optarg,
+                    sizeof settings.hd_path);
             break;
         case 'r':
             nblk = strtoul(optarg, 0, 0);
@@ -176,11 +183,20 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Testnet is supported for Bitcoin only.\n");
         return 1;
     }
+    if (settings.hd && !settings.compressed) {
+        fprintf(stderr, "HD wallets work with compressed keys only.\n");
+        return 1;
+    }
+    if (settings.hd_path[sizeof settings.hd_path - 1] != 0) {
+        fprintf(stderr, "HD path is too long.\n");
+        return 1;
+    }
 
     coin = &coins[testnet + 2 * litecoin + 3 * peercoin];
     settings.coin.type = coin->coin;
 
-    snprintf(fname, sizeof fname, "sample%s%s.jpg",
+    snprintf(fname, sizeof fname, "sample%s%s%s.jpg",
+            settings.hd ? "-hd" : "",
             coin->suffix,
             shamir ? "-sss" : "");
     FILE *f = fopen(fname, "wb");
@@ -207,9 +223,17 @@ int main(int argc, char *argv[])
     check_layout(shamir_layout, "Shamir's");
     check_layout(salt1_layout, "Salt1");
     check_layout(shamir_salt1_layout, "Shamir with salt1");
+    check_layout(hd_layout, "HD");
 
     // Generate key pair.
-    int len = keygen(key);
+    int len = 0;
+    if (settings.hd) {
+        uint64_t seed[8];
+        hd_gen_seed_with_mnemonic(16, seed, texts[IDX_PRIVKEY]);
+        hd_make_xpub((const uint8_t *) seed, sizeof seed);
+    } else {
+        len = keygen(key);
+    }
 
     // Set address heading according to coin type.
     bitcoin_address_ref = coin->heading;
@@ -220,8 +244,10 @@ int main(int argc, char *argv[])
         jpeg_init(buf, buf + sizeof buf, settings.salt_type == 0 ?
                   shamir_layout : shamir_salt1_layout);
     } else {
-        jpeg_init(buf, buf + sizeof buf, settings.salt_type == 0 ?
-                  main_layout : salt1_layout);
+        jpeg_init(buf, buf + sizeof buf,
+                  settings.hd ? hd_layout :
+                  settings.salt_type == 0 ? main_layout :
+                  salt1_layout);
     }
 
     if (nblk) {

@@ -673,3 +673,79 @@ const struct Layout shamir_salt1_layout[] = {
         .vstep  = 25,
     },
 };
+
+const struct Layout hd_layout[] = {
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 20,
+        .x      = 20 + (28*3 - BITCOIN_ADDRESS_FRAGMENT_WIDTH + 1)/2,
+        .pic    = bitcoin_account_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = JWIDTH - 21 - 28*3 + (28*3 - SEED_FRAGMENT_WIDTH + 1)/2,
+        .pic    = seed_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 6,
+        .x      = JWIDTH - 21 - 28*3 + (28*3 - KEEP_SAFE_FRAGMENT_WIDTH + 1)/2,
+        .pic    = keep_safe_fragment,
+    },
+    {
+        .type   = FGM_TEXT,
+        .vstep  = 1,
+        .x      = 20,
+        .text   = { .idx = IDX_HD_PATH, .width = 32, .centre = 28 },
+    },
+    {
+        .type   = FGM_TEXT,
+        .vstep  = 8,
+        .x      = 20,
+        .text   = { .idx = IDX_XPUB, .width = 28 },
+    },
+    {
+        .type   = FGM_TEXT,
+        .x      = JWIDTH - 21 - 28*3,
+        .text   = { .idx = IDX_PRIVKEY, .width = 28 },
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 7,
+        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_top_fragment,
+    },
+    {
+        .type   = FGM_QR,
+        .vstep  = 17,
+        .x      = 20,
+        .qr     = { .idx = IDX_XPUB, .size = QR_SIZE(6) },
+    },
+    {
+        .type   = FGM_QR,
+        .x      = JWIDTH - 20 - QR_SIZE(6),
+        .qr     = { .idx = IDX_PRIVKEY, .size = QR_SIZE(6) },
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 17,
+        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_middle_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
+        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
+        .pic    = logo_bottom_fragment,             // 66x13
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = LOGO_BOTTOM_FRAGMENT_HEIGHT + 4,
+        .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
+        .pic    = small_print_fragment,
+    },
+    {
+        .type   = FGM_STOP,
+        .vstep  = JHEIGHT - 20 - 22 - 58 - 4,
+    },
+};

@@ -72,6 +72,7 @@ extern const struct Layout main_layout[];
 extern const struct Layout shamir_layout[];
 extern const struct Layout salt1_layout[];
 extern const struct Layout shamir_salt1_layout[];
+extern const struct Layout hd_layout[];
 const uint16_t *bitcoin_address_ref;
 
 #endif

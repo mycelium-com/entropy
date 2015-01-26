@@ -34,16 +34,18 @@ DPI         = 220
 FONT        = "/System/Library/Fonts/Optima.ttc", 44
 TEXTS       = ("Bitcoin Address", "Private Key", "Share 1 of 3", "Share 2 of 3",
                "Share 3 of 3", "(any two shares reveal the key)",
+               "Bitcoin Account", "Seed",
                "Litecoin Address",
                "Entropy for verification:", "Key = SHA-256(salt1 || Entropy)")
 
 # Small font and text for the small print at the bottom
 SFONT       = "/System/Library/Fonts/Optima.ttc", 32
-STEXT       = "Created by Mycelium Entropy.   mycelium.com"
+STEXTS      = ("Created by Mycelium Entropy.   mycelium.com",
+               "(keep safe!)")
 
 # Monospace font for text next to QR codes
 MFONT       = "/System/Library/Fonts/Menlo.ttc", 40
-MTEXT       = " 0123456789-ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+MTEXT       = " 0123456789-ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz/'"
 
 # Just for tuning the JPEG optimiser.  It's ok to have occasional 33x33 QRs.
 QR_SIZE = 29
@@ -158,8 +160,9 @@ def make_jpeg(jpeg_name, font, mfont, mtw, mth):
     # texts
     for text in TEXTS:
         y = add_text_fragment(rects, drw, font, y, text)
-    y = add_text_fragment(rects, drw, ImageFont.truetype(*SFONT), y, STEXT,
-                          "small_print")
+    small_font = ImageFont.truetype(*SFONT)
+    y = add_text_fragment(rects, drw, small_font, y, STEXTS[0], "small_print")
+    y = add_text_fragment(rects, drw, small_font, y, STEXTS[1])
 
     # add Mycelium logo
     logo = os.path.dirname(os.path.realpath(sys.argv[0]))
