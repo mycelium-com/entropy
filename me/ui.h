@@ -36,22 +36,22 @@ enum Ui_message_code {
 extern volatile int ui_btn_count;
 extern volatile uint32_t ui_btn_timestamp;
 
-//! \brief Initializes the user interface
+// Initialise the user interface.
 void ui_init(void);
 
-//! \brief Enters the user interface in power down mode
-void ui_powerdown(void);
+// Enter the USB suspend mode.
+void ui_suspend(void);
 
-//! \brief Switches off LED0.
+// Switch off LEDs.
 void ui_off(void);
 
-// Turns off button interrupts.
+// Turn off button interrupts.
 void ui_btn_off(void);
 
-//! \brief Exits the user interface of power down mode
+// Wake up from the USB suspend mode.
 void ui_wakeup(void);
 
-//! \name Callback to show the MSC read and write access
+// Callbacks to show the MSC read and write access
 void ui_start_read(void);
 void ui_stop_read(void);
 void ui_start_write(void);

@@ -17,6 +17,7 @@
 
 #include <board.h>
 #include <sleepmgr.h>
+#include <usart.h>
 #include <led.h>
 #include <udc.h>
 #include <ff.h>
@@ -24,6 +25,7 @@
 
 #include "conf_usb.h"
 #include "conf_access.h"
+#include "conf_uart_serial.h"
 #include "sys/conf_system.h"
 #include "sys/stdio-uart.h"
 #include "sys/now.h"
@@ -107,7 +109,10 @@ int main(void)
         update_run();
         ui_off();
         ui_btn_count = 0;
-        do ; while (ui_btn_count == 0);
+        sysclk_set_source(SYSCLK_SRC_RCSYS);
+        do
+            sleepmgr_enter_sleep();
+        while (ui_btn_count == 0);
         NVIC_SystemReset();
         return 0;
     }
@@ -200,10 +205,10 @@ generate_new_key:
     while (true) {
         if (main_b_msc_enable) {
             if (!udi_msc_process_trans()) {
-                //sleepmgr_enter_sleep();
+                sleepmgr_enter_sleep();
             }
         } else {
-            //sleepmgr_enter_sleep();
+            sleepmgr_enter_sleep();
         }
 
         if (global_error_flags) {
@@ -220,19 +225,65 @@ generate_new_key:
             ui_keygen();
             goto generate_new_key;
         }
+
+        main_check_suspend_wakeup(false);
+    }
+}
+
+static volatile enum {
+    NONE,
+    SUSPEND,
+    WAKEUP
+} usb_request;
+
+void main_check_suspend_wakeup(bool postpone_suspend)
+{
+	irqflags_t flags;
+    static uint32_t pba_mask;
+
+    switch (usb_request) {
+    case SUSPEND:
+        if (postpone_suspend)
+            break;
+        do ; while (!usart_is_tx_empty(CONF_UART));
+        flags = cpu_irq_save();
+        pba_mask = PM->PM_PBAMASK;
+        PM->PM_UNLOCK = PM_UNLOCK_KEY(0xAAu) |
+            PM_UNLOCK_ADDR((uintptr_t) &PM->PM_PBAMASK - (uintptr_t) PM);
+        PM->PM_PBAMASK = 0;
+        usb_request &= ~SUSPEND;
+        cpu_irq_restore(flags);
+        ui_suspend();
+        sysclk_set_prescalers(3, 3, 3, 3, 3);
+        break;
+
+    case WAKEUP:
+        sysclk_set_prescalers(0, 0, 0, 0, 0);
+        ui_wakeup();
+        flags = cpu_irq_save();
+        if (pba_mask) {
+            PM->PM_UNLOCK = PM_UNLOCK_KEY(0xAAu) |
+                PM_UNLOCK_ADDR((uintptr_t) &PM->PM_PBAMASK - (uintptr_t) PM);
+            PM->PM_PBAMASK = pba_mask;
+        }
+        usb_request &= ~WAKEUP;
+        cpu_irq_restore(flags);
+        break;
+
+    default:
+        break;
     }
 }
 
 void main_suspend_action(void)
 {
     sync_suspend();
-    ui_powerdown();
-    //sleepmgr_enter_sleep();
+    usb_request = SUSPEND;
 }
 
 void main_resume_action(void)
 {
-    ui_wakeup();
+    usb_request = WAKEUP;
 }
 
 void main_sof_action(void)

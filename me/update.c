@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stddef.h>
+#include <sleepmgr.h>
 #include <udc.h>
 #include <ctrl_access.h>
 #include <ff.h>
@@ -115,16 +116,18 @@ void update_run(void)
                 may_be_dirty = true;
                 last_usb_trans = now();
             } else {
-                //sleepmgr_enter_sleep();
+                sleepmgr_enter_sleep();
             }
         } else {
-            //sleepmgr_enter_sleep();
+            sleepmgr_enter_sleep();
         }
 
         if (may_be_dirty && now() - last_usb_trans > AST_FREQ / 2) {
             blkbuf_flush();
             may_be_dirty = false;
         }
+
+        main_check_suspend_wakeup(may_be_dirty);
 
         if (global_error_flags) {
             udc_stop();

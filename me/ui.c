@@ -140,6 +140,7 @@ void ui_off(void)
 void ui_btn_off(void)
 {
     gpio_disable_pin_interrupt(BUTTON_0_PIN);
+    ui_btn_count = 0;
 }
 
 static void ui_msg(enum Ui_message_code code)
@@ -156,7 +157,7 @@ static void ui_msg(enum Ui_message_code code)
 
 void ui_error(enum Ui_message_code code)
 {
-    gpio_disable_pin_interrupt(BUTTON_0_PIN);
+    ui_btn_off();
     ui_msg(code);
     for (;;);
 }
@@ -179,14 +180,16 @@ void ui_confirm(enum Ui_message_code code)
     ui_keygen();
 }
 
-void ui_powerdown(void)
+void ui_suspend(void)
 {
     LED_Off(LED0);
+    ui_btn_off();
 }
 
 void ui_wakeup(void)
 {
-    //LED_On(LED0);
+    LED_On(LED0);
+    gpio_enable_pin_interrupt(BUTTON_0_PIN);
 }
 
 void ui_start_read(void)

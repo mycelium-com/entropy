@@ -74,6 +74,9 @@ void main_suspend_action(void);
  */
 void main_resume_action(void);
 
+// Called from the main loop to react to USB suspend/wakeup events.
+void main_check_suspend_wakeup(bool postpone_suspend);
+
 // Flag whether we are in firmware update and configuration mode
 extern bool configuration_mode;
 
