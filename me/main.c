@@ -38,6 +38,7 @@
 #include "fs.h"
 #include "me-access.h"
 #include "keygen.h"
+#include "hd.h"
 #include "data.h"
 #include "rng.h"
 #include "update.h"
@@ -135,7 +136,14 @@ generate_new_key:
 #endif
 
     // Generate key pair.
-    len = keygen(key);
+    if (settings.hd) {
+        uint64_t seed[8];
+        hd_gen_seed_with_mnemonic(16, seed, texts[IDX_PRIVKEY]);
+        hd_make_xpub((const uint8_t *) seed, sizeof seed);
+        len = 0;    // suppress uninitialised variable warning
+    } else {
+        len = keygen(key);
+    }
 
 #if AT25DFX_MEM
     do ; while (!xflash_ready);
@@ -146,7 +154,13 @@ generate_new_key:
         litecoin_address_fragment : bitcoin_address_fragment;
 
     int mode = ui_btn_count;
-    if (mode) {
+    if (settings.hd) {
+        // HD mode does not support Shamir's secret sharing or salt yet
+        cbd_num_sectors = 432;
+        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__,
+                hd_layout);
+        prefix = "HD ";
+    } else if (mode) {
         // generate 2-of-3 Shamir's shares
         cbd_num_sectors = 928 + settings.salt_type * 80;
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
@@ -298,7 +312,7 @@ static void make_fs(void)
 
     // Add JPEG file.
     char *buf = (char *) _estack.stream_buf + nblk * 512;
-    sprintf((char *)buf, "1:%s%s.jpg", prefix, texts[IDX_ADDRESS]);
+    sprintf((char *)buf, "1:%s%.35s.jpg", prefix, texts[IDX_ADDRESS]);
     f_open(&file, (char *)buf, FA_WRITE | FA_CREATE_ALWAYS);
     FRESULT res = f_lseek(&file, (cbd_num_sectors - nblk) * 512);
     if (res != FR_OK)

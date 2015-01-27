@@ -225,27 +225,25 @@ int main(int argc, char *argv[])
     check_layout(shamir_salt1_layout, "Shamir with salt1");
     check_layout(hd_layout, "HD");
 
-    // Generate key pair.
-    int len = 0;
+    // Set address heading according to coin type.
+    bitcoin_address_ref = coin->heading;
+
     if (settings.hd) {
         uint64_t seed[8];
         hd_gen_seed_with_mnemonic(16, seed, texts[IDX_PRIVKEY]);
         hd_make_xpub((const uint8_t *) seed, sizeof seed);
-    } else {
-        len = keygen(key);
-    }
-
-    // Set address heading according to coin type.
-    bitcoin_address_ref = coin->heading;
-
-    if (shamir) {
+        jpeg_init(buf, buf + sizeof buf, hd_layout);
+    } else if (shamir) {
+        int len;
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
+        len = keygen(key);  // generate regular key pair
         sss_encode(2, 3, SSS_BASE58, key, len);
-        jpeg_init(buf, buf + sizeof buf, settings.salt_type == 0 ?
-                  shamir_layout : shamir_salt1_layout);
-    } else {
         jpeg_init(buf, buf + sizeof buf,
-                  settings.hd ? hd_layout :
+                  settings.salt_type == 0 ? shamir_layout :
+                  shamir_salt1_layout);
+    } else {
+        keygen(key);        // generate regular key pair
+        jpeg_init(buf, buf + sizeof buf,
                   settings.salt_type == 0 ? main_layout :
                   salt1_layout);
     }
