@@ -237,7 +237,10 @@ int main(int argc, char *argv[])
     if (settings.hd) {
         uint64_t seed[8];
         hd_gen_seed_with_mnemonic(16, seed, texts[IDX_PRIVKEY]);
-        hd_make_xpub((const uint8_t *) seed, sizeof seed);
+        if (!hd_make_xpub((const uint8_t *) seed, sizeof seed)) {
+            fprintf(stderr, "Error in HD path.");
+            return 1;
+        }
         jpeg_init(buf, buf + sizeof buf, hd_layout);
     } else if (shamir) {
         int len;

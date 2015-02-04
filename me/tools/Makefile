@@ -21,6 +21,24 @@ check: check.c ../jpeg.c ../layout.c ../qr.c ../jpeg-data.c ../jpeg-data-ext.c \
 test: test.c ../settings.c ../../lib/xxtea.c $(SRC)
 	$(CC) $(CFLAGS) -o $@ $^
 
+run-check: check
+	./$<
+	./$< -s
+	./$< -l
+	./$< -l -s
+	./$< -1
+	./$< -1 -s
+	./$< -1 -l
+	./$< -1 -l -s
+	./$< -dd
+	./$< -dd -l
+	./$< -dd -t
+	./$< -dd -1
+	./$< -dd -1 -l
+
+run-test: test test.py
+	./$< | ./test.py
+
 clean:
 	rm -f check test
 
