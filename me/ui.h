@@ -2,7 +2,7 @@
  * User interface.
  * Button and LED handling.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *

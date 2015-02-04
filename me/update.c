@@ -1,7 +1,7 @@
 /*
  * Firmware update and configuration.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -218,6 +218,14 @@ static const char settings_txt[] =
 "# Type of public key:\r\n"
 "compressed\r\n"
 "#uncompressed\r\n"
+"\r\n"
+"# BIP-32/39 Hierarchical Deterministic Wallet:\r\n"
+"# - the defaut xpub path is BIP-44 Account 0;\r\n"
+"# - you can specify your own path as in the example below;\r\n"
+"# - maximum path length is 31 characters.\r\n"
+"# Note that HD wallet creation takes a bit longer, around 10 seconds.\r\n"
+"#hd\r\n"
+"#hd m/44'/0'/0'\r\n"
 "\r\n"
 "# Advanced feature: up to 32 bytes of your own salt in hex, e.g.:\r\n"
 "#salt1 dead beef\r\n"

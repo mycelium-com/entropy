@@ -1,7 +1,7 @@
 /*
  * Parser for settings.txt.
  *
- * Copyright 2014, 2105 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *

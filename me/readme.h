@@ -1,7 +1,7 @@
 /*
  * Contents of readme.txt.
  *
- * Copyright 2014 Mycelium SA, Luxembourg.
+ * Copyright 2014, 2015 Mycelium SA, Luxembourg.
  *
  * This file is part of Mycelium Entropy.
  *
@@ -32,7 +32,7 @@ static const char readme[] =
 "\r\n"
 "To make more, click once for a regular wallet, or twice for a 2-of-3.\r\n"
 "\r\n"
-"Please allow at least 3 seconds after unplugging your Mycelium Entropy\r\n"
+"Please allow at least 7 seconds after unplugging your Mycelium Entropy\r\n"
 "before you plug it in again.\r\n"
 "\r\n"
 "\r\n"
@@ -51,7 +51,7 @@ static const char readme[] =
 "-----------------\r\n"
 "\r\n"
 "3 blinks and a pause (repeating): no entropy collected.  This happens when\r\n"
-"the device is plugged in too soon.  Unplug it and wait three seconds.\r\n"
+"the device is plugged in too soon.  Unplug it and wait seven seconds.\r\n"
 "\r\n"
 "9 blinks and a pause (repeating): internal hardware error.\r\n"
 "\r\n"
@@ -78,7 +78,7 @@ static const char readme[] =
 "\r\n"
 "This device contains software distributed under the following conditions.\r\n"
 "\r\n"
-"Copyright 2013, 2014 Mycelium SA, Luxembourg.\r\n"
+"Copyright 2013-2015 Mycelium SA, Luxembourg.\r\n"
 "\r\n"
 "Mycelium Entropy is free software: you can redistribute it and/or modify\r\n"
 "it under the terms of the GNU General Public License as published by\r\n"

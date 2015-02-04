@@ -69,7 +69,7 @@ ASFLAGS =
 CFLAGS = 
 
 # Extra flags to use when preprocessing.
-CPPFLAGS = -D NDEBUG -I.
+CPPFLAGS = -D NDEBUG -I. -D ATMEL_SOFTWARE_FRAMEWORK=0
 
 # Extra flags to use when linking
 LDFLAGS =

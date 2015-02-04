@@ -168,7 +168,7 @@ generate_new_key:
         // HD mode does not support Shamir's secret sharing or salt yet
         cbd_num_sectors = 432 + settings.salt_type * 140;
         jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__, hd_layout);
-        prefix = "HD ";
+        prefix = "";
     } else if (mode) {
         // generate 2-of-3 Shamir's shares
         cbd_num_sectors = 928 + settings.salt_type * 80;
