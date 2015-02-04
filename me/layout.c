@@ -107,9 +107,46 @@ const struct Layout main_layout[] = {
         .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
         .pic    = small_print_fragment,
     },
+    {   // stop here if there is no salt/diceware section
+        .type   = FGM_STOP,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
+        .vstep  = JHEIGHT - 19 - 4 - 6 - 29 - 16 - 20,
+    },
+    //-------- salt ----------------------------------------------------
+    {
+        .type   = FGM_LARGE_PICTURE,
+        .vstep  = 5 + 7,
+        .pic    = cut_here_fragment,                // 5
+    },
+    //------------------------------------------------------------------
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 5 + 9,
+        .x      = 20 + QR_SIZE(4) + 4,
+        .pic    = entropy_for_verification_fragment,    // 57x7
+    },
+    {
+        .type   = FGM_QR,
+        .vstep  = 1,
+        .x      = 20,
+        .qr     = { .idx = IDX_UNSALTED, .size = QR_SIZE(4) },
+    },
+    {
+        .type   = FGM_TEXT,
+        .vstep  = 7 - 1 + 4,
+        .x      = 20 + QR_SIZE(4) + 4,
+        .text   = { .idx = IDX_UNSALTED, .width = 36 },
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 10 + 4,
+        .x      = 20 + QR_SIZE(4) + 4,
+        .pic    = key_sha_256_salt1_fragment,           // 77x7
+    },
     {
         .type   = FGM_STOP,
-        .vstep  = JHEIGHT - 19 - 4 - 6 - 29 - 16 - 20,
+        .vstep  = JHEIGHT - 51 - 19 - 4 - 6 - 29 - 16 - 20,
     },
 };
 
@@ -193,25 +230,47 @@ const struct Layout shamir_layout[] = {
         .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
+    //-------- unsalted layout: more space between sections ------------
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 13 + 4,
         .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
         .pic    = small_print_fragment,
     },
-    //------------------------------------------------------------------
     {
         .type   = FGM_LARGE_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 5 + 7,
         .pic    = cut_here_fragment,                // 5
     },
-    //------------------------------------------------------------------
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 5 + 10,
         .x      = 142,
         .pic    = private_key_fragment,             // 28x7
     },
+    //-------- salted layout: condensed sections -----------------------
+    {
+        .type   = FGM_LARGE_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 1,
+        .vstep  = 13 + 4,
+        .pic    = cut_here_fragment,                // 5
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 1,
+        .vstep  = 5 + 4,
+        .x      = 142,
+        .pic    = private_key_fragment,             // 28x7
+    },
+    //------------------------------------------------------------------
     {
         .type   = FGM_PICTURE,
         .x      = 170,
@@ -285,25 +344,47 @@ const struct Layout shamir_layout[] = {
         .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
+    //-------- unsalted layout: more space between sections ------------
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 13 + 4,
         .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
         .pic    = small_print_fragment,
     },
-    //------------------------------------------------------------------
     {
         .type   = FGM_LARGE_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 5 + 7,
         .pic    = cut_here_fragment,                // 5
     },
-    //------------------------------------------------------------------
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 5 + 10,
         .x      = 142,
         .pic    = private_key_fragment,             // 28x7
     },
+    //-------- salted layout: condensed sections -----------------------
+    {
+        .type   = FGM_LARGE_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 1,
+        .vstep  = 13 + 4,
+        .pic    = cut_here_fragment,                // 5
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 1,
+        .vstep  = 5 + 4,
+        .x      = 142,
+        .pic    = private_key_fragment,             // 28x7
+    },
+    //------------------------------------------------------------------
     {
         .type   = FGM_PICTURE,
         .x      = 170,
@@ -377,389 +458,27 @@ const struct Layout shamir_layout[] = {
         .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
         .pic    = logo_bottom_fragment,             // 66x13
     },
+    //-------- unsalted layout ends here -------------------------------
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = 13 + 4,
         .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
         .pic    = small_print_fragment,
     },
-    //------------------------------------------------------------------
     {
         .type   = FGM_STOP,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
         .vstep  = JHEIGHT - 3 * (23 + 29 + 31) - 2 * 12 - 5,
     },
-};
-
-const struct Layout salt1_layout[] = {
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(BITCOIN),
-        .vstep  = 20,
-        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
-        .pic    = bitcoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(LITECOIN),
-        .vstep  = 20,
-        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
-        .pic    = litecoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 56,
-        .pic    = address_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 156,
-        .pic    = private_key_fragment,         // 28x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 6,
-        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_top_fragment,
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 10,
-        .x      = 20,
-        .qr     = { .idx = IDX_ADDRESS, .size = QR_SIZE(3) },
-    },
-    {
-        .type   = FGM_QR,
-        .x      = JWIDTH - 29 - 40 - 20,
-        .qr     = { .idx = IDX_PRIVKEY, .size = QR_SIZE(3) },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 2,
-        .x      = JWIDTH - 20 - 36,
-        .text   = { .idx = IDX_PRIVKEY, .width = 12 },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 6,
-        .x      = 20 + 29 + 4,
-        .text   = { .idx = IDX_ADDRESS, .width = 12 },
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 18,
-        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_middle_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
-        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_bottom_fragment,             // 66x13
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 19 + 4,
-        .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
-        .pic    = small_print_fragment,
-    },
-    //------------------------------------------------------------------
-    {
-        .type   = FGM_LARGE_PICTURE,
-        .vstep  = 5 + 7,
-        .pic    = cut_here_fragment,                // 5
-    },
-    //------------------------------------------------------------------
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 5 + 9,
-        .x      = 20 + QR_SIZE(4) + 4,
-        .pic    = entropy_for_verification_fragment,    // 57x7
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 1,
-        .x      = 20,
-        .qr     = { .idx = IDX_UNSALTED, .size = QR_SIZE(4) },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 7 - 1 + 4,
-        .x      = 20 + QR_SIZE(4) + 4,
-        .text   = { .idx = IDX_UNSALTED, .width = 36 },
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 10 + 4,
-        .x      = 20 + QR_SIZE(4) + 4,
-        .pic    = key_sha_256_salt1_fragment,           // 77x7
-    },
-    {
-        .type   = FGM_STOP,
-        .vstep  = JHEIGHT - 51 - 19 - 4 - 6 - 29 - 16 - 20,
-    },
-};
-
-const struct Layout shamir_salt1_layout[] = {
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 20,
-        .x      = 142,
-        .pic    = private_key_fragment,             // 28x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 170,
-        .pic    = share_1_of_3_fragment,            // 30x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 6,
-        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_top_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(BITCOIN),
-        .vstep  = 1,
-        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
-        .pic    = bitcoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(LITECOIN),
-        .vstep  = 1,
-        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
-        .pic    = litecoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 56,
-        .pic    = address_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = JWIDTH - 73 - 19,
-        .pic    = any_two_shares_reveal_fragment,   // 74x7
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 9,
-        .x      = JWIDTH - 33 - 37 - 20,
-        .qr     = { .idx = IDX_SSS_PART(1), .size = QR_SIZE(4) },
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 2,
-        .x      = 20,
-        .qr     = { .idx = IDX_ADDRESS, .size = QR_SIZE(3) },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 0,
-        .x      = JWIDTH - 20 - 33,
-        .text   = { .idx = IDX_SSS_PART(1), .width = 11 },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 7,
-        .x      = 20 + 29 + 4,
-        .text   = { .idx = IDX_ADDRESS, .width = 12 },
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
-        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_middle_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
-        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_bottom_fragment,             // 66x13
-    },
-    //------------------------------------------------------------------
+    //-------- salt ----------------------------------------------------
     {
         .type   = FGM_LARGE_PICTURE,
         .vstep  = 13 + 4,
         .pic    = cut_here_fragment,                // 5
     },
-    //------------------------------------------------------------------
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 5 + 4,
-        .x      = 142,
-        .pic    = private_key_fragment,             // 28x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 170,
-        .pic    = share_2_of_3_fragment,            // 30x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 6,
-        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_top_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(BITCOIN),
-        .vstep  = 1,
-        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
-        .pic    = bitcoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(LITECOIN),
-        .vstep  = 1,
-        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
-        .pic    = litecoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 56,
-        .pic    = address_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = JWIDTH - 73 - 19,
-        .pic    = any_two_shares_reveal_fragment,   // 74x7
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 9,
-        .x      = JWIDTH - 33 - 37 - 20,
-        .qr     = { .idx = IDX_SSS_PART(2), .size = QR_SIZE(4) },
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 2,
-        .x      = 20,
-        .qr     = { .idx = IDX_ADDRESS, .size = QR_SIZE(3) },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 0,
-        .x      = JWIDTH - 20 - 33,
-        .text   = { .idx = IDX_SSS_PART(2), .width = 11 },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 7,
-        .x      = 20 + 29 + 4,
-        .text   = { .idx = IDX_ADDRESS, .width = 12 },
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
-        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_middle_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
-        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_bottom_fragment,             // 66x13
-    },
-    //------------------------------------------------------------------
-    {
-        .type   = FGM_LARGE_PICTURE,
-        .vstep  = 13 + 4,
-        .pic    = cut_here_fragment,                // 5
-    },
-    //------------------------------------------------------------------
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 5 + 4,
-        .x      = 142,
-        .pic    = private_key_fragment,             // 28x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 170,
-        .pic    = share_3_of_3_fragment,            // 30x7
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = 6,
-        .x      = (JWIDTH - LOGO_TOP_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_top_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(BITCOIN),
-        .vstep  = 1,
-        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
-        .pic    = bitcoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .cond_idx = COND_COIN,
-        .cond_val = COIN_BIP44(LITECOIN),
-        .vstep  = 1,
-        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
-        .pic    = litecoin_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = 56,
-        .pic    = address_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .x      = JWIDTH - 73 - 19,
-        .pic    = any_two_shares_reveal_fragment,   // 74x7
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 9,
-        .x      = JWIDTH - 33 - 37 - 20,
-        .qr     = { .idx = IDX_SSS_PART(3), .size = QR_SIZE(4) },
-    },
-    {
-        .type   = FGM_QR,
-        .vstep  = 2,
-        .x      = 20,
-        .qr     = { .idx = IDX_ADDRESS, .size = QR_SIZE(3) },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 0,
-        .x      = JWIDTH - 20 - 33,
-        .text   = { .idx = IDX_SSS_PART(3), .width = 11 },
-    },
-    {
-        .type   = FGM_TEXT,
-        .vstep  = 7,
-        .x      = 20 + 29 + 4,
-        .text   = { .idx = IDX_ADDRESS, .width = 12 },
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_TOP_FRAGMENT_HEIGHT - 19,
-        .x      = (JWIDTH - LOGO_MIDDLE_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_middle_fragment,
-    },
-    {
-        .type   = FGM_PICTURE,
-        .vstep  = LOGO_MIDDLE_FRAGMENT_HEIGHT,
-        .x      = (JWIDTH - LOGO_BOTTOM_FRAGMENT_WIDTH + 1) / 2,
-        .pic    = logo_bottom_fragment,             // 66x13
-    },
-    //------------------------------------------------------------------
-    {
-        .type   = FGM_LARGE_PICTURE,
-        .vstep  = 13 + 4,
-        .pic    = cut_here_fragment,                // 5
-    },
-    //------------------------------------------------------------------
     {
         .type   = FGM_PICTURE,
         .vstep  = 5 + 3,
@@ -882,8 +601,45 @@ const struct Layout hd_layout[] = {
         .x      = JWIDTH - 19 - SMALL_PRINT_FRAGMENT_WIDTH,
         .pic    = small_print_fragment,
     },
+    {   // stop here if there is no salt/diceware section
+        .type   = FGM_STOP,
+        .cond_idx = COND_SALT,
+        .cond_val = 0,
+        .vstep  = JHEIGHT - 20 - 22 - 58 - 4,
+    },
+    //-------- salt ----------------------------------------------------
+    {
+        .type   = FGM_LARGE_PICTURE,
+        .vstep  = 5 + 7,
+        .pic    = cut_here_fragment,                // 5
+    },
+    //------------------------------------------------------------------
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 5 + 9,
+        .x      = 20 + QR_SIZE(4) + 4,
+        .pic    = entropy_for_verification_fragment,    // 57x7
+    },
+    {
+        .type   = FGM_QR,
+        .vstep  = 1,
+        .x      = 20,
+        .qr     = { .idx = IDX_UNSALTED, .size = QR_SIZE(4) },
+    },
+    {
+        .type   = FGM_TEXT,
+        .vstep  = 7 - 1 + 4,
+        .x      = 20 + QR_SIZE(4) + 4,
+        .text   = { .idx = IDX_UNSALTED, .width = 36 },
+    },
+    {
+        .type   = FGM_PICTURE,
+        .vstep  = 10 + 4,
+        .x      = 20 + QR_SIZE(4) + 4,
+        .pic    = key_sha_256_salt1_fragment,           // 77x7
+    },
     {
         .type   = FGM_STOP,
-        .vstep  = JHEIGHT - 20 - 22 - 58 - 4,
+        .vstep  = JHEIGHT - 51 - 20 - 22 - 58 - 4,
     },
 };

@@ -203,6 +203,7 @@ int main(int argc, char *argv[])
         layout_conditions[COND_COIN] = COIN_BIP44(BITCOIN);
     else
         layout_conditions[COND_COIN] = settings.coin.bip44;
+    layout_conditions[COND_SALT] = settings.salt_type;
 
     snprintf(fname, sizeof fname, "sample%s%s%s%s.jpg",
             settings.hd ? "-hd" : "",
@@ -231,8 +232,6 @@ int main(int argc, char *argv[])
 
     check_layout(main_layout, "Main");
     check_layout(shamir_layout, "Shamir's");
-    check_layout(salt1_layout, "Salt1");
-    check_layout(shamir_salt1_layout, "Shamir with salt1");
     check_layout(hd_layout, "HD");
 
     if (settings.hd) {
@@ -245,14 +244,10 @@ int main(int argc, char *argv[])
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
         len = keygen(key);  // generate regular key pair
         sss_encode(2, 3, SSS_BASE58, key, len);
-        jpeg_init(buf, buf + sizeof buf,
-                  settings.salt_type == 0 ? shamir_layout :
-                  shamir_salt1_layout);
+        jpeg_init(buf, buf + sizeof buf, shamir_layout);
     } else {
         keygen(key);        // generate regular key pair
-        jpeg_init(buf, buf + sizeof buf,
-                  settings.salt_type == 0 ? main_layout :
-                  salt1_layout);
+        jpeg_init(buf, buf + sizeof buf, main_layout);
     }
 
     if (nblk) {

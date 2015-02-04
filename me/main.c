@@ -160,27 +160,25 @@ generate_new_key:
         layout_conditions[COND_COIN] = COIN_BIP44(BITCOIN);
     else
         layout_conditions[COND_COIN] = settings.coin.bip44;
+    layout_conditions[COND_SALT] = settings.salt_type;
 
     int mode = ui_btn_count;
     if (settings.hd) {
         // HD mode does not support Shamir's secret sharing or salt yet
         cbd_num_sectors = 432;
-        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__,
-                hd_layout);
+        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__, hd_layout);
         prefix = "HD ";
     } else if (mode) {
         // generate 2-of-3 Shamir's shares
         cbd_num_sectors = 928 + settings.salt_type * 80;
         rs_init(0x11d, 1);  // initialise GF(2^8) for Shamir
         sss_encode(2, 3, SSS_BASE58, key, len);
-        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__,
-                settings.salt_type == 0 ? shamir_layout : shamir_salt1_layout);
+        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__, shamir_layout);
         prefix = "2-of-3 ";
     } else {
         // generate regular private key in Wallet Import Format (aka SIPA)
         cbd_num_sectors = 290 + settings.salt_type * 140;
-        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__,
-                settings.salt_type == 0 ? main_layout : salt1_layout);
+        jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__, main_layout);
         prefix = "";
     }
     cbd_buf_owner = CBD_NONE;
