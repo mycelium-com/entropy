@@ -154,9 +154,12 @@ generate_new_key:
     do ; while (!xflash_ready);
 #endif
 
-    // this is sort of temporary
-    bitcoin_address_ref = settings.coin.type == LITECOIN ?
-        litecoin_address_fragment : bitcoin_address_fragment;
+    // set up coin condition for the layout;
+    // treat BITCOIN_TESTNET same as BITCOIN
+    if (settings.coin.bip44 == COIN_BIP44(BITCOIN_TESTNET))
+        layout_conditions[COND_COIN] = COIN_BIP44(BITCOIN);
+    else
+        layout_conditions[COND_COIN] = settings.coin.bip44;
 
     int mode = ui_btn_count;
     if (settings.hd) {

@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include "qr.h"
 #include "jpeg-data.h"
+#include "settings.h"
 #include "layout.h"
 
 /*
@@ -30,12 +31,29 @@
  * The recommended margins are 20 on each side.
  */
 
+uint8_t layout_conditions[COND_NUM_ELEMENTS];
+
 const struct Layout main_layout[] = {
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 20,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,         // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 20,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -114,10 +132,25 @@ const struct Layout shamir_layout[] = {
         .pic    = logo_top_fragment,
     },
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 1,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,             // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 1,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -191,10 +224,25 @@ const struct Layout shamir_layout[] = {
         .pic    = logo_top_fragment,
     },
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 1,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,             // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 1,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -268,10 +316,25 @@ const struct Layout shamir_layout[] = {
         .pic    = logo_top_fragment,
     },
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 1,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,             // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 1,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -329,10 +392,25 @@ const struct Layout shamir_layout[] = {
 
 const struct Layout salt1_layout[] = {
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 20,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,         // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 20,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -442,10 +520,25 @@ const struct Layout shamir_salt1_layout[] = {
         .pic    = logo_top_fragment,
     },
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 1,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,             // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 1,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -513,10 +606,25 @@ const struct Layout shamir_salt1_layout[] = {
         .pic    = logo_top_fragment,
     },
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 1,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,             // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 1,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -584,10 +692,25 @@ const struct Layout shamir_salt1_layout[] = {
         .pic    = logo_top_fragment,
     },
     {
-        .type   = FGM_PICTURE_BY_REF,
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 1,
-        .x      = 38,
-        .picref = &bitcoin_address_ref,             // 38x5
+        .x      = 56 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 1,
+        .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 56,
+        .pic    = address_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -677,9 +800,24 @@ const struct Layout shamir_salt1_layout[] = {
 const struct Layout hd_layout[] = {
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(BITCOIN),
         .vstep  = 20,
-        .x      = 20 + (28*3 - BITCOIN_ADDRESS_FRAGMENT_WIDTH + 1)/2,
-        .pic    = bitcoin_account_fragment,
+        .x      = 61 - BITCOIN_FRAGMENT_WIDTH,
+        .pic    = bitcoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(LITECOIN),
+        .vstep  = 20,
+        .x      = 61 - LITECOIN_FRAGMENT_WIDTH,
+        .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .x      = 61,
+        .pic    = account_fragment,
     },
     {
         .type   = FGM_PICTURE,

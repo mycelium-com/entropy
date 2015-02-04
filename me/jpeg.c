@@ -107,7 +107,7 @@ struct checkpoint {
 static struct {
     struct fgm_ctl ctl;
     struct pic_state state;
-} pic_fragments[3];
+} pic_fragments[4];
 
 static struct {
     struct fgm_ctl ctl;
@@ -551,6 +551,10 @@ static bool jpeg_more(void)
 {
     struct fgm_ctl **fgm;
 
+    // skip fragments whose condition is false
+    while (layout_conditions[layout->cond_idx] != layout->cond_val)
+        layout++;
+
     if (chain->next == 0) {
         // no active fragments; output whitespace until the next layout item
         int gap = layout->vstep - dy;
@@ -565,11 +569,19 @@ static bool jpeg_more(void)
         dy += gap;
     }
 
-    while (dy == layout->vstep) {
-        // next layout item becomes active
+    for (;;) {
         const uint16_t *pic;
 
-        while (layout->type == FGM_LARGE_PICTURE) {
+        // check condition and skip if necessary
+        while (layout_conditions[layout->cond_idx] != layout->cond_val)
+            layout++;
+
+        if (dy != layout->vstep)
+            break;
+
+        // next layout item becomes active
+
+        if (layout->type == FGM_LARGE_PICTURE) {
             pic = layout++->pic;
             // pic points at the body, which consists of uint16_t fields:
             //  addr_l    - address in serial flash, lower word
@@ -581,26 +593,22 @@ static bool jpeg_more(void)
             unsigned addr = pic[0] | pic[1] << 16;      // address in flash
             int vgap = layout->vstep - pic[2];          // step minus height
             copy_bitstream_from_flash(addr, pic[3], pic[4], pic[5], vgap * JWIDTH);
+            dy = layout->vstep;
+            return true;
         }
-
-        if (layout->type == FGM_STOP) {
-            finalise_jpeg();
-            return false;
-        }
-
-        dy = 0;
 
         struct fgm_ctl *new_item = &end;
         uint16_t shift = 0;
 
+        dy = 0;
+
         switch (layout->type) {
-        case FGM_PICTURE_BY_REF:
-            pic = *layout->picref;
-            goto fgm_picture;
+        case FGM_STOP:
+            finalise_jpeg();
+            return false;
 
         case FGM_PICTURE:
             pic = layout->pic;
-fgm_picture:
             // pic points at body of uint16_t fields:
             //  addr_l              - address in flash, lower word
             //  addr_h              - address in flash, higher word

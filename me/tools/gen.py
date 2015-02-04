@@ -32,10 +32,10 @@ DPI         = 220
 
 # Font for section headers
 FONT        = "/System/Library/Fonts/Optima.ttc", 44
-TEXTS       = ("Bitcoin Address", "Private Key", "Share 1 of 3", "Share 2 of 3",
+TEXTS       = ("Bitcoin", "Litecoin", "Address", "Account",
+               "Private Key", "Share 1 of 3", "Share 2 of 3",
                "Share 3 of 3", "(any two shares reveal the key)",
-               "Bitcoin Account", "Seed",
-               "Litecoin Address",
+               "Seed",
                "Entropy for verification:", "Key = SHA-256(salt1 || Entropy)")
 
 # Small font and text for the small print at the bottom

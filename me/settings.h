@@ -47,8 +47,10 @@ extern struct Settings {
 // The first byte is avb, followed by bip44.
 #if __BYTE_ORDER == __LITTLE_ENDIAN
 #define COIN_TYPE(avb, bip44)   ((avb) | (bip44) << 8)
+#define COIN_BIP44(type)        ((type) >> 8)
 #else
 #define COIN_TYPE(avb, bip44)   ((avb) << 8 | (bip44))
+#define COIN_BIP44(type)        ((type) & 0xff)
 #endif
 enum {
     BITCOIN         = COIN_TYPE(0, 0),

@@ -78,6 +78,9 @@ static bool check_layout(const struct Layout *layout, const char *name)
     unsigned height = 0;
 
     do {
+        // skip fragments whose condition is false
+        while (layout_conditions[layout->cond_idx] != layout->cond_val)
+            layout++;
         height += layout->vstep;
     } while (layout++->type != FGM_STOP);
 
@@ -120,13 +123,12 @@ int main(int argc, char *argv[])
     static const struct {
         uint16_t coin;
         const char *suffix;
-        const uint16_t *heading;
     } coins[] = {
-        { BITCOIN,          "",         bitcoin_address_fragment  },
-        { BITCOIN_TESTNET,  "-testnet", bitcoin_address_fragment  },
-        { LITECOIN,         "-ltc",     litecoin_address_fragment },
-        { PEERCOIN,         "-peer",    bitcoin_address_fragment  },    // n/a
-        { DOGECOIN,         "-doge",    bitcoin_address_fragment  },    // n/a
+        { BITCOIN,          ""         },
+        { BITCOIN_TESTNET,  "-testnet" },
+        { LITECOIN,         "-ltc"     },
+        { PEERCOIN,         "-peer"    },    // n/a
+        { DOGECOIN,         "-doge"    },    // n/a
     }, *coin;
 
     if (argc == 2 && strcmp(argv[1], "--help") == 0) {
@@ -195,10 +197,18 @@ int main(int argc, char *argv[])
     coin = &coins[testnet + 2 * litecoin + 3 * peercoin];
     settings.coin.type = coin->coin;
 
-    snprintf(fname, sizeof fname, "sample%s%s%s.jpg",
+    // set up coin condition for the layout;
+    // treat BITCOIN_TESTNET same as BITCOIN
+    if (settings.coin.bip44 == COIN_BIP44(BITCOIN_TESTNET))
+        layout_conditions[COND_COIN] = COIN_BIP44(BITCOIN);
+    else
+        layout_conditions[COND_COIN] = settings.coin.bip44;
+
+    snprintf(fname, sizeof fname, "sample%s%s%s%s.jpg",
             settings.hd ? "-hd" : "",
             coin->suffix,
-            shamir ? "-sss" : "");
+            shamir ? "-sss" : "",
+            settings.salt_type ? "-salt" : "");
     FILE *f = fopen(fname, "wb");
     if (!f) {
         perror(fname);
@@ -224,9 +234,6 @@ int main(int argc, char *argv[])
     check_layout(salt1_layout, "Salt1");
     check_layout(shamir_salt1_layout, "Shamir with salt1");
     check_layout(hd_layout, "HD");
-
-    // Set address heading according to coin type.
-    bitcoin_address_ref = coin->heading;
 
     if (settings.hd) {
         uint64_t seed[8];

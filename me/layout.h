@@ -26,7 +26,6 @@
 enum {
     FGM_LARGE_PICTURE,
     FGM_PICTURE,
-    FGM_PICTURE_BY_REF,
     FGM_QR,
     FGM_TEXT,
     FGM_STOP,
@@ -43,10 +42,21 @@ enum {
 // For Shamir's Secret Sharing part n of m
 #define IDX_SSS_PART(n) (n)
 
+// Conditional execution
+enum {
+    COND_TRUE,          // unset cond_idx and cond_val => true
+    COND_COIN,          // index of the coin type condition
+    COND_SALT,          // index of the salt type condition
+    COND_NUM_ELEMENTS   // number of condition variables
+};
+extern uint8_t layout_conditions[COND_NUM_ELEMENTS];
+
 struct Layout {
-    uint8_t  type;      // FGM_xxx
-    uint8_t  vstep;     // vertical difference from previous fragment
-    uint16_t x;         // horizontal position
+    uint8_t  type;          // FGM_xxx
+    uint8_t  vstep;         // vertical difference from previous fragment
+    uint8_t  x;             // horizontal position
+    uint8_t  cond_idx:4;    // index of the condition variable
+    uint8_t  cond_val:4;    // condition value for this fragment
 
     union {
         // picture fragment (small or large)
@@ -73,6 +83,5 @@ extern const struct Layout shamir_layout[];
 extern const struct Layout salt1_layout[];
 extern const struct Layout shamir_salt1_layout[];
 extern const struct Layout hd_layout[];
-const uint16_t *bitcoin_address_ref;
 
 #endif
