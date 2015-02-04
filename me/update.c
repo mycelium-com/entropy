@@ -61,10 +61,6 @@ static DWORD fattime = (BUILD_YEAR - 1980) << 25
                      | BUILD_MIN << 5
                      | BUILD_SEC >> 1;
 
-enum {
-    RESERVED_BLOCKS = 128,  // number of blocks to reserve at the end of flash
-};
-
 // Check filesystem parameters.
 // Our update applet only works with FAT12 with clusters not larger than
 // 16 kB.  If the user has re-formatted the drive, FatFs might still
@@ -90,14 +86,14 @@ void update_run(void)
     FATFS fs;
 
     blkbuf_init();
-    fs_init(&fs_param, xflash_num_blocks - RESERVED_BLOCKS, false);
+    fs_init(&fs_param, xflash_num_blocks - XFLASH_RESERVED_BLOCKS, false);
     f_mount(0, &fs);
     detect_hardware();
     if (!make_files() || !fs_param_ok(&fs)) {
         // errors here probably mean the file system is messed up;
         // let's destroy it and make a fresh one
         f_mount(0, 0);
-        fs_init(&fs_param, xflash_num_blocks - RESERVED_BLOCKS, true);
+        fs_init(&fs_param, xflash_num_blocks - XFLASH_RESERVED_BLOCKS, true);
         f_mount(0, &fs);
         make_files();
     }

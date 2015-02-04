@@ -67,7 +67,7 @@ Ctrl_status xfb_usb_read_10(uint32_t addr, uint16_t nb_sector)
 
 Ctrl_status xfb_usb_write_10(uint32_t addr, uint16_t nb_sector)
 {
-    if (addr + nb_sector > xflash_num_blocks)
+    if (addr + nb_sector > xflash_num_blocks - XFLASH_RESERVED_BLOCKS)
         return CTRL_FAIL;
 
     for (; nb_sector; --nb_sector) {

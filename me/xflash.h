@@ -56,6 +56,9 @@ enum {
 
     // BIP-39 word list.
     XFLASH_WORDLIST_OFFSET      = 65536,
+
+    // Number of blocks to reserve at the end of flash.
+    XFLASH_RESERVED_BLOCKS      = 128,
 };
 
 #endif
