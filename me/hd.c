@@ -31,7 +31,7 @@
 #include "data.h"
 #include "layout.h"
 #include "xflash.h"
-#include "rng.h"
+#include "keygen.h"
 #include "hd.h"
 
 // We can temporarily use the memory at _estack for the word list.
@@ -68,8 +68,8 @@ bool hd_gen_seed_with_mnemonic(int ent, uint64_t seed[8], char *mnemonic)
     }
     puts("Wordlist check OK.");
 
-    // generate a random number; we use the first 'ent' bytes
-    rng_next(rnum.w);
+    // generate a (possibly salted) random number; we use the first 'ent' bytes
+    keygen_get_entropy(rnum.w);
     // append BIP-39 checksum
     sha256_hash(checksum.hash, rnum.b, ent);
     rnum.b[ent] = checksum.cs;
@@ -123,10 +123,16 @@ bool hd_gen_seed_with_mnemonic(int ent, uint64_t seed[8], char *mnemonic)
     return true;
 }
 
-// TODO: print error -> xpub if wrong
-
 #define HARDENED    0x80000000ul
 
+// Generate xpub for the HD node at settings.hd_path.
+// If hd_path is empty, set it to BIP-44 Account 0: m/44'/coin'/0'.
+// Return false if either:
+//  - hd_path is incorrect; or
+//  - the seed or one of the keys on the path is invalid.
+// Since the latter is extremely unlikely (less than 1 in 2**123),
+// the two errors are combined.  Invalid seed will be indicated like
+// an incorrect hd_path.
 bool hd_make_xpub(const uint8_t *seed, int len)
 {
     static const uint8_t xpub_version[2][4] = { // version bytes for serialisation
@@ -203,7 +209,7 @@ bool hd_make_xpub(const uint8_t *seed, int len)
 
             case '\'':
                 if (!number_seen || (index & HARDENED))
-                    return false;
+                    return false;   // illegal hardening (')
                 index |= HARDENED;
                 continue;
 

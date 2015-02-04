@@ -144,7 +144,8 @@ generate_new_key:
     if (settings.hd) {
         uint64_t seed[8];
         hd_gen_seed_with_mnemonic(16, seed, texts[IDX_PRIVKEY]);
-        hd_make_xpub((const uint8_t *) seed, sizeof seed);
+        if (!hd_make_xpub((const uint8_t *) seed, sizeof seed))
+            ui_error(UI_E_BAD_CONFIG);
         len = 0;    // suppress uninitialised variable warning
     } else {
         len = keygen(key);
@@ -165,7 +166,7 @@ generate_new_key:
     int mode = ui_btn_count;
     if (settings.hd) {
         // HD mode does not support Shamir's secret sharing or salt yet
-        cbd_num_sectors = 432;
+        cbd_num_sectors = 432 + settings.salt_type * 140;
         jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__, hd_layout);
         prefix = "HD ";
     } else if (mode) {

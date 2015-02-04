@@ -27,5 +27,9 @@
 // Return key length (33 or 34), or 0 on failure.
 int keygen(uint8_t key_buf[]);
 
+// Get a random number and salt it if requested.
+// Store the result into ent[8].
+void keygen_get_entropy(uint32_t ent[8]);
+
 #endif
 

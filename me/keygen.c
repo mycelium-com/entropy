@@ -31,7 +31,29 @@
 #include "settings.h"
 #include "keygen.h"
 
+// Get a random number and salt it if requested.
+void keygen_get_entropy(uint32_t ent[8])
+{
+    // for salting
+    struct {
+        uint8_t  salt[32];
+        uint32_t rnum[8];
+    } mixer;
 
+    switch (settings.salt_type) {
+    case 1:
+        rng_next(mixer.rnum);
+        hexlify(texts[IDX_UNSALTED] - 1, (uint8_t *) mixer.rnum, 32);
+        uint8_t *mix = mixer.salt + sizeof mixer.salt - settings.salt_len;
+        memcpy(mix, settings.salt, settings.salt_len);
+        sha256_hash(ent, mix, mixer.salt + sizeof mixer - mix);
+        break;
+    default:
+        rng_next(ent);
+    }
+}
+
+// Generate private key and address.
 int keygen(uint8_t key_buf[])
 {
     int len;
@@ -49,26 +71,10 @@ int keygen(uint8_t key_buf[])
     bignum256 tkey;     // private key in bignum format
     curve_point pub;    // public key
 
-    // for salting
-    struct {
-        uint8_t  salt[32];
-        uint32_t rnum[8];
-    } mixer;
-
     // generate a random 256-bit number;
     // try again if it is >= field prime
     do {
-        switch (settings.salt_type) {
-        case 1:
-            rng_next(mixer.rnum);
-            hexlify(texts[IDX_UNSALTED] - 1, (uint8_t *) mixer.rnum, 32);
-            uint8_t *mix = mixer.salt + sizeof mixer.salt - settings.salt_len;
-            memcpy(mix, settings.salt, settings.salt_len);
-            sha256_hash(key.words, mix, mixer.salt + sizeof mixer - mix);
-            break;
-        default:
-            rng_next(key.words);
-        }
+        keygen_get_entropy(key.words);
         bn_read_be((uint8_t *)key.words, &tkey);
     } while (!bn_is_less(&tkey, &order256k1));
 
