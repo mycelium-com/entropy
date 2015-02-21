@@ -178,7 +178,7 @@ generate_new_key:
         prefix = "2-of-3 ";
     } else {
         // generate regular private key in Wallet Import Format (aka SIPA)
-        cbd_num_sectors = 290 + settings.salt_type * 140;
+        cbd_num_sectors = 312 + settings.salt_type * 140;
         jpeg_init(_estack.stream_buf, (uint8_t *) &__ram_end__, main_layout);
         prefix = "";
     }
