@@ -213,6 +213,7 @@ static const char settings_txt[] =
 "# Type of cryptocurrency / network / coin:\r\n"
 "coin Bitcoin\r\n"
 "#coin Litecoin\r\n"
+"#coin Peercoin\r\n"
 "#coin testnet\r\n"
 "\r\n"
 "# Type of public key:\r\n"
