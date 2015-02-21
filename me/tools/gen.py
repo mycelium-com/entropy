@@ -32,7 +32,7 @@ DPI         = 220
 
 # Font for section headers
 FONT        = "/System/Library/Fonts/Optima.ttc", 44
-TEXTS       = ("Bitcoin", "Litecoin", "Address", "Account",
+TEXTS       = ("Bitcoin", "Litecoin", "Peercoin", "Address", "Account",
                "Private Key", "Share 1 of 3", "Share 2 of 3",
                "Share 3 of 3", "(any two shares reveal the key)",
                "Seed",

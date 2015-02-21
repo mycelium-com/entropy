@@ -87,6 +87,9 @@ int parse_settings(struct Raw_public_key keys[], int len)
         { .token = "testnet",   .code = COIN, .value = BITCOIN_TESTNET },
         { .token = "litecoin",  .code = COIN, .value = LITECOIN },
         { .token = "ltc",       .code = COIN, .value = LITECOIN },
+        { .token = "peercoin",  .code = COIN, .value = PEERCOIN },
+        { .token = "ppcoin",    .code = COIN, .value = PEERCOIN },
+        { .token = "ppc",       .code = COIN, .value = PEERCOIN },
         { 0 }
     };
     static const struct Token_table commands[] = {

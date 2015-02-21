@@ -52,6 +52,14 @@ const struct Layout main_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(PEERCOIN),
+        .vstep  = 20,
+        .x      = 56 - PEERCOIN_FRAGMENT_WIDTH,
+        .pic    = peercoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
         .x      = 56,
         .pic    = address_fragment,
     },
@@ -186,6 +194,14 @@ const struct Layout shamir_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(PEERCOIN),
+        .vstep  = 1,
+        .x      = 56 - PEERCOIN_FRAGMENT_WIDTH,
+        .pic    = peercoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
         .x      = 56,
         .pic    = address_fragment,
     },
@@ -300,6 +316,14 @@ const struct Layout shamir_layout[] = {
     },
     {
         .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(PEERCOIN),
+        .vstep  = 1,
+        .x      = 56 - PEERCOIN_FRAGMENT_WIDTH,
+        .pic    = peercoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
         .x      = 56,
         .pic    = address_fragment,
     },
@@ -411,6 +435,14 @@ const struct Layout shamir_layout[] = {
         .vstep  = 1,
         .x      = 56 - LITECOIN_FRAGMENT_WIDTH,
         .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(PEERCOIN),
+        .vstep  = 1,
+        .x      = 56 - PEERCOIN_FRAGMENT_WIDTH,
+        .pic    = peercoin_fragment,
     },
     {
         .type   = FGM_PICTURE,
@@ -532,6 +564,14 @@ const struct Layout hd_layout[] = {
         .vstep  = 20,
         .x      = 61 - LITECOIN_FRAGMENT_WIDTH,
         .pic    = litecoin_fragment,
+    },
+    {
+        .type   = FGM_PICTURE,
+        .cond_idx = COND_COIN,
+        .cond_val = COIN_BIP44(PEERCOIN),
+        .vstep  = 20,
+        .x      = 61 - PEERCOIN_FRAGMENT_WIDTH,
+        .pic    = peercoin_fragment,
     },
     {
         .type   = FGM_PICTURE,
