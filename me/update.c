@@ -79,7 +79,7 @@ void update_run(void)
         .fdisk      = true,             // make a partitioned volume
         .clu_sect   = 8,                // cluster is the flash erase unit
         .align      = 8,                // align data to flash erase units
-        .label      = "MYCELIUM FW",    // volume label
+        .label      = "ME-CONFIG  ",    // volume label
         .read_ptr   = blkbuf_read_ptr,  // device read function
         .write_ptr  = blkbuf_write_ptr, // device write function
     };
@@ -176,7 +176,7 @@ static const char readme_txt[] =
 "   and/or\r\n"
 "   to change settings: edit settings.txt with a plain text editor.\r\n"
 "2. Instruct your computer to eject, unmount, or to safely remove the\r\n"
-"   'MYCELIUM FW' volume.\r\n"
+"   'ME-CONFIG' volume.\r\n"
 "3. Click the button to commence the update and to check configuration.\r\n"
 "4. Rapid flashing of the LED indicates that an operation is in progress.\r\n"
 "   Do not disturb the device.\r\n"

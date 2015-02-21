@@ -340,7 +340,7 @@ static void make_fs(void)
         .fdisk      = false,            // make a non-partitioned volume
         .clu_sect   = CLU_SECT,         // cluster size in sectors
         .align      = 1,                // no alignment
-        .label      = "MYCELIUM   ",    // volume label
+        .label      = "ENTROPY    ",    // volume label
         .read_ptr   = read_ptr,         // device read function
         .write_ptr  = write_ptr,        // device write function
     };
