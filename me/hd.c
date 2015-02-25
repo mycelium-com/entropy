@@ -135,9 +135,10 @@ bool hd_gen_seed_with_mnemonic(int ent, uint64_t seed[8], char *mnemonic)
 // an incorrect hd_path.
 bool hd_make_xpub(const uint8_t *seed, int len)
 {
-    static const uint8_t xpub_version[2][4] = { // version bytes for serialisation
-        { 0x04, 0x88, 0xB2, 0x1E }, // mainnet, public
-        { 0x04, 0x35, 0x87, 0xCF }  // testnet, public
+    static const uint8_t xpub_version[3][4] = { // version bytes for serialisation
+        { 0x04, 0x88, 0xB2, 0x1E }, // mainnet
+        { 0x04, 0x35, 0x87, 0xCF }, // testnet
+        { 0x01, 0x9d, 0xa4, 0x62 }, // Litecoin
     };
     union {
         struct {                    // buffer for input to HMAC-SHA512
@@ -178,7 +179,7 @@ bool hd_make_xpub(const uint8_t *seed, int len)
     sha512_hmac(node.hash, (const uint8_t *) "Bitcoin seed", 12, seed, len);
     bn_read_be(node.kadd, &priv);
     if (!bn_is_less(&priv, &order256k1) || bn_is_zero(&priv))
-        return false;               // FIXME: invalid seed (extremely unlikely)
+        return false;               // invalid seed (extremely unlikely)
 
     // if settings.hd_path is not provided, make it BIP-44 Account 0
     if (!*p)
@@ -243,7 +244,7 @@ bool hd_make_xpub(const uint8_t *seed, int len)
             bn_addmod(&priv, &add, &order256k1);
             // check validity
             if (!bn_is_less(&add, &order256k1) || bn_is_zero(&priv))
-                return false;   // FIXME: invalid key (probability lower than 1 in 2**127)
+                return false;   // invalid key (probability lower than 1 in 2**127)
 
             number_seen = false;
             depth++;
@@ -273,7 +274,10 @@ bool hd_make_xpub(const uint8_t *seed, int len)
     // fill other fields
     node.xpub.depth = depth;
     node.xpub.child_num_be = cpu_to_be32(index);
-    memcpy(node.xpub.version, xpub_version[settings.coin.bip44 == 1], 4);
+    uint8_t xpub = settings.coin.bip44;     // index of the xpub magic prefix
+    if (xpub > sizeof xpub_version / sizeof xpub_version[0])
+        xpub = 0;                           // use normal BIP-32 xpub by default
+    memcpy(node.xpub.version, xpub_version[xpub], 4);
 
     // compute the current node's public key and serialise it into xpub buffer
     scalar_multiply(&priv, &pub);
