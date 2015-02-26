@@ -26,7 +26,7 @@ echo "<" $USB $DEVNAME $1 $ID_MODEL >> $LOG
 if [ $ON_CHIP -lt 500 ]; then
 	dd if=factory.bin of=$DEVNAME seek=32
 else
-	dd if=me-1.0.bin of=$DEVNAME seek=32
+	dd if=me-1.1.bin of=$DEVNAME seek=32
 fi
 ./ifp.py $DEVNAME $1 $ID_MODEL
 echo "  $USB" $DEVNAME ">" >> $LOG

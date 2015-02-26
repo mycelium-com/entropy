@@ -8,8 +8,8 @@
  */
 
 #define MAGIC           FW_MAGIC_ENTROPY
-#define VERSION         "1.0"
-#define VERSION_CODE    5
+#define VERSION         "1.1"
+#define VERSION_CODE    6
 #define FLAVOUR_CODE    FW_FLAVOUR_MYCELIUM
 
 // Hardware requirements:
