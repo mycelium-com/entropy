@@ -56,11 +56,12 @@ uploading a compromised image.
 
 === Un-bricking
 
-After flashing a botched image, entering the normal update and configuration mode
-can be problematic.  Should this happen, hold the button for 5 seconds while plugging
-the device in.  The device will enter its bootloader in firmware recovery mode and
-attach a volume named `RECOVERY`.  Follow instructions in `readme.txt` on this volume.
-Note that this method will not check any signatures.
+After flashing a botched image, entering the normal update and configuration
+mode can be problematic.  Should this happen, hold the button for 5 seconds
+while plugging the device in.  The device will enter its bootloader in firmware
+recovery mode and attach a volume named `BOOTLOADER`.  Follow instructions in
+`readme.txt` on this volume.  Note that this method will not check any
+signatures.
 
 == Shamir's Secret Sharing
 

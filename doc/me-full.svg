@@ -9,9 +9,9 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    version="1.1"
-   width="2500"
+   width="2120"
    height="864"
-   viewBox="-700 500 2500 864"
+   viewBox="-320 500 2120 864"
    id="svg2">
   <defs
      id="defs4">
@@ -243,13 +243,13 @@
        id="radialGradient3968"
        xlink:href="#linearGradient3925"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.971831,2.4288333e-7,-2.775809e-7,2.2535209,-349.85867,-2152.1085)" />
+       gradientTransform="matrix(1.971831,2.4288333e-7,-2.775809e-7,2.2535209,-349.85867,-2532.1085)" />
     <linearGradient
        id="linearGradient3973"
        x1="290"
-       y1="1590"
+       y1="1210"
        x2="280"
-       y2="1634"
+       y2="1254"
        gradientUnits="userSpaceOnUse">
       <stop
          style="stop-color:#dddaa6;stop-opacity:1;"
@@ -263,9 +263,9 @@
     <linearGradient
        id="linearGradient3981"
        x1="435"
-       y1="1590"
+       y1="1210"
        x2="430"
-       y2="1634"
+       y2="1254"
        gradientUnits="userSpaceOnUse">
       <stop
          style="stop-color:#dddaa6;stop-opacity:1;"
@@ -340,16 +340,18 @@
        width="280"
        height="320"
        x="220"
-       y="1432.3622"
+       y="1052.3622"
        id="rect3155"
        style="fill:url(#radialGradient3968);fill-opacity:1;fill-rule:evenodd;stroke:#e6e4bd;stroke-width:8;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <rect
        width="400"
-       height="1100"
+       height="720"
        x="160"
        y="332.36218"
        id="rect2990"
        style="fill:url(#linearGradient5266);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-opacity:1" />
+    <image xlink:href="logo.png" x="238" y="509" width="244" height="230"
+       opacity="0.8" preserveAspectRatio="none" />
     <path
        d="M 484.76625,150.95683 A 130,124.7447 0 0 1 254.05883,148.78685"
        transform="matrix(1,0,0,-1,-10,439.46906)"
@@ -368,14 +370,14 @@
        width="50"
        height="40"
        x="260"
-       y="1592.3622"
+       y="1212.3622"
        id="rect3933"
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient3973);stroke-width:4;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;stroke-linejoin:round" />
     <rect
        width="50"
        height="40"
        x="410"
-       y="1592.3622"
+       y="1212.3622"
        id="rect3943"
        style="fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:url(#linearGradient3981);stroke-width:4;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round" />
   </g>
