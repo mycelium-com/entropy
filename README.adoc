@@ -9,7 +9,7 @@ The main firmware is in the `me` sub-directory.  The rest is auxiliary component
 * GCC-compatible toolchain for ARM^(R)^ Cortex^(R)^-M processor family +
   (such as https://launchpad.net/gcc-arm-embedded[GNU Tools for ARM Embedded Processors])
 * Atmel^(R)^ Software Framework (http://www.atmel.com/tools/avrsoftwareframework.aspx[ASF])
-  version 3.18 or newer
+  version 3.18 (exactly)
 * GNU Make
 * GNU Bash
 * AWK, sed and xxd utilities
