@@ -326,7 +326,7 @@ static bool make_files(void)
             n += sprintf(buf + n, " %s", BOARD_NAME);
 #if BOARD == USER_BOARD
             if (hardware_descr.code[0] != HW_SAM4L4
-             || xflash_id != 0x16BA20)
+             || xflash_id != 0x1320C2)
                 n += sprintf(buf + n, " prototype");
 #endif
             break;
