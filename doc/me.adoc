@@ -15,8 +15,8 @@
 </div>
 ++++
 
-Your cute little new toy provides a very secure way to print paper wallets.
-Still, the security of a system is--at best--that of its weakest link.
+Your cute little new device provides a very secure way to print paper wallets.
+However, the security of a system is--at best--only as good as its weakest link.
 So please observe the following words of caution before you begin:
 [WARNING]
 ====
@@ -31,19 +31,20 @@ before use.
 .Printing a Bitcoin wallet:
 . Insert Mycelium Entropy into your printer's front USB port, the one typically
 used to print photos from thumb drives and USB cameras.
-. When paper wallet image is detected, select the image and hit _print_.
+. When the paper wallet image is detected, select the image and hit _print_.
 
 IMPORTANT: After printing is complete, it is recommended to cycle your printer's
 power before reconnecting it to clear any image cache that may be left in the
 printer's memory.
 
-If you wish to create a new paper wallet, press and release the button on your
+If you wish to create a new paper wallet, push the button on your
 Entropy device, and wait a few seconds for your printer to detect a new image.
 
-NOTE: When the device is unplugged and then plugged in again too soon, it will
-not be able to collect high quality entropy for you.  In this case it refuses to
-generate a wallet and indicates this by repeating a series of three blinks.
-Please allow a few seconds between removing and re-inserting your device.
+NOTE: If the device is unplugged and then plugged in again too soon, it will
+not be able to collect enough high quality entropy.  In this case it will
+refuse to generate a wallet and indicate this by flashing a series of three
+blinks.  Please wait a few seconds between removing and re-inserting your
+device.
 
 To create a 2-of-3 split key wallet, briefly press the button right after
 inserting the device into your printer. This will create a Bitcoin address with
@@ -54,7 +55,7 @@ wallets.
 
 === Indications ===
 
-Mycelium Entropy uses its LED to tell you how it is doing.  Move your mouse
+Mycelium Entropy uses its LED to tell you its status.  Move your mouse
 over, or touch the table below to see these notifications in action.
 
 [role=ui_leds, cols="^.^2,^.^1,5"]
@@ -99,15 +100,14 @@ an attacker.
 This method is commonly known as _Shamir's 2-of-3 Secret Sharing Scheme_.
 It is implemented according to the specification at
 https://github.com/cetuscetus/btctool/blob/bip/bip-xxxx.mediawiki.
-Funds from a split wallet can be spent with Mycelium Bitcoin Wallet for
-Android(TM).  _Android is a trademark of Google Inc._
+Funds from a split wallet can be spent with Mycelium Bitcoin Wallet.
 
 Mycelium Entropy does not currently support this scheme with Hierarchical
 Deterministic wallets.
 
 === Motivation ===
 
-Secure longterm backup and storage of secrets is of particular importance to
+Secure long-term backup and storage of secrets is of particular importance to
 Bitcoin users. So far various techniques have been used including storing plain
 text private keys and password encrypted private keys on paper.
 
@@ -132,43 +132,42 @@ flexibility.
 Bitcoin supports two multi-signature schemes
 (link:https://github.com/bitcoin/bips/blob/master/bip-0011.mediawiki[BIP-11],
 link:https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki[BIP-16]), in
-which redeeming transaction outputs requires signatures by multiple private
-keys.
+which redeeming a transaction requires signatures by multiple private keys.
 
-Secret sharing is not a replacement for multi-sig transactions. Rather it provides
-a secure mechanism for storing and protecting private keys, which in turn can be
-used for multi-signature or classic transactions.
+Secret sharing is not a replacement for multi-sig transactions.  Rather, it
+provides a secure mechanism for storing and protecting private keys, which in
+turn can be used for multi-signature or classic transactions.
 
 == Security ==
 
-An ordinary application running on a regular computer can read files off a USB
-stick and transmit them over the Internet.  Such an application need not look
+An ordinary application running on a regular computer can read files from a USB
+drive and transmit them over the Internet.  Such an application need not look
 like a “virus”, and the computer need not be “infected” for that to happen.
 That's why it is highly inadvisable to print Mycelium Entropy wallets intended
 for any serious amounts through a computer--unless that computer will _never_ be
-connected to the Internet and will _always_ be physically secure, and you know
+connected to the Internet, will _always_ be physically secure, and you know
 what you are doing.
 
-Please print your wallets directly from your Entropy onto a printer.
+Please print your wallets directly on a printer from your Entropy.
 
 It is, of course, perfectly safe to plug Mycelium Entropy into a computer.
 While the wallets generated this way should be considered compromised and should
 only be used for experiments, the device itself is not under any threat.  Even
-a computer brimming with malware cannot compromise any previous or future
+a computer full of malware cannot compromise any previous or future
 wallets from this device.
 _There are certain simple precautions that must be followed in the
 Configuration and Firmware Update mode;_ they are described in the corresponding
 section of this manual.
 
-However, all printers are not created equal.
+However, please keep in mind that some printers are more secure than others.
 
-.Printers without hard drive:
+.Printers without a hard drive:
 Pretty much any home/personal printer will not have a hard drive, but most will
 have some kind of memory installed. The type of printer, as well as the model,
 will determine how much, if any, memory is installed.
 
 NOTE: Even old printers (laser, dot matrix, inkjet, etc.) had some kind of
-memory that they used for some data storage for printing.
+memory that they used for storing data while printing.
 
 Most memory that is in home/personal printers only hold the data for the current
 print job from anywhere from a few lines to a few pages, as the job is being
@@ -181,12 +180,13 @@ NOTE: In some cases the printer may be using volatile memory with a battery
 backup.  If it is, this should be mentioned in the user guide. In that case,
 leave it unplugged for however long the user guide says is too long.
 
-.Printers with hard drive:
-Large office printers usually have a hard disk that keeps a copy of everything
-they print.
+.Printers with a hard drive:
+Large office printers usually have a hard disk that may keep either a full copy
+of everything they print, or metadata, containing the filename and the user who
+created the print job.
 
 * If the printer allows you to bypass its internal hard drive and print directly
-from RAM, select this setting for better security, and ensure that print jobs
+from RAM, select this setting for better security to ensure that print jobs
 are not stored on the printer hard drive.
 * If the printer allows you to overwrite the data immediately after printing (or
 scanning or faxing, if it’s an all-in-one device), select that option.
@@ -214,8 +214,7 @@ reported]’ below.
 . Open `settings.txt` on that disk in a text editor.  If you haven't got a
 preferred text editor, the default application for this file type will usually
 be adequate.
-. Adjust configuration settings in the file as described below, and save it
-back.
+. Adjust configuration settings in the file as described below, and save it.
 . Instruct your computer to eject/unmount/safely remove `ME-CONFIG`, like you
 would a regular USB flash stick.
 . Briefly press the button on the device and wait for the light to turn off.
@@ -226,7 +225,7 @@ consult the <<Blink Codes>> section below and remove the device. +
 *DO NOT* press the button.
 
 This procedure is also described in the `readme.txt` file on the `ME-CONFIG`
-disk volume.  The `settings.txt` file is self-documented so you can tweak the
+disk.  The `settings.txt` file is self-documented so you can tweak the
 configuration without access to this manual.
 
 TIP: To revert to factory defaults, remove `settings.txt` and continue from step
@@ -234,20 +233,20 @@ TIP: To revert to factory defaults, remove `settings.txt` and continue from step
 
 [[disk_broken]]
 .If a problem with the disk is reported:
-+++<i class="fa fa-windows"></i>&nbsp;+++ Windows may occasionally
-suggest checking the disk for errors.  This is normal, we just couldn't find
-the reason for it yet.  This should not happen again after the check. +
-If something more serious is encountered, like the disk is reported to be
-broken, a possible cause can be removal of the device without clicking the
-button, while it is in the Configuration mode.  To recover, either erase the
-first block of the disk, or let your operating system format it.  The
-configuration will revert to factory defaults.
++++<i class="fa fa-windows"></i>&nbsp;+++ Windows may occasionally suggest
+checking the disk for errors.  This is normal, and does not mean there is a
+problem with the device.  You may let it check it, or leave it as is. +
+If something more serious is reported, such as the disk being broken, a
+possible cause can be that the device was removed without clicking the button
+while it was in the Configuration mode.  To fix this, either erase the first
+block of the disk, or format it using your operating system.  The configuration
+will revert to factory defaults.
 
 === Configuration File Structure ===
 
 The ‘`#`’ character starts a comment, which extends to the end of the line.
 Comments contain information for you and are ignored by Mycelium Entropy.
-They are also frequently used to disable a setting without removing it from the
+They can also be used to disable a setting without removing it from the
 file, and to select one option amongst multiple alternatives, like so:
 
 ----
@@ -286,7 +285,7 @@ See the <<Hierarchical Deterministic Wallets>> section for more information.
 Keyword: `salt1`. +
 Parameter: 1–32 bytes of your own salt in hexadecimal; spaces are permitted for
 readability. +
-This option allows you to mix in your own entropy in a verifiable way.  See the
+This option allows you to add your own entropy in a verifiable way.  See the
 <<Salt>> section for more information.
 
 .Authorised firmware signing keys
@@ -354,7 +353,7 @@ generally insecure way, its leakage does not compromise your key;
 secure because of the salt;
 * the algorithm's implementation is easily verified.
 
-The current implementation is fairly simple and is called _Type-1 salt_ here.  A
+The current implementation is fairly simple and is called _Type-1 salt_.  A
 more advanced algorithm has been proposed but has not been implemented yet.
 
 * _Salt_ is a string of up to 32 bytes, which is entered in hexadecimal
@@ -369,7 +368,7 @@ verification.
 == Firmware Update ==
 
 To update the device's firmware, enter _Configuration mode_ as described in
-section <<Configuration>> above.  Instead of steps 4 and 5, copy the new
+<<Configuration>> section above.  Instead of steps 4 and 5, copy the new
 firmware image to `ME-CONFIG`.  Follow the rest of the procedure from step 6.
 
 If the LED turns off after a few seconds of fast blinking, the update has been
@@ -421,10 +420,10 @@ Unplug the device and wait about 7 seconds before inserting it again.
 |4|{led}|Warning: unofficial firmware. +
 The new firmware you have uploaded is signed by one of the keys listed in
 `settings.txt`, but not with the Mycelium key.
-If this is intentional, please click the button to confirm and
-to let the device proceed with firmware update.  Otherwise, unplug the device
-and, if you like, report this to Mycelium, as this could have
-been malware trying to hijack your Entropy.
+If this is intentional, please click the button to confirm and allow the device
+to proceed with the firmware update.  Otherwise, unplug the device and, if you
+like, report this to Mycelium, as this could have been malware trying to hijack
+your Entropy.
 
 |5|{led}|Invalid signing key in `settings.txt`. +
 Re­enter configuration mode and check the `sign`
@@ -455,11 +454,11 @@ on, bent, crushed, chewed, punctured, or if it is exposed to liquid, corrosive
 chemicals, strong microwave radiation, or extreme temperatures, below −20ºC
 (−4ºF) or above +80ºC (176ºF).
 
-Do not leave your device within the reach of small children.  It constitutes a
+Do not leave your device within reach of small children.  It constitutes a
 choking hazard and has sharp edges and corners that may cause an injury.
 
 Never force the device's connector into a port or apply excessive pressure to
-the device's button because this may cause damage to the device and surrounding
+the device's button, as this may cause damage to the device and surrounding
 objects.  Keep in mind that the quantum nature of USB devices requires you to
 link:http://i.imgur.com/yyEwOHK.png[spin a device three times before it will
 fit].  Take particular care around the device when it is plugged in to avoid
