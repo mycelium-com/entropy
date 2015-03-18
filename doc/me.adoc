@@ -208,10 +208,9 @@ _Configuration mode:_
 Hold the button down while inserting the device into your computer.
 . The device's LED will pulsate slowly.
 (Hover or touch here to see it).
-. Your computer should detect a USB disk labelled `ME-CONFIG`. +
-+++<i class="fa fa-windows"></i>&nbsp;+++ Windows may occasionally
-suggest checking the disk for errors.  This is normal, we just couldn't find
-the reason for it yet.  This should not happen again after the check.
+. Your computer should detect a USB disk labelled `ME-CONFIG`.
+** In case of a problem, see ‘link:#disk_broken[If a problem with the disk is
+reported]’ below.
 . Open `settings.txt` on that disk in a text editor.  If you haven't got a
 preferred text editor, the default application for this file type will usually
 be adequate.
@@ -232,6 +231,17 @@ configuration without access to this manual.
 
 TIP: To revert to factory defaults, remove `settings.txt` and continue from step
 6.
+
+[[disk_broken]]
+.If a problem with the disk is reported:
++++<i class="fa fa-windows"></i>&nbsp;+++ Windows may occasionally
+suggest checking the disk for errors.  This is normal, we just couldn't find
+the reason for it yet.  This should not happen again after the check. +
+If something more serious is encountered, like the disk is reported to be
+broken, a possible cause can be removal of the device without clicking the
+button, while it is in the Configuration mode.  To recover, either erase the
+first block of the disk, or let your operating system format it.  The
+configuration will revert to factory defaults.
 
 === Configuration File Structure ===
 
