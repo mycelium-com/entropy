@@ -53,6 +53,9 @@ them to be able to spend from it.  To make another one, double-click the button.
 You can use Mycelium Wallet's _Cold Storage_ function to spend from these
 wallets.
 
+A number of printers have been tested for compatibility.  They are listed in
+<<Appendix A: Printers>>.
+
 === Indications ===
 
 Mycelium Entropy uses its LED to tell you its status.  Move your mouse
@@ -160,6 +163,8 @@ Configuration and Firmware Update mode;_ they are described in the corresponding
 section of this manual.
 
 However, please keep in mind that some printers are more secure than others.
+The following advice is taken from a
+link:http://www.reddit.com/r/Bitcoin/comments/2aodta/on_printer_memory_for_the_security_of_printed/[report by luckdragon69].
 
 .Printers without a hard drive:
 Pretty much any home/personal printer will not have a hard drive, but most will
@@ -608,6 +613,8 @@ details.
   POSSIBILITY OF SUCH DAMAGE.
 */
 ----
+
+include::printers.adoc[]
 
 == About This Document ==
 

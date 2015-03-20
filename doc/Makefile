@@ -4,7 +4,7 @@
 
 all: me.html
 
-me.html: me.adoc docinfo.html
+me.html: me.adoc printers.adoc docinfo.html
 	asciidoctor $<
 
 clean:

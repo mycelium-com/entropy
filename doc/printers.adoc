@@ -1,0 +1,105 @@
+== Appendix A: Printers ==
+
+The following table lists printers that have been tested with Entropy.  The
+prices were updated in February 2015.  Please also see the <<Security>> section
+for general information about selecting a printer.
+
+[cols="5,^.^3,>1"]
+|===
+|Model|Status|Price, $
+
+|Brother HL-4150CDN Color Laser|OK|346
+|Brother HL-5450DN|no USB port|
+|Brother HL-L2300D|no USB port|
+|Brother HL-L2380DW|no USB port|
+|Brother MFC-8710DW All-in-One Laser|OK|290
+|Brother MFC-9330CDW Color All-in-One Laser|OK (has 500 page fax memory, may store images)|330
+|Brother MFC-9970CDW Color All-in-One Laser|OK|930
+|Brother MFC-J285DW|no USB port|
+|Brother MFC-J870DW|no USB port|
+|Brother MFC-J875DW Wireless All-In-One|does not work|
+|Brother MFC-L2700DW|no USB port|
+|Canon i560|does not work|
+|Canon imageCLASS MF8280CW Color Laser|OK|225
+|Canon MAXIFY iB4020 |no USB port|
+|Canon MAXIFY MB2020 |OK|118
+|Canon MAXIFY MB2320|OK|100
+|Canon MAXIFY MB5020 |OK|205
+|Canon PIXMA iP100 Photo|no way to print from USB|
+|Canon PIXMA iP2820|no USB port|
+|Canon PIXMA iP4900|no way to print from USB|
+|Canon PIXMA iP8720|no USB port|
+|Canon PIXMA iX6820|no USB port|
+|Canon PIXMA MG2420|no USB port|
+|Canon PIXMA MG2520|no USB port|
+|Canon PIXMA MG3520|no USB port|
+|Canon PIXMA MG5520|no USB port|
+|Canon PIXMA MG5620|no USB port|
+|Canon PIXMA MG6250|OK|307
+|Canon PIXMA MG6620|no USB port|
+|Canon PIXMA MG7520|no USB port|
+|Canon PIXMA MX392|no USB port|
+|Canon PIXMA MX472|no USB port|
+|Canon PIXMA MX532|no way to print from USB|
+|Canon PIXMA MX922|OK|100
+|Canon PIXMA Pro-100 Inkjet|no USB port|
+|Canon Selphy CP910|does not work|
+|Dell C2665dnf Color Laser|OK|400
+|Dell B1160w|no USB port|
+|Dell B1165nfw Mono Laser|no USB port|
+|Dell C1660w|no USB port|
+|Epson XP-410|no USB port|
+|Epson Stylus Photo R3000|no USB port|
+|Epson Stylus Pro 3880|no USB port|
+|Epson WF-2540|no way to print photos from USB|
+|Epson WF-2630|no USB port|
+|Epson WF-2660|no USB port|
+|Epson WF-3520 All-in-One|OK|175
+|Epson WF-3540 All-in-One|OK|180
+|Epson WF-3620|OK|135
+|Epson WF-3640|OK|150
+|Epson WF-7510 Wide-format All-in-One|OK|136
+|Epson WF-7610|OK|180
+|Epson WorkForce 30|no USB port|
+|Epson WP-4540|no way to print photos from USB|
+|Epson XP-610|OK|88
+|Epson XP-810|OK|188
+|Epson XP-850|OK|200
+|HP Deskjet 1010|no USB port|
+|HP Deskjet 1510|no USB port|
+|HP Deskjet 2540|no USB port|
+|HP Envy 120 Wireless|OK|145
+|HP Envy 4500|no USB port|
+|HP Envy 5530|no USB port|
+|HP Envy 5660|no USB port|
+|HP Envy 7640|OK|113
+|HP LaserJet 600 M601|does not work|
+|HP LaserJet P2035|no USB port|
+|HP LaserJet P3015dn|does not print from front USB port|
+|HP LaserJet Pro 200 Color M251nw|OK|200
+|HP LaserJet Pro 200 Color MFP M276nw|OK|317
+|HP LaserJet Pro 400 M401dw|OK|340
+|HP LaserJet Pro 400 M401n|no USB port|
+|HP LaserJet Pro MFP M127fn|no USB port|
+|HP LaserJet Pro MFP M127fw|no USB port|
+|HP LaserJet Pro MFP M177fw|no USB port|
+|HP LaserJet Pro MFP M425dn|OK|196
+|HP LaserJet Pro MFP M476dw|OK|375
+|HP LaserJet Pro P1102w|no USB port|
+|HP Officejet 100 Mobile|no USB port|
+|HP Officejet 150 Mobile All-in-One|no USB port|
+|HP Officejet 5740|OK|120
+|HP Officejet 6700 Premium|OK|110
+|HP Officejet 7110|no USB port|
+|HP Officejet 7612|OK|179
+|HP Officejet Pro 6830|OK|194
+|HP Officejet Pro 8100|no USB port|
+|HP Officejet Pro 8600 Plus|OK|235
+|HP Officejet Pro 8610|OK|205
+|HP Officejet Pro 8620|OK|174
+|HP Officejet Pro 8630|OK|172
+|HP Officejet Pro X576dw|OK but contains storage memory. NOT SAFE.|
+|HP Photosmart 7520|OK|114
+|HP Photosmart 8450|OK|340
+|Samsung Xpress M2020W|no USB port|
+|===
