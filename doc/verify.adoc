@@ -51,6 +51,9 @@ are slightly larger than the corresponding firmware parts.  The verification
 tool dumps entire sections, where firmware is padded at the end (usually with
 `FF`).  The hashes below take this padding into account.
 
+The hash of the verification tool is also included.  Note that it will not
+appear on the `FIRMWARE` disk.
+
 [cols="2,5,4"]
 |===
 |File|SHA-1 hash|Description
@@ -61,4 +64,6 @@ tool dumps entire sections, where firmware is padded at the end (usually with
 |Main firmware.
 |`bip39.bin`|`7f33cd6922b414f14ea4107e7ca88c18fedecf1f`
 |BIP-39 word list, used for HD wallets.
+|`verify.tsk`|`386710390f7dbeccf57df5bd1dfd81f02ffa4a5c`
+|Firmware verification tool.
 |===
