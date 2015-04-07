@@ -1,0 +1,64 @@
+= Mycelium Entropy =
+:icons: font
+:stylesdir:
+:scriptsdir:
+:hide-uri-scheme:
+:prewrap:
+:docinfo1:
+:led: pass:[<object data="me.svg" type="image/svg+xml" style="width: 6em; height: 5em"></object>]
+
+== Firmware Verification ==
+
+This document explains how to check whether your Mycelium Entropy device
+contains genuine firmware.
+
+IMPORTANT: This procedure guarantees malware detection only if the potential
+compomise happened before the 7^th^ of April 2015.
+
+. Hold the button down while inserting the device into your computer.
+. The device's LED will pulsate slowly.
+. Your computer should detect a USB disk labelled `ME-CONFIG`.
+** In case of a problem, consult the link:me.html#disk_broken[User Manual].
+. Download and copy link:verify.tsk[verify.tsk] to `ME-CONFIG`.
+. Instruct your computer to eject/unmount/safely remove `ME-CONFIG`, like you
+would a regular USB flash stick.
+. Briefly press the button on the device.
+. The light on the device will blink rapidly for about 16 seconds.
+. If the firmware is genuine, the two LEDs will blink alternately (not too fast,
+around two times a second). +
+Any other indication means that your device may have been compromised.
+
+After that, you can unplug your device.
+
+This tool can also dump the actual contents of your Entropy's firmware.
+After verification, the device will create a disk labelled `FIRMWARE` with three
+files on it.
+
+.Why is this procedure potentially ineffective against future compromises?
+Your device's firmware is used to run the verification tool (verify.tsk).
+Once this document is published, there is small risk that a clever attacker may
+adapt his/her forged firmware to fake the tool's blinking and the `FIRMWARE`
+disk.
+
+=== Firmware Hashes ===
+
+NOTE: This section is purely informational.  The LED-based verification
+explained above is fully sufficient to determine whether your device has been
+compromised or not.
+
+The firmware is stored in three sections of Mycelium Entropy flash.  Two of them
+are slightly larger than the corresponding firmware parts.  The verification
+tool dumps entire sections, where firmware is padded at the end (usually with
+`FF`).  The hashes below take this padding into account.
+
+[cols="2,5,4"]
+|===
+|File|SHA-1 hash|Description
+
+|`boot.bin`|`6bf1a0305fe76ac81ce5f5cb5fa874312f10ca6b`|Bootloader.
+|`firmware.bin`|`71ac8668438594babc77b4f2d8de6f2ec0de77e5` or +
+`d2b70565164c63890eccea183d01674574e145db`
+|Main firmware.
+|`bip39.bin`|`7f33cd6922b414f14ea4107e7ca88c18fedecf1f`
+|BIP-39 word list, used for HD wallets.
+|===
