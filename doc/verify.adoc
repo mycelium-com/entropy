@@ -30,9 +30,10 @@ Any other indication means that your device may have been compromised.
 
 After that, you can unplug your device.
 
-.The firmware in your device is not modified.
+.The firmware in your device is not modified by this procedure.
 This procedure does not involve re-programming of any existing firmware.
-The verification tool will run entirely in the volatile RAM.
+The verification tool will run entirely in the volatile RAM, checking hashes
+and signatures of all firmware components.
 
 This tool can also dump the actual contents of your Entropy's firmware.
 After verification, the device will create a disk labelled `FIRMWARE` with three
@@ -71,3 +72,14 @@ appear on the `FIRMWARE` disk.
 |`verify.tsk`|`386710390f7dbeccf57df5bd1dfd81f02ffa4a5c`
 |Firmware verification tool.
 |===
+
+=== Source Code ===
+
+The source code of the firmware verification tool (verify.tsk) is available in
+the Mycelium Entropy repository at
+https://github.com/mycelium-com/entropy/tree/master/verify.
+
+The `.tsk` extension is a reference to the RSX-11M operating system, where it
+denotes an executable program, called a _task_.  In Mycelium Entropy, a task is
+run once in the RAM until the device is unplugged, and is not stored like
+regular firmware.
