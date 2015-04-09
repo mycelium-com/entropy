@@ -10,7 +10,7 @@
 == Firmware Verification ==
 
 This document explains how to check whether your Mycelium Entropy device
-contains genuine firmware.
+contains only genuine firmware.
 
 IMPORTANT: This procedure guarantees malware detection only if the potential
 compomise happened before the 7^th^ of April 2015.
@@ -29,6 +29,10 @@ around two times a second). +
 Any other indication means that your device may have been compromised.
 
 After that, you can unplug your device.
+
+.The firmware in your device is not modified.
+This procedure does not involve re-programming of any existing firmware.
+The verification tool will run entirely in the volatile RAM.
 
 This tool can also dump the actual contents of your Entropy's firmware.
 After verification, the device will create a disk labelled `FIRMWARE` with three
