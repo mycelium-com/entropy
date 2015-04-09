@@ -20,4 +20,6 @@ me/*/jpeg-check
 me/jpeg-data*
 me/tools/check
 me/tools/test
+verify/disk.c
 doc/me.html
+doc/verify.html
