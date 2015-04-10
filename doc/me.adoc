@@ -56,6 +56,10 @@ wallets.
 A number of printers have been tested for compatibility.  They are listed in
 <<Appendix A: Printers>>.
 
+For technical information about Mycelium Entropy and why it is secure, please
+see <<Appendix B: How It Works>> and the
+link:https://github.com/mycelium-com/entropy[source code].
+
 === Indications ===
 
 Mycelium Entropy uses its LED to tell you its status.  Move your mouse
@@ -615,6 +619,55 @@ details.
 ----
 
 include::printers.adoc[]
+
+== Appendix B: How It Works ==
+
+Mycelium Entropy uses one primary and two secondary sources of entropy.
+The raw sources are mixed and entropy is extracted using the SHA-512
+cryptographic hash function.  The results are rendered to a JPEG file, which is
+generated on demand.  All sensitive information, such as keys and JPEG contents,
+is kept in volatile memory and is wiped out within seven seconds of the device's
+removal from the USB port.
+
+=== Primary Random Source ===
+
+When Mycelium Entropy is inserted into a USB port, it takes the contents of its
+microcontroller's built-in static RAM as the primary source of entropy.  This
+method is based on the paper by D.E. Holcomb, W.P. Burleson, and K. Fu:
+link:http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.164.6432[Power-up
+SRAM State as an Identifying Fingerprint and Source of True Random Numbers]
+(_IEEE Transactions on Computers_, vol. 58, issue 9, 2009; DOI:
+10.1109/TC.2008.212).  Their results were confirmed by analysing the raw data
+collected from the Mycelium Entropy microcontroller.
+
+The paper gives a conservative estimate that 32 bits of SRAM contain at least
+one bit of entropy on power-up.  (The actual ratio is closer to 22:1.)  The
+device collects 24 kbytes of raw data.  This is estimated to have more than 6144
+bits of entropy, or 24 times more than required.
+
+Multiple health checks are run on the SRAM data to confirm its randomness.
+
+=== Secondary Random Sources ===
+
+It can be argued that SRAM is not designed to produce random numbers.  For
+additional safety, two other hardware sources are added:
+
+* the microcontroller's built-in True Random Number Generator (TRNG) module, and
+* measurements of a floating input to the Analogue to Digital Converter (ADC).
+
+The sources are mixed in such a way that in the unlikely case of a backdoor in
+the TRNG module, the security of Mycelium Entropy is not reduced.
+
+=== Multiple Keys ===
+
+Mycelium Entropy can generate several keys from a single insertion, when
+instructed by pressing the button.  An algorithm based on state of the art
+cryptographic practice ensures that all generated keys are unpredictable, even
+though the amount of SRAM entropy obtained at power-up is limited.  This
+algorithm is practically the same as the well audited and trusted child key
+derivation function of hierarchical deterministic wallets as specified in
+BIP-32, except that the entropy pool (chain code) is also fed from the secondary
+random sources for each new key.
 
 == About This Document ==
 
