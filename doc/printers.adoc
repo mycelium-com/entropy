@@ -41,6 +41,7 @@ for general information about selecting a printer.
 |Canon PIXMA MX392|no USB port|
 |Canon PIXMA MX472|no USB port|
 |Canon PIXMA MX532|no way to print from USB|
+|Canon PIXMA MX725|OK|
 |Canon PIXMA MX922|OK|100
 |Canon PIXMA Pro-100 Inkjet|no USB port|
 |Canon Selphy CP910|does not work|
