@@ -145,13 +145,12 @@ void ui_btn_off(void)
 
 static void ui_msg(enum Ui_message_code code)
 {
-    tc_stop(TC_UI, TC_UI_CHANNEL);
-    LED_Off(LED0);
-    ast_write_periodic0_value(AST, AST_PER_1HZ - 3);    // ~4 Hz blinking
-    ast_enable_interrupt(AST, AST_INTERRUPT_PER);
+    ui_off();
     led_extend = 4;
     led_pulses = code << 1;
     led_pause = 8;
+    ast_write_periodic0_value(AST, AST_PER_1HZ - 3);    // ~4 Hz blinking
+    ast_enable_interrupt(AST, AST_INTERRUPT_PER);
     printf("UI message %d.\n", code);
 }
 
