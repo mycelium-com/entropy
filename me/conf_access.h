@@ -219,5 +219,6 @@ void set_active_lun(U8 lun);
 #define GLOBAL_WR_PROTECT    false   //!< Management of a global write protection.
 //! @}
 
+#define AT25DFX_JPEG    DISABLE
 
 #endif // _CONF_ACCESS_H_

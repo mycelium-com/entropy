@@ -29,9 +29,6 @@ void xflash_read(uint8_t *data, uint16_t size, uint32_t address);
 void xflash_write(const uint8_t *data, uint16_t size, uint32_t address);
 // erase smallest erasable block: 4 kB (if capable) or 64 kB
 void xflash_erase_4k(uint32_t address);
-bool xflash_erase(void);
-bool xflash_check_ready(void);
-bool xflash_write_jpeg(void);
 
 extern volatile bool xflash_ready;
 
@@ -41,8 +38,11 @@ extern bool xflash_4k_erase_capable;  // whether the flash can erase 4 kB blocks
 extern uint32_t xflash_num_blocks;    // size in 512 byte blocks
 
 // To be called periodically to poll for background operations.
-#if AT25DFX_MEM
+#if AT25DFX_JPEG
 void xflash_periodic_interrupt(void);
+bool xflash_erase(void);
+bool xflash_check_ready(void);
+bool xflash_write_jpeg(void);
 #else
 #define xflash_periodic_interrupt()
 #endif

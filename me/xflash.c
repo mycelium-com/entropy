@@ -116,7 +116,7 @@ void xflash_erase_4k(uint32_t address)
     }
 }
 
-#if AT25DFX_MEM == ENABLE
+#if AT25DFX_JPEG
 // We are using flash as a buffer which can hold an entire JPEG file
 // and serve it through USB in random order.
 

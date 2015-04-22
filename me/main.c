@@ -134,7 +134,7 @@ int main(void)
     parse_settings(0, 0);
 
 generate_new_key:
-#if AT25DFX_MEM
+#if AT25DFX_JPEG
     if (!xflash_erase()) {
         ui_error(UI_E_HARDWARE_FAULT);
     }
@@ -151,7 +151,7 @@ generate_new_key:
         len = keygen(key);
     }
 
-#if AT25DFX_MEM
+#if AT25DFX_JPEG
     do ; while (!xflash_ready);
 #endif
 
@@ -187,7 +187,7 @@ generate_new_key:
     ui_off();
     LED_On(LED0);
 
-#if AT25DFX_MEM
+#if AT25DFX_JPEG
     xflash_write_jpeg();
 #endif
 
