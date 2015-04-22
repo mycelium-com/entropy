@@ -69,10 +69,9 @@
 #include "conf_at25dfx.h"
 #include "at25dfx.h"
 #include "at25dfx_mem.h"
+#include "xflash.h"
 
-extern unsigned num_sectors;
-
-#define AT25DFX_NSECT       num_sectors
+#define AT25DFX_NSECT       xflash_num_blocks
 
 
 //_____ D E F I N I T I O N S ______________________________________________
@@ -81,7 +80,14 @@ extern unsigned num_sectors;
  */
 //! @{
 
+enum {
+    FLASH_BLOCK_SIZE = 65536,
+    FLASH_MAX_SIZE   = 2048 * 1024,
+};
+
 static bool b_at25dfx_unloaded = false;
+
+static bool erased[FLASH_MAX_SIZE / FLASH_BLOCK_SIZE];
 
 Ctrl_status at25dfx_test_unit_ready(void)
 {
@@ -125,7 +131,7 @@ extern uint8_t _estack[SECTOR_SIZE];
 
 Ctrl_status at25dfx_usb_read_10(U32 addr, U16 nb_sector)
 {
-	if (addr + nb_sector > AT25DFX_NSECT){
+	if (addr + nb_sector > AT25DFX_NSECT) {
 		return CTRL_FAIL;
 	}
 	while (nb_sector--) {
@@ -140,7 +146,25 @@ Ctrl_status at25dfx_usb_read_10(U32 addr, U16 nb_sector)
 
 Ctrl_status at25dfx_usb_write_10(U32 addr, U16 nb_sector)
 {
-    return CTRL_FAIL;
+    if (addr + nb_sector > AT25DFX_NSECT) {
+        return CTRL_FAIL;
+    }
+    while (nb_sector--) {
+        unsigned flash_addr = addr * SECTOR_SIZE;
+
+		if (!udi_msc_trans_block(false, sector_buf, SECTOR_SIZE, NULL))
+            return CTRL_FAIL;
+
+        if (!erased[flash_addr / FLASH_BLOCK_SIZE]) {
+            if (at25dfx_erase_block(flash_addr, AT25_BLOCK_ERASE_64K) != AT25_SUCCESS)
+                return CTRL_FAIL;
+            erased[flash_addr / FLASH_BLOCK_SIZE] = true;
+        }
+        if (at25dfx_write(sector_buf, SECTOR_SIZE, flash_addr) != AT25_SUCCESS)
+            return CTRL_FAIL;
+        addr++;
+	}
+    return CTRL_GOOD;
 }
 
 //! @}

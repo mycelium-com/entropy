@@ -62,7 +62,7 @@ void set_active_lun(U8 lun);
 #define LUN_0                DISABLE   //!< On-Chip Virtual Memory.
 #define LUN_1                DISABLE   //!< AT45DBX Data Flash.
 #define LUN_2                DISABLE   //!< SD/MMC Card over Slot 0
-#define LUN_3                DISABLE   //!< AT25-compatible serial flash (RO).
+#define LUN_3                DISABLE   //!< AT25-compatible serial flash (R[w]).
 #define LUN_4                ENABLE    //!< Mycelium Entropy streaming JPEG.
 #define LUN_5                ENABLE    //!< Serial flash (RW) with block buffers
 #define LUN_6                DISABLE   //!< Spare
@@ -129,13 +129,13 @@ void set_active_lun(U8 lun);
 #define LUN_3_INCLUDE                           "at25dfx_mem.h"
 #define Lun_3_test_unit_ready                   at25dfx_test_unit_ready
 #define Lun_3_read_capacity                     at25dfx_read_capacity
-#define Lun_3_wr_protect                        say_yes
+#define Lun_3_wr_protect                        say_no
 #define Lun_3_removal                           say_yes
 #define Lun_3_usb_read_10                       at25dfx_usb_read_10
 #define Lun_3_usb_write_10                      at25dfx_usb_write_10
 #define Lun_3_mem_2_ram                         at25dfx_df_2_ram
 #define Lun_3_ram_2_mem                         at25dfx_ram_2_df
-#define LUN_3_NAME                              "\"Entropy\""
+#define LUN_3_NAME                              "\"Serial Flash\""
 //! @}
 
 /*! \name LUN 4 Definitions

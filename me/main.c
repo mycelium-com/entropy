@@ -47,6 +47,13 @@
 #include "settings.h"
 #include "readme.h"
 
+#if AT25DFX_MEM
+// Special support for prototypes with serial flash chips not supporting
+// 4 kB block erase operations.
+#include <string.h>
+#include "applet.h"
+#endif
+
 // Symbols defined by the linker.
 // Uninitialised memory is between them.
 extern struct {
@@ -100,7 +107,46 @@ int main(void)
         CONFIG_FW_REG_CLR = CONFIG_FW_MASK;     // clear config mode flag
         if (!xflash_4k_erase_capable) {
             puts("\nConfiguration mode not available with this flash chip.");
+#if !AT25DFX_MEM
             ui_error(UI_E_UNSUPPORTED_HARDWARE);
+#else
+            // Special support for prototypes with serial flash chips
+            // not supporting 4 kB block erase operations.
+            set_active_lun(LUN_ID_AT25DFX_MEM);
+            ui_pulsate();
+            __ram_end__ = 0;
+            udc_start();
+            ui_btn_count = 0;
+            do {
+                if (main_b_msc_enable)
+                    udi_msc_process_trans();
+            } while (ui_btn_count == 0);
+            udc_stop();
+            ui_off();
+            ui_btn_off();
+
+            uint32_t addr = xflash_num_blocks * 512 - 2 * XFLASH_WORDLIST_OFFSET;
+            uint32_t size;
+            struct Applet_param *param = (struct Applet_param *) applet_param_addr;
+
+            xflash_read((uint8_t *) &size, sizeof size, addr);
+            printf("Applet size: %lu.\n", size);
+            if (size > 256 && size < 32768) {
+                param->data_addr = addr + sizeof size;
+                param->csize = 32768;
+                param->file_scl = 2;
+                param->file_size = size;
+                param->ftype = FW_MAGIC_TASK;
+                printf("Starting applet.\n");
+
+                memcpy((void *) applet_addr, applet_bin, applet_bin_len);
+
+                __set_MSP(applet_addr);
+                asm ("bx %0" :: "r" (applet_addr | 1));
+            }
+            NVIC_SystemReset();
+            return 0;
+#endif
         }
         set_active_lun(LUN_ID_XFLASH_BUF_MEM);
         ui_pulsate();
