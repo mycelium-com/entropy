@@ -445,8 +445,8 @@ The new firmware's signature is invalid, or its public key is
 not authorised.  All authorised keys must be listed in `settings.txt`.
 
 |7|{led}|Invalid firmware. +
-The new firmware image is not signed, or does not
-contain valid Mycelium Entropy firmware.
+The new firmware image is not signed, does not contain valid Mycelium Entropy
+firmware, or is incompatible with the current firmware.
 
 |8|{led}|Unsupported hardware. +
 The new firmware does not support the hardware revision of your
