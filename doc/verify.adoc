@@ -65,7 +65,8 @@ appear on the `FIRMWARE` disk.
 
 |`boot.bin`|`6bf1a0305fe76ac81ce5f5cb5fa874312f10ca6b`|Bootloader.
 |`firmware.bin`|`71ac8668438594babc77b4f2d8de6f2ec0de77e5` or +
-`d2b70565164c63890eccea183d01674574e145db`
+`d2b70565164c63890eccea183d01674574e145db` or +
+`09ea40c183a23de5ec42ea01c1f38f727815fc81`
 |Main firmware.
 |`bip39.bin`|`7f33cd6922b414f14ea4107e7ca88c18fedecf1f`
 |BIP-39 word list, used for HD wallets.
