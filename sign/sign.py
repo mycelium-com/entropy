@@ -258,7 +258,7 @@ def update_sig(fname, sig):
     else:
         sig["mcu"] = sig["HW_SAM4L4"]
 
-def sign(fname, just_check):
+def sign(fname, just_check, force):
     dirname = os.path.dirname(fname)
     image_file = open(fname, ("rb+", "rb")[just_check])
     image = image_file.read()
@@ -274,8 +274,13 @@ def sign(fname, just_check):
         sig = Signature()
         sig.unpack(image, offset)
         sig.show(image, offset)
-        return True
-    if just_check:
+        if not force:
+            return True
+        print fname + ": removing existing signature"
+        image = image[:offset]
+        image_file.seek(offset)
+        image_file.truncate(offset)
+    elif just_check:
         print fname + ": not signed"
         return True
 
@@ -308,8 +313,10 @@ def sign(fname, just_check):
 
 ap = argparse.ArgumentParser(description="Sign a firmware image or task.")
 ap.add_argument("fname", metavar="image.{bin|tsk}", nargs="+")
-ap.add_argument("-c", "--check", action="store_true", help="check image signature")
+cfgroup = ap.add_mutually_exclusive_group()
+cfgroup.add_argument("-c", "--check", action="store_true", help="check image signature")
+cfgroup.add_argument("-f", "--force", action="store_true", help="force signature replacement")
 
 args = ap.parse_args()
 for fname in args.fname:
-    sign(fname, args.check)
+    sign(fname, args.check, args.force)
