@@ -37,12 +37,14 @@ all:
 	$(MAKE) -C brt 	$(XSGN)	# bootloader replacement tool
 	$(MAKE) -C hwtest	# Mycelium Entropy hardware test
 	$(MAKE) -C factory	# initial factory firmware and self test
+	$(MAKE) -C wlp	$(XSGN)	# BIP-39 word list programming tool
 	$(MAKE) -C collect	# entropy collection tool
 	$(MAKE) -C me	$(XSGN)	# Mycelium Entropy main firmware
 
 clean:
 	$(MAKE) -C me clean
 	$(MAKE) -C collect clean
+	$(MAKE) -C wlp clean
 	$(MAKE) -C factory clean
 	$(MAKE) -C hwtest clean
 	$(MAKE) -C brt clean

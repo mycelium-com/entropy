@@ -21,5 +21,6 @@ me/jpeg-data*
 me/tools/check
 me/tools/test
 verify/disk.c
+wlp/*/en-us-b39.c
 doc/me.html
 doc/verify.html
