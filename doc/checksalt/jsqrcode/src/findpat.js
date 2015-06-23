@@ -409,8 +409,8 @@ function FinderPatternFinder()
 				}
 				var average = totalModuleSize /  startSize;
                 this.possibleCenters.sort(function(center1,center2) {
-				      var dA=Math.abs(center2.EstimatedModuleSize - average);
-				      var dB=Math.abs(center1.EstimatedModuleSize - average);
+				      var dA=Math.abs(center1.EstimatedModuleSize - average);
+				      var dB=Math.abs(center2.EstimatedModuleSize - average);
 				      if (dA < dB) {
 				    	  return (-1);
 				      } else if (dA == dB) {
