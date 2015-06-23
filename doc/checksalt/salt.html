@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mycelium Entropy Salt Validator</title>
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="theme.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="jsqrcode/src/grid.js"></script>
+<script src="jsqrcode/src/version.js"></script>
+<script src="jsqrcode/src/detector.js"></script>
+<script src="jsqrcode/src/formatinf.js"></script>
+<script src="jsqrcode/src/errorlevel.js"></script>
+<script src="jsqrcode/src/bitmat.js"></script>
+<script src="jsqrcode/src/datablock.js"></script>
+<script src="jsqrcode/src/bmparser.js"></script>
+<script src="jsqrcode/src/datamask.js"></script>
+<script src="jsqrcode/src/rsdecoder.js"></script>
+<script src="jsqrcode/src/gf256poly.js"></script>
+<script src="jsqrcode/src/gf256.js"></script>
+<script src="jsqrcode/src/decoder.js"></script>
+<script src="jsqrcode/src/qrcode.js"></script>
+<script src="jsqrcode/src/findpat.js"></script>
+<script src="jsqrcode/src/alignpat.js"></script>
+<script src="jsqrcode/src/databr.js"></script>
+<script src="jsbn/jsbn.js"></script>
+<script src="jsbn/jsbn2.js"></script>
+<script src="jsbn/ec.js"></script>
+<script src="jsbip39/sjcl-bip39.js"></script>
+<script src="jsbip39/wordlist_english.js"></script>
+<script src="jsbip39/jsbip39.js"></script>
+<script>var module = {};</script>
+<script src="bs58.js"></script>
+<script src="salt.js"></script>
+</head>
+<body class="container">
+<div class="page-header">
+<h1>Mycelium Entropy Salt Validator</h1>
+</div>
+<p>
+If you have configured your Mycelium Entropy device to use
+<a href="https://mycelium.com/assets/entropy/me.html#_salt">salt</a>,
+this tool allows you to check whether your device uses it correctly.
+<p>
+Please bear in mind that <span class="danger">any data you enter here should
+be considered potentially compromised</span>.  Do not use paper wallets tested
+here for any serious purposes.
+<p>
+This tool performs all its work entirely in the browser.  It does not
+intentionally transmit or store your data.
+<p>
+We invite independent audits of this tool.  Its core functionality is
+in function <code>key</code> in file <a href="salt.js">salt.js</a>.
+
+<form class="form-horizontal">
+<h2>Enter your salt</h2>
+<div class="form-group">
+	<label class="col-sm-1 control-label">Salt</label>
+	<div class="col-sm-11">
+		<input id="salt" type="text" class="form-control" size=96
+			inputmode="verbatim"
+			spellcheck=false
+			pattern="[ 0-9A-Fa-f]*"
+			placeholder="up to 32 bytes in hexadecimal">
+		<p id="salt-too-long" class="danger" hidden>
+			The longest possible salt is 64 hexadecimal digits.
+		<p id="salt-odd" class="danger" hidden>
+			Salt must consist of an even number of hexadecimal
+			digits.
+	</div>
+</div>
+<h2>Enter entropy for verification</h2>
+<div class="row">
+	<div class="col-sm-4">
+		<p>Select a picture to scan the Entropy QR code from:
+		<p><span class="btn btn-block btn-file">
+			<i class="fa fa-file-image-o"></i>&nbsp;&nbsp; Choose file…
+			<input type="file" accept="image/*"
+				onchange="file_input(this);" capture>
+		</span>
+		<p>
+		<button id="cambtn" class="btn btn-block" onclick="use_video();">
+			<i class="fa fa-camera"></i>&nbsp;&nbsp; Scan with camera
+		</button>
+		<p>or drag and drop it here.
+		<p>Alternatively, you can also type it below.
+	</div>
+	<div class="col-sm-8">
+		<span id="video"><video autoplay></video>
+		<button class="btn btn-danger" onclick="stop_video();" hidden>
+			<i class="fa fa-close"></i> Stop
+		</button></span>
+		<div id="image" hidden>
+			<img src="" alt="" width=320 height=240 onload="set_image(this);">
+		</div>
+	</div>
+</div>
+<br>
+<div class="form-group">
+	<label class="col-sm-1 control-label">Entropy</label>
+	<div class="col-sm-11">
+		<input id="entropy" type="text" class="form-control" size=96
+			inputmode="verbatim"
+			spellcheck=false
+			pattern="[ 0-9A-Fa-f]*"
+			placeholder="32 bytes in hexadecimal">
+		<p id="entropy-wrong" class="danger" hidden>
+			Entropy should be 64 hexadecimal digits in length.
+</div>
+</div>
+</form>
+<h2>Check results</h2>
+<div class="row">
+	<div class="col-sm-3">
+		<input type="button" id="calc-reg" class="btn" disabled
+			value="Single address wallet">
+	</div>
+	<div class="col-sm-3">
+		<input type="button" id="calc-hd" class="btn" disabled
+			value="HD wallet">
+	</div>
+	<div class="col-sm-3">
+		<select class="form-control">
+			<option value="0x80">Bitcoin
+			<option value="0xb0">Litecoin
+			<option value="0xb7">Peercoin
+			<option value="0xef">Bitcoin testnet
+		</select>
+	</div>
+	<div class="col-sm-3 checkbox">
+		<label><input type="checkbox" checked>
+			compressed public key
+		</label>
+	</div>
+</div>
+<hr>
+<form class="form-horizontal" id="results" hidden>
+<div class="form-group">
+	<label class="col-sm-2 control-label">Key material:</label>
+	<div class="col-sm-10"><p class="form-control-static"><samp id="sha"></samp>
+		<br>SHA-256 (salt || entropy)
+	</div>
+</div>
+<hr>
+<div class="form-group results-hd">
+	<label class="col-sm-2 control-label">Seed:</label>
+	<div class="col-sm-10"><p class="form-control-static"><samp id="mnemonic"></samp></div>
+</div>
+<div class="form-group results-reg">
+	<label class="col-sm-2 control-label">Private key:</label>
+	<div class="col-sm-10"><p class="form-control-static"><samp id="privkey"></samp></div>
+</div>
+<div class="form-group results-reg">
+	<label class="col-sm-2 control-label">Address:</label>
+	<div class="col-sm-10"><p class="form-control-static"><samp id="address"></samp></div>
+</div>
+</form>
+<canvas id="qr-canvas" hidden></canvas>
+<hr>
+<h3>Acknowledgements</h3>
+This tools uses the following libraries:
+<ul>
+	<li>jsqrcode: <a href="https://github.com/LazarSoft/jsqrcode">https://github.com/LazarSoft/jsqrcode</a>
+	<li>SJCL: <a href="https://bitwiseshiftleft.github.io/sjcl/">https://bitwiseshiftleft.github.io/sjcl/</a>
+	<li>jsbn: <a href="http://www-cs-students.stanford.edu/~tjw/jsbn/">http://www-cs-students.stanford.edu/~tjw/jsbn/</a>
+	<li>jsBIP39: <a href="https://github.com/iancoleman/jsbip39">https://github.com/iancoleman/jsbip39</a>
+	<li>bs58.js: <a href="https://github.com/cryptocoinjs/bs58">https://github.com/cryptocoinjs/bs58</a>
+	<li>jQuery: <a href="https://jquery.com/">https://jquery.com/</a>
+	<li>Bootstrap: <a href="http://getbootstrap.com/">http://getbootstrap.com/</a>
+</ul>
+</body>
+</html>
