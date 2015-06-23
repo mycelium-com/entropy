@@ -512,7 +512,7 @@ function FinderPatternFinder()
 		}
 		
 	this.findFinderPattern = function(image){
-		var tryHarder = false;
+		var tryHarder = true;
 		this.image=image;
 		var maxI = qrcode.height;
 		var maxJ = qrcode.width;
