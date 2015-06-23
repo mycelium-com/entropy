@@ -45,8 +45,8 @@ qrcode.decode = function(src){
     {
         var image = new Image();
         image.onload=function(){
-            //var canvas_qr = document.getElementById("qr-canvas");
-            var canvas_qr = document.createElement('canvas');
+            var canvas_qr = document.getElementById("qr-canvas");
+            //var canvas_qr = document.createElement('canvas');
             var context = canvas_qr.getContext('2d');
             var nheight = image.height;
             var nwidth = image.width;
