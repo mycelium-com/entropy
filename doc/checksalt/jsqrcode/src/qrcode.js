@@ -152,6 +152,9 @@ qrcode.process = function(ctx){
     var detector = new Detector(image);
 
     var qRCodeMatrix = detector.detect();
+
+    qrcode.points = qRCodeMatrix.points;
+    qrcode.moduleSize = qRCodeMatrix.moduleSize;
     
     /*for (var y = 0; y < qRCodeMatrix.bits.Height; y++)
     {

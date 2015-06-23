@@ -115,10 +115,11 @@ PerspectiveTransform.quadrilateralToSquare=function( x0,  y0,  x1,  y1,  x2,  y2
 	return this.squareToQuadrilateral(x0, y0, x1, y1, x2, y2, x3, y3).buildAdjoint();
 }
 
-function DetectorResult(bits,  points)
+function DetectorResult(bits, points, moduleSize)
 {
 	this.bits = bits;
 	this.points = points;
+	this.moduleSize = moduleSize;
 }
 
 
@@ -399,7 +400,7 @@ function Detector(image)
 			{
 				points = new Array(bottomLeft, topLeft, topRight, alignmentPattern);
 			}
-			return new DetectorResult(bits, points);
+			return new DetectorResult(bits, points, moduleSize);
 		}
 		
 
