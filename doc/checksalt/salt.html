@@ -77,22 +77,22 @@ in function <code>key</code> in file <a href="salt.js">salt.js</a>.
 		<p>Select a picture to scan the Entropy QR code from:
 		<p><span class="btn btn-block btn-file">
 			<i class="fa fa-file-image-o"></i>&nbsp;&nbsp; Choose file…
-			<input type="file" accept="image/*"
+			<input type="file" accept="image/*;capture=camera"
 				onchange="file_input(this);" capture>
 		</span>
 		<p>
-		<button id="cambtn" class="btn btn-block" onclick="use_video();">
+		<button id="cambtn" class="btn btn-block" onclick="use_video();" hidden>
 			<i class="fa fa-camera"></i>&nbsp;&nbsp; Scan with camera
 		</button>
 		<p>or drag and drop it here.
-		<p>Alternatively, you can also type it below.
+		<p>Alternatively, you can also type your entropy below.
 	</div>
 	<div class="col-sm-8">
-		<span id="video"><video autoplay></video>
+		<span id="video" hidden><video autoplay></video>
 		<button class="btn btn-danger" onclick="stop_video();" hidden>
 			<i class="fa fa-close"></i> Stop
 		</button></span>
-		<div id="image" hidden>
+		<div id="image">
 			<img src="" alt="" width=320 height=240 onload="set_image(this);">
 		</div>
 	</div>
