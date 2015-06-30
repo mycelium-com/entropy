@@ -5,6 +5,7 @@ navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia 
 
 var video;
 var video_stream;
+var video_constraints = true;
 var video_on = false;
 var first_pass_on_file;
 var canvas;
@@ -95,9 +96,22 @@ $(function () {
     });
 });
 
+if (this.MediaStreamTrack) {
+    MediaStreamTrack.getSources(function (src) {
+        for (var i in src) {
+            if (src[i].kind == "video" && src[i].facing == "environment") {
+                video_constraints = { optional: [{ sourceId: src[i].id }] };
+                break;
+            }
+        }
+    });
+}
+
 function use_video() {
     $("#cambtn").attr("disabled", true);
-    navigator.getUserMedia({video: true}, function (stream) {
+    if (video_constraints != true)
+        $("video").css("transform", "none");
+    navigator.getUserMedia({ video: video_constraints }, function (stream) {
         // handle video
         video_stream = stream;
         video = document.querySelector("video");
@@ -117,7 +131,6 @@ function use_video() {
 }
 
 function decode_video() {
-    console.log("dv: video paused " + video.paused + ", ended " + video.ended);
     if (!video_on) return;
     if (!video.paused && !video.ended) {
         try {
