@@ -108,6 +108,8 @@ This method is commonly known as _Shamir's 2-of-3 Secret Sharing Scheme_.
 It is implemented according to the specification at
 https://github.com/cetuscetus/btctool/blob/bip/bip-xxxx.mediawiki.
 Funds from a split wallet can be spent with Mycelium Bitcoin Wallet.
+The private key can also be recovered from shares with this tool:
+https://mycelium.com/assets/entropy/checksalt/sss.html.
 
 Mycelium Entropy does not currently support this scheme with Hierarchical
 Deterministic wallets.
@@ -374,6 +376,9 @@ of bytes, that is, an even number of hexadecimal digits, up to 64.
 mnemonic.
 * _Entropy_ is printed alongside the private/public key pair for your
 verification.
+
+“Salted” keys can be verified at
+https://mycelium.com/assets/entropy/checksalt/salt.html.
 
 == Firmware Update ==
 
