@@ -12,9 +12,10 @@ var canvas;
 var ctx;
 var key_qr;
 
-var shares = [];
-var set_id;
-var threshold;
+var shares = [];        // decoded (binary) shares, indexed by x
+var share_texts = {};   // encoded (textual) shares as keys
+var set_id;             // share set ID
+var threshold;          // number of shares required to recover the key
 
 // Combine shares and compute the secret.
 function combine() {
@@ -89,6 +90,7 @@ function add_share(share_text) {
     }
 
     shares[x] = share.slice(4);
+    share_texts[share_text] = true;
 
     $("#list-of-shares").append("#" + x + ": <code>" + share_text + "</code><br>");
     $("#share").val("");
@@ -101,8 +103,16 @@ function add_share(share_text) {
 
 function clear_shares(e) {
     shares = [];
+    share_texts = {};
     $("#list-of-shares").text("");
     $("#shares, #private-key").hide("slow");
+
+    if (!video_on) {
+        $("#video")[0].hidden = true;
+        $("#image")[0].hidden = false;
+        $("img")[0].hidden = true;
+    }
+
     e.stopPropagation();
     e.preventDefault();
 }
@@ -217,15 +227,17 @@ function file_input(dt) {
 
     $("#video")[0].hidden = true;
     $("#image")[0].hidden = false;
+    var img = $("img")[0];
+    img.hidden = false;
 
     first_pass_on_file = true;
     if (dt.getData && dt.getData("URL")) {
-        $("img")[0].src = dt.getData("URL");
+        img.src = dt.getData("URL");
         qrcode.decode(dt.getData("URL"));
     } else if (dt.files) {
         var reader = new FileReader();
         reader.onload = function () {
-            $("img")[0].src = reader.result;
+            img.src = reader.result;
             qrcode.decode(reader.result);
         }
         reader.readAsDataURL(dt.files[0]);
@@ -234,7 +246,7 @@ function file_input(dt) {
 
 qrcode.callback = function (text) {
     // validate text as a private key share
-    if (text.slice(0, 4) == "SSS-") {
+    if (text.slice(0, 4) == "SSS-" && !(text in share_texts)) {
         $("#share").val(text).change();
         stop_video();
         return;
